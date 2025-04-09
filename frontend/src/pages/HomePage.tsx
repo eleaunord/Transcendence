@@ -14,7 +14,7 @@ export function HomePage() {
       {/* Image de fond en transparence */}
       <div
         className="absolute inset-0 bg-cover bg-center opacity-40"
-        style={{ backgroundImage: 'url(/src/assets/photo_pong.png)' }}
+        style={{ backgroundImage: 'url(/public/assets/photo_pong.png)' }}
       ></div>
 
       {/* Contenu de la page */}

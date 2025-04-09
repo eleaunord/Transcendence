@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';  // Importer useNavigate pour la redirection
+import { useNavigate } from 'react-router-dom';
 
 export function GamePage() {
-  const navigate = useNavigate();  // Hook pour la navigation
+  const navigate = useNavigate();
 
   // Déclarer l'état panelOpen avec useState pour gérer l'ouverture/fermeture du panneau
-  const [panelOpen, setPanelOpen] = useState<boolean>(true);  // Initialiser l'état à `true` pour que le panneau soit ouvert au début
+  const [panelOpen, setPanelOpen] = useState<boolean>(true);
 
   // Fonction pour basculer l'état du panneau
   const togglePanel = () => {
-    setPanelOpen((prevState) => !prevState);  // Inverse l'état du panneau (ouvert/fermé)
+    setPanelOpen((prevState) => !prevState);
   };
 
   // Fonction pour revenir à la page de personnalisation
   const goBackToCustomization = () => {
-    window.location.href = '/customization';  // Rediriger vers la page de personnalisation
+    navigate('/customization');  // Rediriger vers la page de personnalisation
   };
 
   // Fonction pour aller au profil de l'utilisateur
@@ -35,19 +35,19 @@ export function GamePage() {
           id="leftPanel"
           className={`transition-all duration-300 ease-in-out ${
             panelOpen ? 'w-64' : 'w-px'
-          } ${panelOpen ? 'bg-gray-800 p-4' : 'bg-blue-600'} p-4 overflow-y-auto`} // Animation de transition de largeur et couleur de la barre
+          } ${panelOpen ? 'bg-gray-800 p-4' : 'bg-blue-600'} p-4 overflow-y-auto`}
         >
           {panelOpen ? (
             <>
               <h2 className="text-xl font-semibold mb-4 text-center">Profil</h2>
 
-              {/* Photo du joueur qui redirige vers le profil utilisateur */}
+              {/* Photo du joueur */}
               <div className="flex justify-center mb-4">
                 <img
-                  src="/src/assets/photo_profil.png"
+                  src="/public/assets/photo_profil.png"
                   alt="Player Profile"
                   className="w-24 h-24 rounded-full border-4 border-white cursor-pointer"
-                  onClick={goToUserProfile}  // Redirection vers le profil utilisateur
+                  onClick={goToUserProfile}
                 />
               </div>
 
@@ -61,7 +61,6 @@ export function GamePage() {
               </div>
             </>
           ) : (
-            // Barre colorée uniquement lorsque le panneau est fermé
             <div className="w-full h-full bg-blue-600"></div>
           )}
         </div>
@@ -69,14 +68,14 @@ export function GamePage() {
         {/* Cadre central pour le jeu */}
         <div className="flex-1 bg-gray-900 flex justify-center items-center">
           <div className="w-3/4 h-3/4 border-4 border-white flex justify-center items-center">
-            <img src="/src/assets/photo_pong.png" alt="Game Preview" className="w-full h-full object-cover rounded-lg" />
+            <img src="/public/assets/photo_pong.png" alt="Game Preview" className="w-full h-full object-cover rounded-lg" />
           </div>
         </div>
       </div>
 
       {/* Bouton pour faire coulisser l'encadré gauche */}
       <button
-        onClick={togglePanel}  // Utilisation de l'événement React pour toggler l'état
+        onClick={togglePanel}
         className="fixed top-1/2 left-0 transform -translate-y-1/2 bg-blue-600 p-3 rounded-r-md hover:bg-blue-700 focus:outline-none"
       >
         <span className="text-white">≡</span> {/* Symbole de menu coulissant */}
@@ -84,7 +83,7 @@ export function GamePage() {
 
       {/* Bouton pour revenir à la personnalisation */}
       <button
-        onClick={goBackToCustomization}  // Utilisation de React Router pour la redirection
+        onClick={goBackToCustomization}
         className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300"
       >
         Retour à la personnalisation
