@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';  // Importer useNavigate pour la redirection
 
 export function GamePage() {
-  const navigate = useNavigate();
+  const navigate = useNavigate();  // Hook pour la navigation
 
   // Déclarer l'état panelOpen avec useState pour gérer l'ouverture/fermeture du panneau
-  const [panelOpen, setPanelOpen] = useState<boolean>(true);
+  const [panelOpen, setPanelOpen] = useState<boolean>(true);  // Initialiser l'état à `true` pour que le panneau soit ouvert au début
+  const [isClicked, setIsClicked] = useState<boolean>(false); // État pour suivre si le bouton a été cliqué
 
   // Fonction pour basculer l'état du panneau
   const togglePanel = () => {
-    setPanelOpen((prevState) => !prevState);
+    setPanelOpen((prevState) => !prevState);  // Inverse l'état du panneau (ouvert/fermé)
+    setIsClicked(true);  // Marque que le bouton a été cliqué
+    setTimeout(() => setIsClicked(false), 300);  // Réinitialise après 300ms
   };
 
   // Fonction pour revenir à la page de personnalisation
@@ -35,19 +38,19 @@ export function GamePage() {
           id="leftPanel"
           className={`transition-all duration-300 ease-in-out ${
             panelOpen ? 'w-64' : 'w-px'
-          } ${panelOpen ? 'bg-gray-800 p-4' : 'bg-blue-600'} p-4 overflow-y-auto`}
+          } ${panelOpen ? 'bg-gray-800 p-4' : 'bg-blue-600'} p-4 overflow-y-auto`} // Animation de transition de largeur et couleur de la barre
         >
           {panelOpen ? (
             <>
               <h2 className="text-xl font-semibold mb-4 text-center">Profil</h2>
 
-              {/* Photo du joueur */}
+              {/* Photo du joueur qui redirige vers le profil utilisateur */}
               <div className="flex justify-center mb-4">
                 <img
-                  src="/public/assets/photo_profil.png"
+                  src="/assets/photo_profil.png"
                   alt="Player Profile"
                   className="w-24 h-24 rounded-full border-4 border-white cursor-pointer"
-                  onClick={goToUserProfile}
+                  onClick={goToUserProfile}  // Redirection vers le profil utilisateur
                 />
               </div>
 
@@ -68,15 +71,15 @@ export function GamePage() {
         {/* Cadre central pour le jeu */}
         <div className="flex-1 bg-gray-900 flex justify-center items-center">
           <div className="w-3/4 h-3/4 border-4 border-white flex justify-center items-center">
-            <img src="/public/assets/photo_pong.png" alt="Game Preview" className="w-full h-full object-cover rounded-lg" />
+            <img src="/assets/photo_pong.png" alt="Game Preview" className="w-full h-full object-cover rounded-lg" />
           </div>
         </div>
       </div>
 
       {/* Bouton pour faire coulisser l'encadré gauche */}
       <button
-        onClick={togglePanel}
-        className="fixed top-1/2 left-0 transform -translate-y-1/2 bg-blue-600 p-3 rounded-r-md hover:bg-blue-700 focus:outline-none"
+        onClick={togglePanel}  // Utilisation de l'événement React pour toggler l'état
+        className={`fixed top-1/2 left-0 transform -translate-y-1/2 bg-blue-600 p-3 rounded-r-md hover:bg-blue-700 focus:outline-none transition-transform duration-300 ${isClicked ? 'rotate-180' : ''}`}
       >
         <span className="text-white">≡</span> {/* Symbole de menu coulissant */}
       </button>
@@ -91,4 +94,3 @@ export function GamePage() {
     </div>
   );
 }
-
