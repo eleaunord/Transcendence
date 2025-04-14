@@ -62,9 +62,9 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
 
   // Thème buttons
   const themes = [
-    ['bg-red-600', '/public/assets/profile-themes/stars.jpg'],
-    ['bg-green-600', '/public/assets/profile-themes/moon_sun_black.jpg'],
-    ['bg-blue-600', '/public/assets/profile-themes/moon_sun_blue.jpg'],
+    ['bg-red-600', '/assets/profile-themes/stars.jpg'],
+    ['bg-green-600', '/assets/profile-themes/moon_sun_black.jpg'],
+    ['bg-blue-600', '/assets/profile-themes/moon_sun_blue.jpg'],
   ];
 
   const themeRow = document.createElement('div');

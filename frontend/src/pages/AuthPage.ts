@@ -1,3 +1,5 @@
+import { IS_DEV_MODE } from '../config';
+
 export function createAuthPage(navigate: (path: string) => void): HTMLElement {
   let error = '';
 
@@ -27,14 +29,13 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
       }
 
       localStorage.setItem('token', data.token);
-      navigate('/profile-creation'); // Utilisation du routeur SPA
+      navigate('/profile-creation');
     } catch (err) {
       error = 'Erreur réseau';
       updateError();
     }
   };
 
-  // Création de l’UI
   const container = document.createElement('div');
   container.className = 'flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
 
@@ -78,7 +79,7 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
   passwordDiv.appendChild(passwordLabel);
   passwordDiv.appendChild(passwordInput);
 
-  // Button
+  // Submit button
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg';
@@ -99,6 +100,24 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
       errorMessage.style.display = 'none';
     }
   };
+
+  // Ajout bouton DEV si actif
+  if (IS_DEV_MODE) {
+    const devBanner = document.createElement('div');
+    devBanner.className = 'w-full bg-yellow-500 text-black text-center py-2 font-semibold z-50';
+    devBanner.textContent = '⚠️ MODE DÉVELOPPEMENT ACTIVÉ ⚠️';
+    container.appendChild(devBanner);
+    const devLoginBtn = document.createElement('button');
+    devLoginBtn.type = 'button';
+    devLoginBtn.textContent = 'Connexion Dev';
+    devLoginBtn.className =
+      'w-full mt-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg';
+    devLoginBtn.addEventListener('click', () => {
+      localStorage.setItem('token', 'dev-token');
+      navigate('/profile-creation');
+    });
+    form.appendChild(devLoginBtn);
+  }
 
   // Assemble form
   form.appendChild(usernameDiv);

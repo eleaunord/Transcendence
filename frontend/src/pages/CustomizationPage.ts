@@ -11,12 +11,29 @@ export function createCustomizationPage(navigate: (path: string) => void): HTMLE
   bgLayer.className = 'absolute inset-0 bg-cover bg-center z-0';
   bgLayer.style.backgroundImage = `url(${backgroundImage})`;
 
-  // Header
+  // Header avec bouton toggle
   const header = document.createElement('header');
-  header.className = 'bg-blue-800 p-4 shadow-lg z-20 relative';
+  header.className = 'bg-blue-800 p-4 shadow-lg z-20 relative flex items-center';
+
+  const toggleBtn = document.createElement('button');
+  toggleBtn.className =
+    'bg-blue-600 p-2 mr-4 rounded hover:bg-blue-700 focus:outline-none transition-transform duration-300';
+  toggleBtn.innerHTML = '<span class="text-white text-xl">≡</span>';
+  toggleBtn.addEventListener('click', () => {
+    panelOpen = !panelOpen;
+    isClicked = true;
+    updatePanel();
+    setTimeout(() => {
+      isClicked = false;
+      updatePanel();
+    }, 300);
+  });
+
   const h1 = document.createElement('h1');
-  h1.className = 'text-3xl font-bold text-center';
+  h1.className = 'text-3xl font-bold text-center flex-1';
   h1.textContent = 'Transcendance';
+
+  header.appendChild(toggleBtn);
   header.appendChild(h1);
 
   // Left Panel
@@ -106,26 +123,12 @@ export function createCustomizationPage(navigate: (path: string) => void): HTMLE
   centralBox.appendChild(startBtn);
   centralArea.appendChild(centralBox);
 
-  // Toggle panel button
-  const toggleBtn = document.createElement('button');
-  toggleBtn.className =
-    'fixed top-1/2 left-0 transform -translate-y-1/2 bg-blue-600 p-3 rounded-r-md hover:bg-blue-700 focus:outline-none transition-transform duration-300 z-30';
-  toggleBtn.innerHTML = '<span class="text-white">≡</span>';
-  toggleBtn.addEventListener('click', () => {
-    panelOpen = !panelOpen;
-    isClicked = true;
-    updatePanel();
-    setTimeout(() => {
-      isClicked = false;
-      updatePanel();
-    }, 300);
-  });
-
+  // Update panel function
   function updatePanel() {
     leftPanel.className = `transition-all duration-300 ease-in-out ${
       panelOpen ? 'w-64 bg-gray-800/80 p-4' : 'w-px bg-blue-600'
     } overflow-y-auto z-10`;
-    toggleBtn.className = `fixed top-1/2 left-0 transform -translate-y-1/2 bg-blue-600 p-3 rounded-r-md hover:bg-blue-700 focus:outline-none transition-transform duration-300 z-30 ${
+    toggleBtn.className = `bg-blue-600 p-2 mr-4 rounded hover:bg-blue-700 focus:outline-none transition-transform duration-300 ${
       isClicked ? 'rotate-180' : ''
     }`;
   }
@@ -157,7 +160,6 @@ export function createCustomizationPage(navigate: (path: string) => void): HTMLE
   layout.appendChild(centralArea);
 
   container.appendChild(layout);
-  container.appendChild(toggleBtn);
 
   return container;
 }
