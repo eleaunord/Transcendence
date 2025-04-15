@@ -15,7 +15,7 @@ COMPOSE = docker-compose
 
 # Démarrer tous les services
 up:
-	@$(COMPOSE) up --build
+	@$(COMPOSE) up --build 
 
 # Arrêter les services
 down:
