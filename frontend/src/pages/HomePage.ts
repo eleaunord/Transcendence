@@ -14,7 +14,7 @@ export function createHomePage(): HTMLElement {
 
   const background = document.createElement('div');
   background.className = 'absolute inset-0 bg-cover bg-center opacity-40';
-  background.style.backgroundImage = "url(/public/assets/photo_pong.png)";
+  background.style.backgroundImage = "url(/assets/photo_pong.png)";
   container.appendChild(background);
 
   const content = document.createElement('div');

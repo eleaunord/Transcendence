@@ -3,7 +3,7 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   let profilePicture = sessionStorage.getItem('profilePicture') || '/public/assets/photo_profil.png';
   let isModalOpen = false;
   let profileTheme = 'bg-gray-900';
-  let backgroundImage = '/public/assets/profile-themes/default_cover.jpg';
+  let backgroundImage = '/assets/profile-themes/default_cover.jpg';
   const playerLevel = 5;
   const gameHistory = [
     { opponent: 'AI', result: 'Win', date: '2025-04-09' },
@@ -147,9 +147,9 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   images.forEach((image, index) => {
     const choice = document.createElement('div');
     choice.className = 'cursor-pointer';
-    choice.innerHTML = `<img src="/public/assets/profile-pictures/${image}" alt="Option ${index + 1}" class="w-full h-32 object-cover rounded-lg" />`;
+    choice.innerHTML = `<img src="/assets/profile-pictures/${image}" alt="Option ${index + 1}" class="w-full h-32 object-cover rounded-lg" />`;
     choice.addEventListener('click', () =>
-      updateProfilePicture(`/public/assets/profile-pictures/${image}`)
+      updateProfilePicture(`/assets/profile-pictures/${image}`)
     );
     grid.appendChild(choice);
   });
