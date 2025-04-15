@@ -100,7 +100,7 @@ app.post('/api/signup', async (request, reply) => {
   }
 })
 
-// login
+// sign in
 
 // Explication : Quand quelqu'un envoie une demande POST (envoie de donnees au serveur, ici les identifiants)
 // a l'adresse /api/login alors on execute cette fonction 
