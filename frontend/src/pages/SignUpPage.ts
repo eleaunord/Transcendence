@@ -4,8 +4,10 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
   const handleSignUp = async () => {
     const usernameInput = document.getElementById('username') as HTMLInputElement;
     const passwordInput = document.getElementById('password') as HTMLInputElement;
+    const emailInput = document.getElementById('email') as HTMLInputElement;
 
-    const username = usernameInput?.value;
+    const username = usernameInput?.value.trim();
+    const email = emailInput?.value.trim();
     const password = passwordInput?.value;
 
     error = '';
@@ -15,13 +17,13 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
       const res = await fetch('/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username,email, password }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        error = data.error || 'Erreur de connexion';
+        error = data.error || 'Signup failed';
         updateError();
         return;
       }
@@ -29,7 +31,7 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
       localStorage.setItem('token', data.token);
       navigate('/profile-creation'); // Utilisation du routeur SPA
     } catch (err) {
-      error = 'Erreur réseau';
+      error = 'Network error';
       updateError();
     }
   };
@@ -61,6 +63,22 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
   usernameInput.required = true;
   usernameDiv.appendChild(usernameLabel);
   usernameDiv.appendChild(usernameInput);
+
+  // Email
+  const emailDiv = document.createElement('div');
+  //usernameDiv.className = 'mb_';
+  const emailLabel = document.createElement('label');
+  emailLabel.htmlFor = 'email';
+  emailLabel.className = 'block text-lg mb-2';
+  emailLabel.textContent = 'email';
+  const emailInput = document.createElement('input');
+  emailInput.type = 'email';
+  emailInput.id = 'email';
+  emailInput.placeholder = 'Email';
+  emailInput.className = 'w-full p-2 bg-gray-700 text-white rounded-lg mb-4';
+  emailInput.required = true;
+  emailDiv.appendChild(emailLabel);
+  emailDiv.appendChild(emailInput);
 
   // Password
   const passwordDiv = document.createElement('div');
@@ -102,6 +120,7 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
 
   // Assemble form
   form.appendChild(usernameDiv);
+  form.appendChild(emailDiv);
   form.appendChild(passwordDiv);
   form.appendChild(button);
   form.appendChild(errorMessage);
