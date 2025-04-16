@@ -28,26 +28,31 @@ export function createHomePage(): HTMLElement {
   paragraph.className = 'text-xl mb-8';
   paragraph.textContent = 'Préparez-vous à jouer à un jeu classique avec vos amis.';
   
-  const signup = document.createElement('signup');
+  const signup = document.createElement('button');
   signup.id = 'signup';
-  signup.className = 'bg-white-600 hover:bg-white-700 text-blue font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300';
+  signup.className = 'bg-white hover:bg-gray-100 text-blue-600 border border-gray-300 font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300';
   signup.textContent = 'Sign up';
   signup.addEventListener('click', handleSignUp);
 
-  const signin = document.createElement('signin');
+  const signin = document.createElement('button');
   signin.id = 'SignIn';
   signin.className = 'bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300';
   signin.textContent = 'Sign in';
   signin.addEventListener('click', handleSignIn);
   // button.addEventListener('enter', handleStartGame);
   
+  const buttonContainer = document.createElement('div');
+  buttonContainer.className = 'flex space-x-4'; // ou 'flex flex-col space-y-4' pour vertical
 
+  buttonContainer.appendChild(signup);
+  buttonContainer.appendChild(signin);
 
   // Assemblage
   content.appendChild(title);
   content.appendChild(paragraph);
-  content.appendChild(signup);
-  content.appendChild(signin);
+  content.appendChild(buttonContainer); // Ajoute les deux boutons ensemble
+  // content.appendChild(signup);
+  // content.appendChild(signin);
   container.appendChild(content);
 
   return container;

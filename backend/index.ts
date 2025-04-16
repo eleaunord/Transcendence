@@ -62,17 +62,17 @@ app.get('/api/users', async () => {
 })
 
 // Route POST : ajouter un utilisateur
-app.post('/api/users', async (request, reply) => {
-  const { name } = request.body as { name: string }
+// app.post('/api/users', async (request, reply) => {
+//   const { name } = request.body as { name: string }
 
-  if (!name) {
-    reply.code(400).send({ error: 'Le champ "name" est requis.' })
-    return
-  }
+//   if (!name) {
+//     reply.code(400).send({ error: 'Le champ "name" est requis.' })
+//     return
+//   }
 
-  const result = db.prepare('INSERT INTO users (name) VALUES (?)').run(name)
-  return { id: result.lastInsertRowid, name }
-})
+//   const result = db.prepare('INSERT INTO users (name) VALUES (?)').run(name)
+//   return { id: result.lastInsertRowid, name }
+// })
 
 // 🚀 Lancement du serveur
 app.listen({ port: 3001, host: '0.0.0.0' }, () => {
@@ -105,7 +105,7 @@ app.post('/api/signup', async (request, reply) => {
   //Hash du mot de passe
   const hashed = await bcrypt.hash(password, 10);
   //Insertion dans la base de donnee
-  console.log('Creating user:', { username, email, hashed });
+  //console.log('Creating user:', { username, email, hashed });
   db.prepare('INSERT INTO users (username,email, password_hash) VALUES(?, ?, ?)').run(username, email, hashed);
   return reply.code(201).send({message: 'User created successfully'});
   }
