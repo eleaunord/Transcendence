@@ -8,6 +8,15 @@ const db = new Database(DB_PATH);
 
 export default db;
 
+db.prepare(`
+	CREATE TABLE IF NOT EXISTS users (
+	  id INTEGER PRIMARY KEY AUTOINCREMENT,
+	  username TEXT NOT NULL UNIQUE,
+	  email TEXT NOT NULL UNIQUE,
+	  password_hash TEXT DEFAULT NULL,
+	  image TEXT DEFAULT 'default.png'
+  )
+`).run();
 
 // //    ===Création de la table "games" ===
 // db.prepare(`

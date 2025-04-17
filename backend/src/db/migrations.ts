@@ -7,15 +7,6 @@ import db from  './db';
 // === Connexion à la base de données ===
 // === Création de la table users (si elle n'existe pas) ===
 
-db.prepare(`
-	CREATE TABLE IF NOT EXISTS users (
-	  id INTEGER PRIMARY KEY AUTOINCREMENT,
-	  username TEXT NOT NULL UNIQUE,
-	  email TEXT NOT NULL UNIQUE,
-	  password_hash TEXT DEFAULT NULL,
-	  image TEXT DEFAULT 'default.png'
-  )
-`).run();
 
 // functions that adds new Data in DB
 function safeAlter(column: string, type: string) {
@@ -26,7 +17,6 @@ function safeAlter(column: string, type: string) {
     console.log(` ==== Added column '${column}' to users table ==== `);
   }
 }
-
 // add new vairables in DB
 
 /*
