@@ -7,7 +7,10 @@ export function createHomePage(): HTMLElement {
     window.location.href = '/signup';  // Redirection classique
   };
 
-
+  const handleGoogleLogin = () => {
+    window.location.href = '/api/auth/google'; // 백엔드 Google OAuth 경로
+  };
+  
   // Création des éléments
   const container = document.createElement('div');
   container.className = 'relative flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
@@ -41,6 +44,11 @@ export function createHomePage(): HTMLElement {
   signin.addEventListener('click', handleSignIn);
   // button.addEventListener('enter', handleStartGame);
   
+  const googleButton = document.createElement('button');
+  googleButton.id = 'google-login';
+  googleButton.className = 'bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300';
+  googleButton.textContent = 'Sign in/up with Google';
+  googleButton.addEventListener('click', handleGoogleLogin);
   const buttonContainer = document.createElement('div');
   buttonContainer.className = 'flex space-x-4'; // ou 'flex flex-col space-y-4' pour vertical
 
@@ -54,6 +62,7 @@ export function createHomePage(): HTMLElement {
   // content.appendChild(signup);
   // content.appendChild(signin);
   container.appendChild(content);
+  content.appendChild(googleButton);
 
   return container;
 }

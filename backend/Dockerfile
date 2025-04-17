@@ -12,6 +12,8 @@ RUN npm run build
 FROM node:20-alpine
 
 WORKDIR /app
+# added
+RUN apk add --no-cache python3 make g++
 
 # Copie uniquement les fichiers nécessaires
 COPY --from=builder /app/dist ./dist

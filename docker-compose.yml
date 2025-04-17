@@ -23,7 +23,8 @@ services:
     volumes:
       - ./backend/database:/app/database
     restart: unless-stopped
-
+    env_file:
+      - .env
   frontend:
     build:
       context: ./frontend
@@ -40,4 +41,47 @@ networks:
   Transcendance:
     name : Transcendance
     driver : bridge
+  
+
+# services:
+#   nginx-proxy:
+#     image: nginx:alpine
+#     container_name: nginx-proxy
+#     ports:
+#       - "8081:80"
+#     volumes:
+#       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+#     networks:
+#       - Transcendance
+#     depends_on:
+#       - frontend
+#       - backend
+#   backend:
+#     build:
+#       context: ./backend
+#     container_name: backend
+#     ports:
+#       - "3001:3001"
+#     networks:
+#       - Transcendance
+#     volumes:
+#       - ./backend/database:/app/database
+#     restart: unless-stopped
+
+#   frontend:
+#     build:
+#       context: ./frontend
+#     container_name: frontend
+#     ports:
+#       - "8080:80"
+#     restart: unless-stopped
+#     depends_on:
+#       - backend
+#     networks:
+#       - Transcendance
+
+# networks:
+#   Transcendance:
+#     name : Transcendance
+#     driver : bridge
   
