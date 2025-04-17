@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import { authRoutes } from './routes/auth';
 import { meRoutes } from './routes/me';
 import { themeRoutes } from './routes/theme';
+import './db/migrations'; // open migration file and execute first.
 
 const app = Fastify();
 

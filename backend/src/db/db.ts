@@ -4,22 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config(); // Charge les variables depuis .env
 
 const DB_PATH = process.env.DB_PATH || './database/data.db';
-// ========== SQLite Setup ==========
-//    === Connexion à la base de données ===
 const db = new Database(DB_PATH);
-
-//    === Création de la table users ===
-
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL UNIQUE,
-    email TEXT NOT NULL UNIQUE,
-    password_hash TEXT,
-    image TEXT DEFAULT 'default.png',
-    google_id TEXT
-  )
-`).run();
 
 export default db;
 

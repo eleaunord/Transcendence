@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
 import dotenv from 'dotenv';
-import db from '../db';
+import db from '../db/db';
 import { User } from '../types'; 
 
 dotenv.config();
