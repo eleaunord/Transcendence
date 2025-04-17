@@ -24,6 +24,5 @@ dist-ssr
 *.sln
 *.sw?
 
-
 # SQLite database
 backend/database/data.db
