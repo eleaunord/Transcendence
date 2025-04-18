@@ -14,7 +14,7 @@ db.prepare(`
 	  username TEXT NOT NULL UNIQUE,
 	  email TEXT NOT NULL UNIQUE,
 	  password_hash TEXT DEFAULT NULL,
-	  image TEXT DEFAULT 'default.png'
+	  image TEXT DEFAULT 'default.jpg'
   )
 `).run();
 
