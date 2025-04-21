@@ -33,9 +33,10 @@ const routes = {
   '/user-profile': useWithNavigate(protectedRoute(createUserProfilePage)),
   '/signup': useWithNavigate(createSignUpPage),
   '/auth/google': useWithNavigate(createGoogleOauthPage),
-  '/2FA': useWithNavigate(create2FAPage),
+  '/2fa': useWithNavigate(create2FAPage),
 
 };
 
 // Maintenant qu'on a les routes, on peut initialiser proprement
 navigate = initRouter(routes)!;
+console.log('🏁 Router chargé');
