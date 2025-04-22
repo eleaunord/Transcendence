@@ -129,4 +129,8 @@ export async function authRoutes(app: FastifyInstance) {
       reply.code(500).send({ error: 'Authentication failed' });
     }
   });
+  app.get('/api/users', async () => {
+    const users = db.prepare('SELECT id, username, email FROM users').all();
+    return users;
+  });
 }
