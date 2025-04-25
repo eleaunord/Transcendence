@@ -16,9 +16,29 @@ const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:8081';
 
 export async function authRoutes(app: FastifyInstance) {
   app.post('/api/signup', async (req, reply) => {
-    const { username, email, password } = req.body as any;
+    const { username: rawUsername, email: rawEmail, password } = req.body as any;
+    // Nettoyage des espaces
+    const username = rawUsername?.trim();
+    const email = rawEmail?.trim();
     if (!username || !email || !password) {
       return reply.code(400).send({ error: 'All fields are required' });
+    }
+    // Vérification de l'email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return reply.code(400).send({ error: 'Invalid email address' });
+    }
+    // Vérification du username (3 à 20 caractères, lettres, chiffres ou underscore)
+    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+    if (!usernameRegex.test(username)) {
+      return reply.code(400).send({ error: 'Invalid username. Use 3-20 letters, numbers or underscores.' });
+    }
+    // Vérification du mot de passe( Au moins 8 caractères,au moins une majuscule, une minuscule, un chiffre, et un caractère spécial.)
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return reply.code(400).send({
+        error: "Password must be at least 8 characters and include uppercase, lowercase, number, and special character(!@#$%_).",
+    });
     }
 
     const existing = db.prepare('SELECT * FROM users WHERE username = ? OR email = ?').get(username, email);
