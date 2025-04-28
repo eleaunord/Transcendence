@@ -12,8 +12,10 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
 const GOOGLE_REDIRECT_URL = process.env.GOOGLE_REDIRECT_URL!;
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:8081';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:8080';
 
+
+// ----- Authentification Classique ------ \\
 export async function authRoutes(app: FastifyInstance) {
   app.post('/api/signup', async (req, reply) => {
     const { username: rawUsername, email: rawEmail, password } = req.body as any;
@@ -70,6 +72,7 @@ export async function authRoutes(app: FastifyInstance) {
     reply.send({ token });
   });
 
+  // ----- Authentification via Google ------ \\
   app.get('/api/auth/google', async (_, reply) => {
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URL}&response_type=code&scope=profile email&access_type=offline`;
     reply.redirect(authUrl);
