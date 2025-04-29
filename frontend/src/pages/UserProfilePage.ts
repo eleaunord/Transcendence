@@ -7,9 +7,9 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   const sidebar = createSidebar(navigate);
   container.appendChild(sidebar);
 
-  //*********************************************************/
+  
   //---------------------Background Image--------------------/
-  //*********************************************************/
+ 
   const backgroundImage = document.createElement('div');
   backgroundImage.id = 'backgroundImage';
   backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
@@ -90,10 +90,12 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   profileCard.appendChild(spinningBorder);
 
   const username = document.createElement('h2');
-  username.textContent = 'Username';
+  username.id = 'usernameValue';
   username.className = 'text-xl font-semibold text-white';
+  username.textContent = 'Username';
   profileCard.appendChild(username);
- //
+
+
  // Changer la photo de profil au clic
  profileImg.addEventListener('click', () => {
   const fileInput = document.createElement('input');
@@ -119,73 +121,102 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   fileInput.click();
   document.body.removeChild(fileInput);
 });
-  //*********************************************************/
-  // --------- Formulaire de modification à droite ----------/
-  //*********************************************************/
 
+  // --------- Formulaire de modification à droite ----------/
+// Formulaire pour modification
   const formContainer = document.createElement('div');
   formContainer.className = `
-    flex flex-col gap-4 bg-gray-800 bg-opacity-50 p-8 rounded-xl shadow-md
-    w-96
+    flex flex-col gap-4 bg-gray-800 bg-opacity-50 p-8 rounded-xl shadow-md w-96
   `.replace(/\s+/g, ' ').trim();
 
-  // Username input
+  const emailRow = document.createElement('div');
+  emailRow.className = 'flex justify-between items-center';
+  const emailLabel = document.createElement('span');
+  emailLabel.textContent = 'Email:';
+  const emailValue = document.createElement('span');
+  emailValue.id = 'emailValue';
+  emailValue.textContent = 'Loading...';
+  emailRow.appendChild(emailLabel);
+  emailRow.appendChild(emailValue);
+
+  const passwordRow = document.createElement('div');
+  passwordRow.className = 'flex justify-between items-center';
+  const passwordLabel = document.createElement('span');
+  passwordLabel.textContent = 'Password:';
+  const passwordValue = document.createElement('span');
+  passwordValue.textContent = '********';
+  passwordRow.appendChild(passwordLabel);
+  passwordRow.appendChild(passwordValue);
+
   const usernameInput = document.createElement('input');
   usernameInput.type = 'text';
-  usernameInput.placeholder = 'Update username';
+  usernameInput.placeholder = 'New username';
   usernameInput.className = `
-    p-2 rounded-lg bg-gray-900 text-white placeholder-gray-400
+    mt-4 p-2 rounded-lg bg-gray-900 text-white placeholder-gray-400
     border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500
   `.replace(/\s+/g, ' ').trim();
 
-  // Password input
-  const passwordInput = document.createElement('input');
-  passwordInput.type = 'password';
-  passwordInput.placeholder = 'Update password';
-  passwordInput.className = `
-    p-2 rounded-lg bg-gray-900 text-white placeholder-gray-400
-    border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500
-  `.replace(/\s+/g, ' ').trim();
-
-  // Email input
-  const emailInput = document.createElement('input');
-  emailInput.type = 'email';
-  emailInput.placeholder = 'Update Email';
-  emailInput.className = `
-    p-2 rounded-lg bg-gray-900 text-white placeholder-gray-400
-    border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500
-  `.replace(/\s+/g, ' ').trim();
-
-  // Update button
   const updateButton = document.createElement('button');
-  updateButton.textContent = 'Update Profile';
+  updateButton.textContent = 'Update Username';
   updateButton.className = `
-    mt-4 p-2 bg-blue-600 hover:bg-blue-700 
-    rounded-lg text-white font-semibold
+    mt-2 p-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-semibold
     transition-colors duration-300
   `.replace(/\s+/g, ' ').trim();
 
-  updateButton.addEventListener('click', () => {
-    const newUsername = usernameInput.value;
-    const newPassword = passwordInput.value;
-    const newEmail = emailInput.value;
+  const successMessage = document.createElement('p');
+  successMessage.textContent = '✅ Profile updated successfully!';
+  successMessage.className = 'text-green-400 font-semibold mt-4 hidden';
 
-    console.log('Updating profile with:', newUsername, newPassword, newEmail);
-    alert('Profile updated! (Simulation)');
+  updateButton.addEventListener('click', async () => {
+    const newUsername = usernameInput.value.trim();
+    if (newUsername.length === 0) {
+      alert('Username cannot be empty!');
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('You must be logged in.');
+      return;
+    }
+
+    try {
+      updateButton.disabled = true; // Désactive le bouton pendant la requête
+      const res = await fetch('/api/me', {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username: newUsername })
+      });
+
+      if (res.ok) {
+        const usernameDisplay = document.getElementById('usernameValue');
+        if (usernameDisplay) usernameDisplay.textContent = newUsername;
+        successMessage.classList.remove('hidden');
+        setTimeout(() => successMessage.classList.add('hidden'), 3000); // Message disparaît après 3s
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Failed to update.');
+      }
+    } catch (err) {
+      console.error('Update error:', err);
+      alert('Server error');
+    } finally {
+      updateButton.disabled = false; // Réactive le bouton
+    }
   });
 
-  // Assemble form
   formContainer.appendChild(usernameInput);
-  formContainer.appendChild(passwordInput);
-  formContainer.appendChild(emailInput);
+  formContainer.appendChild(emailRow);
+  formContainer.appendChild(passwordRow);
   formContainer.appendChild(updateButton);
+  formContainer.appendChild(successMessage);
 
-  // Assemble Profile Section
   profileSection.appendChild(profileCard);
   profileSection.appendChild(formContainer);
-
   container.appendChild(profileSection);
-
   // Sidebar hover events
   sidebar.addEventListener('mouseenter', () => {
     document.querySelectorAll('.sidebar-label').forEach(label => {
@@ -240,7 +271,23 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
     
     }
   });
-
+// Chargement dynamique des infos utilisateur
+const token = localStorage.getItem('token');
+if (token) {
+  fetch('/api/me', {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+    .then(res => res.json())
+    .then(user => {
+      const usernameDisplay = document.getElementById('usernameValue');
+      const emailValue = document.getElementById('emailValue');
+      if (usernameDisplay) usernameDisplay.textContent = user.username;
+      if (emailValue) emailValue.textContent = user.email;
+    })
+    .catch(err => console.error('Erreur chargement profil:', err));
+}
   return container;
 }
 
