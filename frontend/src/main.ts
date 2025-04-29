@@ -9,6 +9,9 @@ import { protectedRoute } from './utils/router';
 import { createSignUpPage } from './pages/SignUpPage';
 import { createGoogleOauthPage } from './pages/GoogleOauth';
 import { create2FAPage } from './pages/2FAPages';
+import { createPong3DPage } from './pages/Pong3DPage';
+import { createMemoryGamePage } from './pages/MemoryGamePage';
+
 
 // Fonction utilitaire pour injecter `navigate` dans chaque page
 function withNavigate(navigate: (path: string) => void) {
@@ -34,7 +37,8 @@ const routes = {
   '/signup': useWithNavigate(createSignUpPage),
   '/auth/google': useWithNavigate(createGoogleOauthPage),
   '/2fa': useWithNavigate(create2FAPage),
-
+  //'/pong': useWithNavigate(protectedRoute(createPong3DPage)),
+  '/memory': useWithNavigate(protectedRoute(createMemoryGamePage)),
 };
 
 // Maintenant qu'on a les routes, on peut initialiser proprement

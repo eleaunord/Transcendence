@@ -1,4 +1,4 @@
-import { createSidebar } from "../utils/sidebar"; // (adapte le chemin si besoin)
+import { createSidebar } from "../utils/sidebar"; 
 
 export function createUserProfilePage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');

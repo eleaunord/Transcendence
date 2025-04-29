@@ -13,7 +13,7 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
   
     const profileImage = document.createElement('img');
     profileImage.src = sessionStorage.getItem('profilePicture') || '/assets/profile-pictures/default.jpg';
-    profileImage.className = 'w-36 h-36 rounded-full mb-2 border-2 border-white object-cover transition-transform duration-300 hover:scale-110';
+    profileImage.className = 'w-12 h-12 rounded-full mb-2 border-2 border-white object-cover transition-transform duration-300 hover:scale-110';
     profileImage.id = 'profile-img-sidebar';
   
     const usernameText = document.createElement('span');
@@ -113,32 +113,32 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
     sidebar.appendChild(topContainer);
     sidebar.appendChild(bottomContainer);
 
-    // // Mouvement de la sidebar
-    // sidebar.addEventListener('mouseenter', () => {
-    //     const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
-    //     if (profileImg) {
-    //       profileImg.classList.remove('w-12', 'h-12');
-    //       profileImg.classList.add('w-36', 'h-36');
-    //     }
+    // Mouvement de la sidebar
+    sidebar.addEventListener('mouseenter', () => {
+        const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
+        if (profileImg) {
+          profileImg.classList.remove('w-12', 'h-12');
+          profileImg.classList.add('w-36', 'h-36');
+        }
       
-    //     document.querySelectorAll('.sidebar-label').forEach(label => {
-    //       (label as HTMLElement).classList.remove('opacity-0');
-    //       (label as HTMLElement).classList.add('opacity-100');
-    //     });
-    //   });
+        document.querySelectorAll('.sidebar-label').forEach(label => {
+          (label as HTMLElement).classList.remove('opacity-0');
+          (label as HTMLElement).classList.add('opacity-100');
+        });
+      });
       
-    //   sidebar.addEventListener('mouseleave', () => {
-    //     const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
-    //     if (profileImg) {
-    //       profileImg.classList.remove('w-36', 'h-36');
-    //       profileImg.classList.add('w-12', 'h-12');
-    //     }
+      sidebar.addEventListener('mouseleave', () => {
+        const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
+        if (profileImg) {
+          profileImg.classList.remove('w-36', 'h-36');
+          profileImg.classList.add('w-12', 'h-12');
+        }
       
-    //     document.querySelectorAll('.sidebar-label').forEach(label => {
-    //       (label as HTMLElement).classList.add('opacity-0');
-    //       (label as HTMLElement).classList.remove('opacity-100');
-    //     });
-    //   });
+        document.querySelectorAll('.sidebar-label').forEach(label => {
+          (label as HTMLElement).classList.add('opacity-0');
+          (label as HTMLElement).classList.remove('opacity-100');
+        });
+      });
       
     // // --- Charger dynamiquement les infos du joueur ---
     // const token = localStorage.getItem('token');

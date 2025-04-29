@@ -1,3 +1,5 @@
+import { createPongScene } from '../games/pong3d/PongScene';
+
 export function createGamePage(navigate: (path: string) => void): HTMLElement {
   let panelOpen = true;
   let isClicked = false;
@@ -5,7 +7,7 @@ export function createGamePage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
   container.className = 'flex flex-col h-screen bg-blue-900 text-white';
 
-  // Header avec bouton toggle intégré
+  // Header
   const header = document.createElement('header');
   header.className = 'bg-blue-800 p-4 shadow-lg flex items-center';
 
@@ -68,14 +70,54 @@ export function createGamePage(navigate: (path: string) => void): HTMLElement {
   gameArea.className = 'flex-1 bg-gray-900 flex justify-center items-center';
 
   const gameFrame = document.createElement('div');
-  gameFrame.className = 'w-3/4 h-3/4 border-4 border-white flex justify-center items-center';
+  gameFrame.className = 'w-3/4 h-3/4 border-4 border-white relative overflow-hidden bg-black';
 
-  const gameImage = document.createElement('img');
-  gameImage.src = '/assets/photo_pong.png';
-  gameImage.alt = 'Game Preview';
-  gameImage.className = 'w-full h-full object-cover rounded-lg';
+  // 🎮 Canvas Babylon.js
+  const canvas = document.createElement('canvas');
+  canvas.id = 'pong-canvas';
+  canvas.className = 'w-full h-full absolute top-0 left-0';
+  canvas.style.display = 'block';
+  canvas.style.backgroundColor = 'black';
 
-  gameFrame.appendChild(gameImage);
+  // ▶️ Bouton lancer Pong
+  const playBtn = document.createElement('button');
+  playBtn.textContent = 'Jouer à Pong 3D';
+  playBtn.className =
+    'absolute bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300';
+  playBtn.style.top = '40%';
+  playBtn.style.left = '50%';
+  playBtn.style.transform = 'translate(-50%, -50%)';
+  playBtn.addEventListener('click', () => {
+    createPongScene(canvas);
+    playBtn.remove();
+    memoryBtn.remove(); // Enlève aussi le bouton Memory
+  });
+
+  // 🎴 Bouton aller au Memory
+  const memoryBtn = document.createElement('button');
+  memoryBtn.textContent = 'Jouer à Memory';
+  memoryBtn.className =
+    'absolute bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300';
+  memoryBtn.style.top = '60%';
+  memoryBtn.style.left = '50%';
+  memoryBtn.style.transform = 'translate(-50%, -50%)';
+  memoryBtn.addEventListener('click', () => {
+    navigate('/memory');
+  });
+
+  const scoreBoard = document.createElement("div");
+  scoreBoard.className = "absolute top-6 left-1/2 transform -translate-x-1/2 text-white text-2xl font-bold";
+  scoreBoard.innerText = "0 - 0";
+
+  const announce = document.createElement("div");
+  announce.className = "absolute top-16 left-1/2 transform -translate-x-1/2 text-yellow-300 text-xl font-semibold";
+  announce.innerText = "";
+  
+  gameFrame.appendChild(canvas);
+  gameFrame.appendChild(scoreBoard);
+  gameFrame.appendChild(announce);
+  gameFrame.appendChild(playBtn);
+  gameFrame.appendChild(memoryBtn); // <-- nouveau bouton Memory
   gameArea.appendChild(gameFrame);
 
   // Main layout
@@ -84,14 +126,14 @@ export function createGamePage(navigate: (path: string) => void): HTMLElement {
   layout.appendChild(leftPanel);
   layout.appendChild(gameArea);
 
-  // Bouton retour à la personnalisation
+  // Bouton retour
   const backBtn = document.createElement('button');
   backBtn.className =
     'fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300';
   backBtn.textContent = 'Retour à la personnalisation';
   backBtn.addEventListener('click', () => navigate('/customization'));
 
-  // Update panel toggle classes
+  // Update panel toggle
   const updatePanel = () => {
     leftPanel.className = `transition-all duration-300 ease-in-out ${
       panelOpen ? 'w-64 bg-gray-800 p-4' : 'w-px bg-blue-600'
@@ -102,7 +144,6 @@ export function createGamePage(navigate: (path: string) => void): HTMLElement {
     }`;
   };
 
-  // Assemble page
   container.appendChild(header);
   container.appendChild(layout);
   container.appendChild(backBtn);
