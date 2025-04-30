@@ -16,25 +16,12 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
   container.appendChild(backgroundImage);
 
-  // Main Content
-  const mainContent = document.createElement('div');
-  mainContent.id = 'mainContent';
-  mainContent.className = 'relative ml-20 p-8 transition-all duration-300 z-10';
-
-  const title = document.createElement('h1');
-  title.className = 'text-3xl font-bold mb-8 text-center ';
-  
-  // title.className = 'text-3xl font-bold mb-8 text-center text-gold-50
-  title.textContent = 'User Profile';
-  mainContent.appendChild(title);
-
-  container.appendChild(mainContent);
 
   // --- Profile Section (Cadre + Formulaire côte à côte) ---
   const profileSection = document.createElement('div');
   profileSection.className = `
     relative ml-24 mt-24
-    flex flex-row items-start gap-x-20
+    flex flex-row items-start  gap-x-20
     z-30
   `.replace(/\s+/g, ' ').trim();
 
@@ -224,11 +211,6 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
       (label as HTMLElement).classList.add('opacity-100');
     });
 
-    const mainContent = document.getElementById('mainContent');
-    if (mainContent) {
-      mainContent.className = 'relative ml-64 p-8 transition-all duration-300 z-10';
-    }
-
     const backgroundImage = document.getElementById('backgroundImage');
     if (backgroundImage) {
       backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
@@ -250,11 +232,6 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
       (label as HTMLElement).classList.add('opacity-0');
       (label as HTMLElement).classList.remove('opacity-100');
     });
-
-    const mainContent = document.getElementById('mainContent');
-    if (mainContent) {
-      mainContent.className = 'relative ml-20 p-8 transition-all duration-300 z-10';
-    }
 
     const backgroundImage = document.getElementById('backgroundImage');
     if (backgroundImage) {

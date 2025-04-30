@@ -1,41 +1,22 @@
 import { createPongScene } from '../games/pong3d/PongScene';
+import { createSidebar } from "../utils/sidebar"; 
 
 export function createGamePage(navigate: (path: string) => void): HTMLElement {
-  let panelOpen = true;
-  let isClicked = false;
 
   const container = document.createElement('div');
   container.className = 'flex flex-col h-screen bg-blue-900 text-white';
+  
+  const sidebar = createSidebar(navigate);
+  container.appendChild(sidebar);
 
-  // Header
-  const header = document.createElement('header');
-  header.className = 'bg-blue-800 p-4 shadow-lg flex items-center';
+   //---------------------Background Image--------------------/
+ 
+   const backgroundImage = document.createElement('div');
+   backgroundImage.id = 'backgroundImage';
+   backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+   backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
+   container.appendChild(backgroundImage);
 
-  const toggleBtn = document.createElement('button');
-  toggleBtn.className =
-    'bg-blue-600 p-2 mr-4 rounded hover:bg-blue-700 focus:outline-none transition-transform duration-300';
-  toggleBtn.innerHTML = '<span class="text-white text-xl">≡</span>';
-  toggleBtn.addEventListener('click', () => {
-    panelOpen = !panelOpen;
-    isClicked = true;
-    updatePanel();
-    setTimeout(() => {
-      isClicked = false;
-      updatePanel();
-    }, 300);
-  });
-
-  const h1 = document.createElement('h1');
-  h1.className = 'text-3xl font-bold text-center flex-1';
-  h1.textContent = 'Transcendance';
-
-  header.appendChild(toggleBtn);
-  header.appendChild(h1);
-
-  // Left panel
-  const leftPanel = document.createElement('div');
-  leftPanel.id = 'leftPanel';
-  leftPanel.className = 'transition-all duration-300 ease-in-out w-64 bg-gray-800 p-4 overflow-y-auto';
 
   const profileTitle = document.createElement('h2');
   profileTitle.className = 'text-xl font-semibold mb-4 text-center';
@@ -60,10 +41,6 @@ export function createGamePage(navigate: (path: string) => void): HTMLElement {
       <li><strong>Wins:</strong> 10</li>
     </ul>
   `;
-
-  leftPanel.appendChild(profileTitle);
-  leftPanel.appendChild(avatarWrapper);
-  leftPanel.appendChild(infoBox);
 
   // Central game display
   const gameArea = document.createElement('div');
@@ -123,7 +100,6 @@ export function createGamePage(navigate: (path: string) => void): HTMLElement {
   // Main layout
   const layout = document.createElement('div');
   layout.className = 'flex flex-1';
-  layout.appendChild(leftPanel);
   layout.appendChild(gameArea);
 
   // Bouton retour
@@ -133,18 +109,6 @@ export function createGamePage(navigate: (path: string) => void): HTMLElement {
   backBtn.textContent = 'Retour à la personnalisation';
   backBtn.addEventListener('click', () => navigate('/customization'));
 
-  // Update panel toggle
-  const updatePanel = () => {
-    leftPanel.className = `transition-all duration-300 ease-in-out ${
-      panelOpen ? 'w-64 bg-gray-800 p-4' : 'w-px bg-blue-600'
-    } overflow-y-auto`;
-
-    toggleBtn.className = `bg-blue-600 p-2 mr-4 rounded hover:bg-blue-700 focus:outline-none transition-transform duration-300 ${
-      isClicked ? 'rotate-180' : ''
-    }`;
-  };
-
-  container.appendChild(header);
   container.appendChild(layout);
   container.appendChild(backBtn);
 
