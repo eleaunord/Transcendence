@@ -119,6 +119,7 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
   const imageSelector = document.createElement('div');
   imageSelector.className = 'flex gap-4 justify-center mb-2 flex-wrap';
   const token = localStorage.getItem('token');
+  console.log('Token récupéré depuis localStorage :', token);
     const images = [
     'star_icon.jpg',
     'moon_icon.jpg',
@@ -139,13 +140,20 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
     imageSelector.appendChild(avatar);
   });
   if (token) {
+    console.log('Token utilisé pour /api/me:', token);
     fetch('/api/me', {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
-      .then(res => res.json())
-      .then(user => {
+      // .then(res => res.json())
+      // .then(user => {
+        .then(res => {
+          console.log('Statut de la réponse:', res.status);
+          return res.json();
+        })
+        .then(user => {
+          console.log('Données utilisateur reçues:', user);
         username = user.username;
         selectedImage = user.image; //|| 'default.jpg';
         picturePreview.src = `/assets/profile-pictures/${selectedImage}`;

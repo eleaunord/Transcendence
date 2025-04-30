@@ -1,5 +1,6 @@
 // // ========== Imports ==========
 import Fastify from 'fastify';
+import fastifyPlugin from 'fastify-plugin';
 import { authRoutes } from './routes/auth';
 import { meRoutes } from './routes/me';
 import { themeRoutes } from './routes/theme';
@@ -23,9 +24,14 @@ app.addContentTypeParser('application/json', { parseAs: 'string' }, (req, body, 
 });
 
 // Enregistrement des routes
-authRoutes(app);
-meRoutes(app);
-themeRoutes(app);
+// authRoutes(app);
+// meRoutes(app);
+// themeRoutes(app);
+app.register(fastifyPlugin(async (app) => {
+  authRoutes(app);
+  meRoutes(app);
+  themeRoutes(app);
+}), { prefix: '/api' });
 
 // Démarrage du serveur
 const PORT = parseInt(process.env.PORT || '3001');
