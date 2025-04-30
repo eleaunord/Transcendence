@@ -60,7 +60,7 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
   
     const gameFrame = document.createElement('div');
     gameFrame.className = 'w-5/6 h-5/6 border-4 border-white relative overflow-hidden bg-black grid place-content-center';
-    gameFrame.style.backgroundImage = 'url(/src/games/assets/game_background.jpg)';
+    gameFrame.style.backgroundImage = 'url(/assets/background/game_background.jpg)';
     gameFrame.style.backgroundSize = 'cover';
     gameFrame.style.backgroundPosition = 'center';
     gameFrame.classList.add('max-w-[90%]', 'max-h-[80%]');
@@ -88,14 +88,14 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
   
       const front = document.createElement('div');
       front.className = 'memory-front absolute w-full h-full rounded-lg';
-      front.style.backgroundImage = 'url(/src/games/assets/icons/card_background.jpg)';
+      front.style.backgroundImage = 'url(/assets/icons/card_background.jpg)';
       front.style.backgroundSize = 'cover';
       front.style.backgroundPosition = 'center';    
       front.style.backfaceVisibility = 'hidden';
   
       const back = document.createElement('div');
       back.className = 'memory-back absolute w-full h-full rounded-lg';
-      back.style.backgroundImage = `url(/src/games/assets/icons/${icon}.jpg)`;
+      back.style.backgroundImage = `url(/assets/icons/${icon}.jpg)`;
       back.style.backgroundSize = 'cover';
       back.style.backgroundPosition = 'center';
       back.style.backfaceVisibility = 'hidden';

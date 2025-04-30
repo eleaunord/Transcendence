@@ -64,7 +64,7 @@ import {
     ballMat.emissiveColor = new Color3(1, 0.84, 0);
   
     const groundMat = new StandardMaterial("groundMat", scene);
-    groundMat.diffuseTexture = new Texture("/src/games/assets/mat_wallpaper.jpg", scene);
+    groundMat.diffuseTexture = new Texture("/assets/background/mat_wallpaper.jpg", scene);
     groundMat.specularColor = new Color3(0, 0, 0);
   
     const ground = MeshBuilder.CreateGround("ground", { width: 9.6, height: 6 }, scene);
