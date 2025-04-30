@@ -4,7 +4,7 @@ import { createSidebar } from "../utils/sidebar";
 export function createGamePage(navigate: (path: string) => void): HTMLElement {
 
   const container = document.createElement('div');
-  container.className = 'flex flex-col h-screen bg-blue-900 text-white';
+  container.className = 'flex flex-col h-screen bg-gray-900 text-white';
   
   const sidebar = createSidebar(navigate);
   container.appendChild(sidebar);
@@ -99,7 +99,11 @@ export function createGamePage(navigate: (path: string) => void): HTMLElement {
 
   // Main layout
   const layout = document.createElement('div');
+  // layout.className = 'flex flex-1';
   layout.className = 'flex flex-1';
+  layout.id = 'game-layout';
+  
+
   layout.appendChild(gameArea);
 
   // Bouton retour
@@ -111,6 +115,58 @@ export function createGamePage(navigate: (path: string) => void): HTMLElement {
 
   container.appendChild(layout);
   container.appendChild(backBtn);
+  
+  sidebar.addEventListener('mouseenter', () => {
+    document.querySelectorAll('.sidebar-label').forEach(label => {
+      (label as HTMLElement).classList.remove('opacity-0');
+      (label as HTMLElement).classList.add('opacity-100');
+    });
+
+    const backgroundImage = document.getElementById('backgroundImage');
+    if (backgroundImage) {
+      backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+    }
+    const layout = document.getElementById('game-layout');
+    if (layout) {
+        layout.classList.add('ml-44'); // 11rem = 176px, correspond à w-64 (256px) - w-20 (80px)
+    }
+
+    const profileSection = document.getElementById('profileCard')?.parentElement;
+    if (profileSection) {
+      profileSection.className = `
+      relative mt-24
+      flex flex-row items-start justify-center gap-12
+      z-30
+    `.replace(/\s+/g, ' ').trim();
+    
+    }
+  });
+
+  sidebar.addEventListener('mouseleave', () => {
+    document.querySelectorAll('.sidebar-label').forEach(label => {
+      (label as HTMLElement).classList.add('opacity-0');
+      (label as HTMLElement).classList.remove('opacity-100');
+    });
+
+    const backgroundImage = document.getElementById('backgroundImage');
+    if (backgroundImage) {
+      backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+    }
+    const layout = document.getElementById('game-layout');
+        if (layout) {
+    layout.classList.remove('ml-44');
+    }
+
+    const profileSection = document.getElementById('profileCard')?.parentElement;
+    if (profileSection) {
+      profileSection.className = `
+      relative mt-24
+      flex flex-row items-start justify-center gap-12
+      z-30
+    `.replace(/\s+/g, ' ').trim();
+    
+    }
+  });
 
   return container;
 }

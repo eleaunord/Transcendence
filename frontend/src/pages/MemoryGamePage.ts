@@ -1,58 +1,20 @@
+import { createSidebar } from "../utils/sidebar"; 
+
 export function createMemoryGamePage(navigate: (path: string) => void): HTMLElement {
-    let panelOpen = true;
-    let isClicked = false;
     let moves = 0; // Compteur de coups
   
     const container = document.createElement('div');
-    container.className = 'flex flex-col h-screen bg-blue-900 text-white';
-  
-    // Header
-    const header = document.createElement('header');
-    header.className = 'bg-blue-800 p-4 shadow-lg flex items-center';
-  
-    const toggleBtn = document.createElement('button');
-    toggleBtn.className = 'bg-blue-600 p-2 mr-4 rounded hover:bg-blue-700 focus:outline-none transition-transform duration-300';
-    toggleBtn.innerHTML = '<span class="text-white text-xl">≡</span>';
-  
-    const h1 = document.createElement('h1');
-    h1.className = 'text-3xl font-bold text-center flex-1';
-    h1.textContent = 'Transcendance - Memory';
-  
-    header.appendChild(toggleBtn);
-    header.appendChild(h1);
-  
-    // Left Panel
-    const leftPanel = document.createElement('div');
-    leftPanel.id = 'leftPanel';
-    leftPanel.className = 'transition-all duration-300 ease-in-out w-64 bg-gray-800 p-4 overflow-y-auto';
-  
-    const profileTitle = document.createElement('h2');
-    profileTitle.className = 'text-xl font-semibold mb-4 text-center';
-    profileTitle.textContent = 'Profil';
-  
-    const avatar = document.createElement('img');
-    avatar.src = '/assets/photo_profil.png';
-    avatar.alt = 'Player Profile';
-    avatar.className = 'w-24 h-24 rounded-full border-4 border-white cursor-pointer';
-    avatar.addEventListener('click', () => navigate('/user-profile'));
-  
-    const avatarWrapper = document.createElement('div');
-    avatarWrapper.className = 'flex justify-center mb-4';
-    avatarWrapper.appendChild(avatar);
-  
-    const infoBox = document.createElement('div');
-    infoBox.className = 'bg-gray-700 p-4 rounded-lg border-2 border-white';
-    infoBox.innerHTML = `
-      <ul class="space-y-4 text-center text-lg text-white">
-        <li><strong>Username:</strong> PlayerOne</li>
-        <li><strong>Level:</strong> 5</li>
-        <li><strong>Wins:</strong> 10</li>
-      </ul>
-    `;
-  
-    leftPanel.appendChild(profileTitle);
-    leftPanel.appendChild(avatarWrapper);
-    leftPanel.appendChild(infoBox);
+    container.className = 'flex flex-col h-screen bg-gray-900 text-white';
+    const sidebar = createSidebar(navigate);
+    container.appendChild(sidebar);
+    //---------------------Background Image--------------------/
+ 
+     const backgroundImage = document.createElement('div');
+     backgroundImage.id = 'backgroundImage';
+     backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+     backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
+     container.appendChild(backgroundImage);
+
   
     // Game Area
     const gameArea = document.createElement('div');
@@ -182,7 +144,8 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
   
     const layout = document.createElement('div');
     layout.className = 'flex flex-1';
-    layout.appendChild(leftPanel);
+    layout.id = 'game-layout';
+    // layout.appendChild(leftPanel);
     layout.appendChild(gameArea);
   
     gameArea.appendChild(gameFrame);
@@ -192,24 +155,61 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
     backBtn.textContent = 'Retour à la personnalisation';
     backBtn.addEventListener('click', () => navigate('/customization'));
   
-    const updatePanel = () => {
-      leftPanel.className = `transition-all duration-300 ease-in-out ${panelOpen ? 'w-64 bg-gray-800 p-4' : 'w-px bg-blue-600'} overflow-y-auto`;
-      toggleBtn.className = `bg-blue-600 p-2 mr-4 rounded hover:bg-blue-700 focus:outline-none transition-transform duration-300 ${isClicked ? 'rotate-180' : ''}`;
-    };
-  
-    toggleBtn.addEventListener('click', () => {
-      panelOpen = !panelOpen;
-      isClicked = true;
-      updatePanel();
-      setTimeout(() => {
-        isClicked = false;
-        updatePanel();
-      }, 300);
-    });
-  
-    container.appendChild(header);
+
     container.appendChild(layout);
     container.appendChild(backBtn);
+  
+    sidebar.addEventListener('mouseenter', () => {
+      document.querySelectorAll('.sidebar-label').forEach(label => {
+        (label as HTMLElement).classList.remove('opacity-0');
+        (label as HTMLElement).classList.add('opacity-100');
+      });
+  
+      const backgroundImage = document.getElementById('backgroundImage');
+      if (backgroundImage) {
+        backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+      }
+      const layout = document.getElementById('game-layout');
+      if (layout) {
+          layout.classList.add('ml-44'); // 11rem = 176px, correspond à w-64 (256px) - w-20 (80px)
+      }
+  
+      const profileSection = document.getElementById('profileCard')?.parentElement;
+      if (profileSection) {
+        profileSection.className = `
+        relative mt-24
+        flex flex-row items-start justify-center gap-12
+        z-30
+      `.replace(/\s+/g, ' ').trim();
+      
+      }
+    });
+  
+    sidebar.addEventListener('mouseleave', () => {
+      document.querySelectorAll('.sidebar-label').forEach(label => {
+        (label as HTMLElement).classList.add('opacity-0');
+        (label as HTMLElement).classList.remove('opacity-100');
+      });
+  
+      const backgroundImage = document.getElementById('backgroundImage');
+      if (backgroundImage) {
+        backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+      }
+      const layout = document.getElementById('game-layout');
+          if (layout) {
+      layout.classList.remove('ml-44');
+      }
+  
+      const profileSection = document.getElementById('profileCard')?.parentElement;
+      if (profileSection) {
+        profileSection.className = `
+        relative mt-24
+        flex flex-row items-start justify-center gap-12
+        z-30
+      `.replace(/\s+/g, ' ').trim();
+      
+      }
+    });
   
     return container;
   }

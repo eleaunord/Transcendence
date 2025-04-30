@@ -12,16 +12,19 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
  
   const backgroundImage = document.createElement('div');
   backgroundImage.id = 'backgroundImage';
+  // backgroundImage.className = 'absolute top-0 left-[5rem] lg:left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+
   backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
   backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
+
   container.appendChild(backgroundImage);
 
 
   // --- Profile Section (Cadre + Formulaire côte à côte) ---
   const profileSection = document.createElement('div');
   profileSection.className = `
-    relative ml-24 mt-24
-    flex flex-row items-start  gap-x-20
+    relative  mt-24
+    flex flex-row items-start justify-center gap-x-20
     z-30
   `.replace(/\s+/g, ' ').trim();
 

@@ -1,15 +1,16 @@
 export function createSidebar(navigate: (path: string) => void): HTMLElement {
     const sidebar = document.createElement('div');
     sidebar.id = 'sidebar';
-    sidebar.className = 'fixed top-0 left-0 h-full bg-gray-800 bg-opacity-75 transition-all duration-300 ease-in-out z-20 flex flex-col justify-between p-4 w-20 hover:w-64 overflow-hidden';
-  
+    // sidebar.className = 'fixed top-0 left-0 h-full bg-gray-800 bg-opacity-75 transition-all duration-300 ease-in-out z-20 flex flex-col justify-between p-4 w-20 hover:w-64 overflow-hidden';
+    sidebar.className = 'fixed top-0 left-0 h-full bg-gray-800 bg-opacity-75 transition-all duration-300 ease-in-out z-20 flex flex-col justify-between p-4 w-20 hover:w-64 overflow-visible';
+
     // --- Partie haute de la sidebar ---
     const topContainer = document.createElement('div');
     topContainer.className = 'flex flex-col gap-4';
   
     // --- Profil Section ---
     const profileSection = document.createElement('div');
-    profileSection.className = 'flex flex-col items-center mb-8 transition-all duration-300';
+    profileSection.className = 'flex flex-col items-center mb-44 transition-all duration-300';
   
     const profileImage = document.createElement('img');
     profileImage.src = sessionStorage.getItem('profilePicture') || '/assets/profile-pictures/default.jpg';
@@ -28,7 +29,7 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
     const winsBox = document.createElement('div');
     winsBox.className = 'bg-green-700 text-white px-3 py-2 rounded-md flex items-center gap-1';
     const winEmoji = document.createElement('span');
-    winEmoji.textContent = '🏆';
+    winEmoji.textContent = ' 🏆 ';
     const winCount = document.createElement('span');
     winCount.id = 'win-count';
     winCount.textContent = '0';
@@ -38,7 +39,7 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
     const lossesBox = document.createElement('div');
     lossesBox.className = 'bg-red-600 text-white px-3 py-2 rounded-md flex items-center gap-1';
     const lossEmoji = document.createElement('span');
-    lossEmoji.textContent = '💀';
+    lossEmoji.textContent = ' 💀 ';
     const lossCount = document.createElement('span');
     lossCount.id = 'loss-count';
     lossCount.textContent = '0';
@@ -92,7 +93,7 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
   
     bottomItems.forEach(item => {
       const menuItem = document.createElement('div');
-      menuItem.className = 'flex items-center gap-4 p-2 cursor-pointer hover:bg-red-700 rounded-md transition-colors duration-200';
+      menuItem.className = 'flex items-center gap-4 p-2 cursor-pointer hover:bg-blue-700 rounded-md transition-colors duration-200';
   
       const icon = document.createElement('img');
       icon.src = item.icon;
@@ -117,6 +118,8 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
     sidebar.addEventListener('mouseenter', () => {
         const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
         if (profileImg) {
+         // profileImg.style.transform = 'scale(3)';
+
           profileImg.classList.remove('w-12', 'h-12');
           profileImg.classList.add('w-36', 'h-36');
         }
@@ -130,6 +133,8 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
       sidebar.addEventListener('mouseleave', () => {
         const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
         if (profileImg) {
+         //profileImg.style.transform = 'scale(1)';
+
           profileImg.classList.remove('w-36', 'h-36');
           profileImg.classList.add('w-12', 'h-12');
         }
