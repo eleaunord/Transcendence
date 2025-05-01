@@ -17,7 +17,8 @@ function safeAlter(column: string, type: string) {
     console.log(` ==== Added column '${column}' to users table ==== `);
   }
 }
-// add new vairables in DB
+
+// --- add new vairables in DB --- \\
 
 /*
 GOOGLE OAUTH

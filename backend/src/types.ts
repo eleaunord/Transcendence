@@ -1,11 +1,22 @@
 export interface User {
-    id: number;
-    username: string;
-    email: string;
-    password_hash?: string;
-    image?: string;
-    google_id?: string;
-  }
+  id: number;
+  username: string;
+  email: string;
+  password_hash?: string;
+  image?: string;
+  google_id?: string;
+  is_2fa_enabled?: number;
+  two_fa_code?: string;
+  two_fa_expires_at?: string;
+}
+
+// ----- Authentification via Google ------ \\
+export interface GoogleUser {
+  id: string;
+  email: string;
+  name: string;
+  picture: string;
+}
 
 // interface Game {
 //     id: number;

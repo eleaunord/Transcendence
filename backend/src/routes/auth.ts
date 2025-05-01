@@ -5,6 +5,9 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 import db from '../db/db';
 import { User } from '../types'; 
+import { sendEmail } from '../utils/sendEmail';
+import { generate2FACode } from '../utils/generate2FA';
+import { GoogleUser } from '../types';
 
 dotenv.config();
 
@@ -14,9 +17,8 @@ const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
 const GOOGLE_REDIRECT_URL = process.env.GOOGLE_REDIRECT_URL!;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:8080';
 
-
-// ----- Authentification Classique ------ \\
 export async function authRoutes(app: FastifyInstance) {
+ // ----- Authentification Classique ------ \\
   app.post('/api/signup', async (req, reply) => {
     const { username: rawUsername, email: rawEmail, password } = req.body as any;
     // Nettoyage des espaces
@@ -72,21 +74,13 @@ export async function authRoutes(app: FastifyInstance) {
     reply.send({ token });
   });
 
-  // ----- Authentification via Google ------ \\
-  app.get('/api/auth/google', async (_, reply) => {
+  // ----- Google OAuth -----
+  app.get('/auth/google', async (_, reply) => {
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URL}&response_type=code&scope=profile email&access_type=offline`;
     reply.redirect(authUrl);
   });
 
-  interface GoogleUser {
-    id: string;
-    email: string;
-    name: string;
-    picture: string;
-  }
-  
-
-  app.get('/api/auth/google/callback', async (req, reply) => {
+  app.get('/auth/google/callback', async (req, reply) => {
     const { code } = req.query as { code: string };
     if (!code) return reply.code(400).send({ error: 'Missing code' });
 
@@ -101,33 +95,17 @@ export async function authRoutes(app: FastifyInstance) {
           grant_type: 'authorization_code',
         }
       );
-      
+
       const accessToken = tokenRes.data.access_token;
-      
+
       const userInfo = await axios.get<GoogleUser>(
         'https://www.googleapis.com/oauth2/v2/userinfo',
         {
           headers: { Authorization: `Bearer ${accessToken}` },
         }
       );
-      
+
       const { id: googleId, email, name, picture } = userInfo.data;
-      
-      // const tokenRes = await axios.post('https://oauth2.googleapis.com/token', {
-      //   code,
-      //   client_id: GOOGLE_CLIENT_ID,
-      //   client_secret: GOOGLE_CLIENT_SECRET,
-      //   redirect_uri: GOOGLE_REDIRECT_URL,
-      //   grant_type: 'authorization_code',
-      // });
-
-      // const accessToken = tokenRes.data.access_token;
-
-      // const userInfo = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
-      //   headers: { Authorization: `Bearer ${accessToken}` },
-      // });
-
-      // const { id: googleId, email, name, picture } = userInfo.data;
 
       let username = name.replace(/\s+/g, '_');
       let suffix = 1;
@@ -146,12 +124,99 @@ export async function authRoutes(app: FastifyInstance) {
       }
 
       const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-      reply.redirect(`${FRONTEND_URL}/profile-creation?token=${token}`);
+      const redirectUrl = `${FRONTEND_URL}/auth/google?token=${token}&email=${encodeURIComponent(email)}`;
+      console.log('[GOOGLE OAUTH] Redirecting to:', redirectUrl);
+      reply.redirect(redirectUrl);
+
     } catch (err: any) {
       console.error('Google Auth Error:', err?.response?.data || err.message);
       reply.code(500).send({ error: 'Authentication failed' });
     }
   });
+
+  // ----- 2FA Enable -----
+  app.post('/enable-2fa', async (req, reply) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader?.startsWith('Bearer ')) {
+        return reply.code(401).send({ error: 'Unauthorized' });
+      }
+
+      const token = authHeader.split(' ')[1];
+      const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
+
+      const user = db.prepare('SELECT * FROM users WHERE id = ?').get(decoded.userId) as User | undefined;
+      if (!user) return reply.code(404).send({ error: 'User not found' });
+
+      const code = generate2FACode();
+      const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5분 유효
+
+      db.prepare(`
+        UPDATE users SET
+          two_fa_code = ?,
+          two_fa_expires_at = ?
+        WHERE id = ?
+      `).run(code, expiresAt.toISOString(), decoded.userId);
+
+      console.log('[2FA] User Email:', user.email); // debug
+      console.log('[2FA] Sending code to email...'); // debug
+      
+      await sendEmail(user.email, 'Your 2FA Code', `Your code is ${code}. It will expire in 5 minutes.`);
+      reply.send({ message: '2FA code sent' });
+
+    } catch (err) {
+      console.error('2FA enable error:', err);
+      reply.code(500).send({ error: 'Failed to enable 2FA' });
+    }
+  });
+
+  // ----- 2FA Verification -----
+  app.post('/verify-2fa', async (req, reply) => {
+    try {
+      const { code } = req.body as { code: string };
+      const authHeader = req.headers.authorization;
+  
+      if (!authHeader?.startsWith('Bearer ')) {
+        return reply.code(401).send({ error: 'Unauthorized' });
+      }
+
+      const token = authHeader.split(' ')[1];
+      const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
+
+      const user = db.prepare('SELECT * FROM users WHERE id = ?').get(decoded.userId) as User | undefined;
+      if (!user || !user.two_fa_code || !user.two_fa_expires_at) {
+        return reply.code(400).send({ error: '2FA not initiated or already verified' });
+      }
+
+      const now = new Date();
+      const expiresAt = new Date(user.two_fa_expires_at);
+  
+      if (now > expiresAt) {
+        return reply.code(400).send({ error: '2FA code expired' });
+      }
+
+      if (code !== user.two_fa_code) {
+        return reply.code(400).send({ error: 'Invalid 2FA code' });
+      }
+
+      // 인증 성공 처리
+      db.prepare(`
+        UPDATE users
+        SET is_2fa_enabled = 1,
+            two_fa_code = NULL,
+            two_fa_expires_at = NULL
+        WHERE id = ?
+      `).run(user.id);
+
+      const finalToken = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
+      reply.send({ token: finalToken });
+
+    } catch (err) {
+      console.error('2FA verification error:', err);
+      reply.code(500).send({ error: '2FA verification failed' });
+    }
+  });
+
   app.get('/api/users', async () => {
     const users = db.prepare('SELECT id, username, email FROM users').all();
     return users;

@@ -36,7 +36,11 @@ const routes = {
   '/user-profile': useWithNavigate(protectedRoute(createUserProfilePage)),
   '/signup': useWithNavigate(createSignUpPage),
   '/auth/google': useWithNavigate(createGoogleOauthPage),
-  '/2fa': useWithNavigate(create2FAPage),
+  '/2fa': useWithNavigate((navigate) => {
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get('mode') === 'input' ? 'input' : 'activation';
+    return create2FAPage(navigate, mode);
+  }),
   //'/pong': useWithNavigate(protectedRoute(createPong3DPage)),
   '/memory': useWithNavigate(protectedRoute(createMemoryGamePage)),
 };
