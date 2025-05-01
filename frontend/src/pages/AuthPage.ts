@@ -4,6 +4,7 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
   let error = '';
 
   const handleLogin = async () => {
+    console.log('handleLogin exécutée');
     const usernameInput = document.getElementById('username') as HTMLInputElement;
     const passwordInput = document.getElementById('password') as HTMLInputElement;
 
@@ -21,6 +22,7 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
       });
 
       const data = await res.json();
+      console.log(data);
 
       if (!res.ok) {
         error = data.error || 'Erreur de connexion';
@@ -28,8 +30,15 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
         return;
       }
 
+      try {
+      console.log('Token reçu:', data.token);
       localStorage.setItem('token', data.token);
-      navigate('/profile-creation');
+      console.log('Token stocké:', localStorage.getItem('token'));
+    } catch (e) {
+      console.error('Erreur lors du stockage du token:', e);
+    }
+
+    navigate('/profile-creation');
     } catch (err) {
       error = 'Erreur réseau';
       updateError();
