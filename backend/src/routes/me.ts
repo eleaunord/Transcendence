@@ -35,7 +35,11 @@ export async function meRoutes(app: FastifyInstance) {
       if (!username || typeof username !== 'string') {
         return reply.code(400).send({ error: 'Invalid username' });
       }
-
+      // Vérification du username (3 à 20 caractères, lettres, chiffres ou underscore)
+      const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+      if (!usernameRegex.test(username)) {
+        return reply.code(400).send({ error: 'Invalid username. Use 3-20 letters, numbers or underscores.' });
+      }
       // Mise à jour en base de données
       db.prepare('UPDATE users SET username = ? WHERE id = ?').run(username, userId);
 
