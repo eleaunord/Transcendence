@@ -2,111 +2,103 @@ import { createPongScene } from '../games/pong3d/PongScene';
 import { createSidebar } from "../utils/sidebar"; 
 
 export function createGamePage(navigate: (path: string) => void): HTMLElement {
-
   const container = document.createElement('div');
   container.className = 'flex flex-col h-screen bg-gray-900 text-white';
-  
+
   const sidebar = createSidebar(navigate);
   container.appendChild(sidebar);
 
-   //---------------------Background Image--------------------/
- 
-   const backgroundImage = document.createElement('div');
-   backgroundImage.id = 'backgroundImage';
-   backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-   backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
-   container.appendChild(backgroundImage);
+  const backgroundImage = document.createElement('div');
+  backgroundImage.id = 'backgroundImage';
+  backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+  backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
+  container.appendChild(backgroundImage);
 
-
-  const profileTitle = document.createElement('h2');
-  profileTitle.className = 'text-xl font-semibold mb-4 text-center';
-  profileTitle.textContent = 'Profil';
-
-  const avatar = document.createElement('img');
-  avatar.src = '/assets/photo_profil.png';
-  avatar.alt = 'Player Profile';
-  avatar.className = 'w-24 h-24 rounded-full border-4 border-white cursor-pointer';
-  avatar.addEventListener('click', () => navigate('/user-profile'));
-
-  const avatarWrapper = document.createElement('div');
-  avatarWrapper.className = 'flex justify-center mb-4';
-  avatarWrapper.appendChild(avatar);
-
-  const infoBox = document.createElement('div');
-  infoBox.className = 'bg-gray-700 p-4 rounded-lg border-2 border-white';
-  infoBox.innerHTML = `
-    <ul class="space-y-4 text-center text-lg text-white">
-      <li><strong>Username:</strong> PlayerOne</li>
-      <li><strong>Level:</strong> 5</li>
-      <li><strong>Wins:</strong> 10</li>
-    </ul>
-  `;
-
-  // Central game display
   const gameArea = document.createElement('div');
   gameArea.className = 'flex-1 bg-gray-900 flex justify-center items-center';
 
   const gameFrame = document.createElement('div');
   gameFrame.className = 'w-3/4 h-3/4 border-4 border-white relative overflow-hidden bg-black';
 
-  // 🎮 Canvas Babylon.js
   const canvas = document.createElement('canvas');
   canvas.id = 'pong-canvas';
   canvas.className = 'w-full h-full absolute top-0 left-0';
   canvas.style.display = 'block';
   canvas.style.backgroundColor = 'black';
 
-  // ▶️ Bouton lancer Pong
-  const playBtn = document.createElement('button');
-  playBtn.textContent = 'Jouer à Pong 3D';
-  playBtn.className =
-    'absolute bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300';
-  playBtn.style.top = '40%';
-  playBtn.style.left = '50%';
-  playBtn.style.transform = 'translate(-50%, -50%)';
-  playBtn.addEventListener('click', () => {
-    createPongScene(canvas);
-    playBtn.remove();
-    memoryBtn.remove(); // Enlève aussi le bouton Memory
+  const modeMenu = document.createElement("div");
+  modeMenu.className = "absolute inset-0 flex flex-col items-center justify-center gap-4 z-20 bg-black bg-opacity-70";
+
+  const btnLocal = document.createElement("button");
+  btnLocal.textContent = "Jouer à 2 sur le même clavier";
+  btnLocal.className = "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded";
+
+  const btnAI = document.createElement("button");
+  btnAI.textContent = "Jouer contre l'IA";
+  btnAI.className = "bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded";
+
+  modeMenu.append(btnLocal, btnAI);
+
+  btnLocal.addEventListener("click", () => {
+    modeMenu.remove();
+    launchGame("local");
   });
 
-  // 🎴 Bouton aller au Memory
+  btnAI.addEventListener("click", () => {
+    modeMenu.remove();
+    launchGame("ai");
+  });
+
+  function launchGame(mode: 'local' | 'ai') {
+    memoryBtn.style.display = "none";
+    const scoreBoard = document.createElement("div");
+    scoreBoard.id = "scoreBoard";
+    scoreBoard.className = `
+      absolute top-6 left-1/2 transform -translate-x-1/2
+      text-3xl font-bold z-10
+    `.replace(/\s+/g, ' ').trim();
+    scoreBoard.innerText = "0 - 0";
+
+    scoreBoard.style.color = '#e0e7ff';
+    scoreBoard.style.textShadow = `
+      0 0 6px rgba(255, 255, 255, 0.5),
+      0 0 10px rgba(173, 216, 230, 0.4),
+      0 0 16px rgba(255, 255, 200, 0.3)
+    `;
+    scoreBoard.style.transition = 'all 0.3s ease-in-out';
+
+    const announce = document.createElement("div");
+    announce.id = "announce";
+    announce.className = "absolute top-16 left-1/2 transform -translate-x-1/2 text-yellow-300 text-xl font-semibold";
+    announce.innerText = "";
+
+    gameFrame.appendChild(scoreBoard);
+    gameFrame.appendChild(announce);
+
+    createPongScene(canvas, { mode });
+  }
+
   const memoryBtn = document.createElement('button');
   memoryBtn.textContent = 'Jouer à Memory';
   memoryBtn.className =
-    'absolute bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300';
-  memoryBtn.style.top = '60%';
+  'absolute z-30 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300';
+  memoryBtn.style.top = '80%';
   memoryBtn.style.left = '50%';
   memoryBtn.style.transform = 'translate(-50%, -50%)';
   memoryBtn.addEventListener('click', () => {
     navigate('/memory');
   });
 
-  const scoreBoard = document.createElement("div");
-  scoreBoard.className = "absolute top-6 left-1/2 transform -translate-x-1/2 text-white text-2xl font-bold";
-  scoreBoard.innerText = "0 - 0";
-
-  const announce = document.createElement("div");
-  announce.className = "absolute top-16 left-1/2 transform -translate-x-1/2 text-yellow-300 text-xl font-semibold";
-  announce.innerText = "";
-  
   gameFrame.appendChild(canvas);
-  gameFrame.appendChild(scoreBoard);
-  gameFrame.appendChild(announce);
-  gameFrame.appendChild(playBtn);
-  gameFrame.appendChild(memoryBtn); // <-- nouveau bouton Memory
+  gameFrame.appendChild(modeMenu);
+  gameFrame.appendChild(memoryBtn);
   gameArea.appendChild(gameFrame);
 
-  // Main layout
   const layout = document.createElement('div');
-  // layout.className = 'flex flex-1';
   layout.className = 'flex flex-1';
   layout.id = 'game-layout';
-  
-
   layout.appendChild(gameArea);
 
-  // Bouton retour
   const backBtn = document.createElement('button');
   backBtn.className =
     'fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300';
@@ -115,58 +107,6 @@ export function createGamePage(navigate: (path: string) => void): HTMLElement {
 
   container.appendChild(layout);
   container.appendChild(backBtn);
-  
-  sidebar.addEventListener('mouseenter', () => {
-    document.querySelectorAll('.sidebar-label').forEach(label => {
-      (label as HTMLElement).classList.remove('opacity-0');
-      (label as HTMLElement).classList.add('opacity-100');
-    });
-
-    const backgroundImage = document.getElementById('backgroundImage');
-    if (backgroundImage) {
-      backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-    }
-    const layout = document.getElementById('game-layout');
-    if (layout) {
-        layout.classList.add('ml-44'); // 11rem = 176px, correspond à w-64 (256px) - w-20 (80px)
-    }
-
-    const profileSection = document.getElementById('profileCard')?.parentElement;
-    if (profileSection) {
-      profileSection.className = `
-      relative mt-24
-      flex flex-row items-start justify-center gap-12
-      z-30
-    `.replace(/\s+/g, ' ').trim();
-    
-    }
-  });
-
-  sidebar.addEventListener('mouseleave', () => {
-    document.querySelectorAll('.sidebar-label').forEach(label => {
-      (label as HTMLElement).classList.add('opacity-0');
-      (label as HTMLElement).classList.remove('opacity-100');
-    });
-
-    const backgroundImage = document.getElementById('backgroundImage');
-    if (backgroundImage) {
-      backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-    }
-    const layout = document.getElementById('game-layout');
-        if (layout) {
-    layout.classList.remove('ml-44');
-    }
-
-    const profileSection = document.getElementById('profileCard')?.parentElement;
-    if (profileSection) {
-      profileSection.className = `
-      relative mt-24
-      flex flex-row items-start justify-center gap-12
-      z-30
-    `.replace(/\s+/g, ' ').trim();
-    
-    }
-  });
 
   return container;
 }

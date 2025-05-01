@@ -14,6 +14,21 @@ export function createPong3DPage(navigate: (path: string) => void): HTMLElement 
 
   container.appendChild(canvas);
 
+  // ScoreBoard
+  const scoreBoard = document.createElement("div");
+  scoreBoard.id = "scoreBoard";
+  scoreBoard.className = `
+    absolute top-6 left-1/2 transform -translate-x-1/2
+    text-3xl font-bold galaxy-text z-10
+  `.replace(/\s+/g, ' ').trim();
+  scoreBoard.innerText = "0 - 0";
+
+  // Announce
+  const announce = document.createElement("div");
+  announce.id = "announce";
+  announce.className = "absolute top-12 left-1/2 transform -translate-x-1/2 text-yellow-400 text-lg z-10";
+  container.appendChild(announce);
+
   // Bouton retour positionné dans le coin
   const backButton = document.createElement("button");
   backButton.textContent = "Retour à l'accueil";
