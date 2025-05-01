@@ -184,6 +184,12 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
       if (res.ok) {
         const usernameDisplay = document.getElementById('usernameValue');
         if (usernameDisplay) usernameDisplay.textContent = newUsername;
+
+        //met a jour username dans le profil, dans la valeur stockee et la sidebar
+        sessionStorage.setItem('username', newUsername);
+        const sidebarUsername = document.getElementById('sidebar-username');
+        if (sidebarUsername) sidebarUsername.textContent = newUsername;
+
         successMessage.classList.remove('hidden');
         setTimeout(() => successMessage.classList.add('hidden'), 3000); // Message disparaît après 3s
       } else {
@@ -263,9 +269,13 @@ if (token) {
     .then(user => {
       const usernameDisplay = document.getElementById('usernameValue');
       const emailValue = document.getElementById('emailValue');
+      sessionStorage.setItem('username', user.username); // stocker ici
       if (usernameDisplay) usernameDisplay.textContent = user.username;
       if (emailValue) emailValue.textContent = user.email;
-    })
+      // mise à jour immédiate si sidebar déjà affichée
+      const sidebarUsername = document.getElementById('sidebar-username');
+      if (sidebarUsername) sidebarUsername.textContent = user.username;
+      })
     .catch(err => console.error('Erreur chargement profil:', err));
 }
   return container;

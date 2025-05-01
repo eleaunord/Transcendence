@@ -20,7 +20,9 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
     const usernameText = document.createElement('span');
     usernameText.id = 'sidebar-username';
     usernameText.className = 'text-white text-lg opacity-0 sidebar-label transition-opacity duration-300 mb-1';
-    usernameText.textContent = 'Username';
+    //met a jour username avec ce qui est stocke
+    usernameText.textContent = sessionStorage.getItem('username') || 'Username';
+
   
     const statsContainer = document.createElement('div');
     statsContainer.id = 'sidebar-stats-container';
