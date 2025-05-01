@@ -13,7 +13,14 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
     profileSection.className = 'flex flex-col items-center mb-28 transition-all duration-300';
   
     const profileImage = document.createElement('img');
-    profileImage.src = sessionStorage.getItem('profilePicture') || '/assets/profile-pictures/default.jpg';
+    let profilePictureSrc = sessionStorage.getItem('profilePicture') || '/assets/profile-pictures/default.jpg';
+    profileImage.src = profilePictureSrc;
+
+    // Ajout du listener d'événement(changement photo profil)
+    window.addEventListener('profilePictureUpdated', (e: Event) => {
+      const customEvent = e as CustomEvent<string>;
+      profileImage.src = customEvent.detail;
+    });
     profileImage.className = 'w-36 h-36 rounded-full mb-2 border-2 border-white object-cover transition-transform duration-300 hover:scale-110';
     profileImage.id = 'profile-img-sidebar';
   

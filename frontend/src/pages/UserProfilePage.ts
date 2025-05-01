@@ -102,6 +102,9 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
         const result = e.target?.result as string;
         profileImg.src = result;
         sessionStorage.setItem('profilePicture', result);
+        //creer un event des qu'une nouvelle photo est selectionnee
+        const updateEvent = new CustomEvent('profilePictureUpdated', { detail: result });
+        window.dispatchEvent(updateEvent);
       };
       reader.readAsDataURL(file);
     }

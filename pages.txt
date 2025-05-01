@@ -1,0 +1,1966 @@
+// export function create2FAPage(navigate: (path: string) => void): HTMLElement {
+//   console.log('✅ Page 2FA chargée');
+
+//   let error = '';
+
+//   const container = document.createElement('div');
+//   container.className = 'flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
+
+//   const form = document.createElement('form');
+//   form.id = '2FAForm';
+//   form.className = 'w-[450px] p-10 bg-gray-800 rounded-lg border-2 border-white';
+
+//   // Header
+//   const usernameDiv = document.createElement('div');
+//   usernameDiv.className = 'mb-4';
+//   const usernameLabel = document.createElement('label');
+//   usernameLabel.className = 'text-2xl font-bold mb-8 flex mt-4 mb-5 px-6 py-2 text-center';
+//   usernameLabel.textContent = 'Vérification en deux étapes.';
+//   usernameDiv.appendChild(usernameLabel);
+
+//   // Subtext
+//   const textDiv = document.createElement('div');
+//   textDiv.className = 'mb-4';
+//   const textLabel = document.createElement('label');
+//   textLabel.className = 'block text-base mb-5 px-6 py-2 text-center';
+//   textLabel.textContent = 'Protégez votre compte avec une couche de sécurité supplémentaire.';
+//   textDiv.appendChild(textLabel);
+
+//   // Buttons
+//   const ActivationButton = document.createElement('button');
+//   ActivationButton.type = 'button';
+//   ActivationButton.className = 'w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg';
+//   ActivationButton.textContent = '🔒 Activer la double authentification';
+
+//   const laterContainer = document.createElement('div');
+//   laterContainer.className = 'flex justify-center mt-4';
+
+//   const laterButton = document.createElement('button');
+//   laterButton.type = 'button';
+//   laterButton.className = 'px-6 py-2 bg-gray-700 hover:bg-red-700 text-white font-semibold rounded-lg';
+//   laterButton.textContent = 'Plus tard';
+//   laterButton.addEventListener('click', () => navigate('/'));
+
+//   ActivationButton.addEventListener('click', () => {
+//     alert('Fonction 2FA à venir');
+//   });
+
+//   laterContainer.appendChild(laterButton);
+
+//   const errorMessage = document.createElement('p');
+//   errorMessage.className = 'mt-4 text-red-500';
+//   errorMessage.style.display = 'none';
+
+//   const updateError = () => {
+//     if (error) {
+//       errorMessage.textContent = error;
+//       errorMessage.style.display = 'block';
+//     } else {
+//       errorMessage.textContent = '';
+//       errorMessage.style.display = 'none';
+//     }
+//   };
+
+//   form.appendChild(usernameDiv);
+//   form.appendChild(textDiv);
+//   form.appendChild(ActivationButton);
+//   form.appendChild(laterContainer);
+//   form.appendChild(errorMessage);
+//   container.appendChild(form);
+
+//   return container;
+// }
+
+
+
+// import { IS_DEV_MODE } from '../config';
+
+// export function create2FAPage(navigate: (path: string) => void): HTMLElement {
+//   let error = '';
+
+
+//   const container = document.createElement('div');
+//   container.className = 'flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
+
+//   const form = document.createElement('form');
+//   form.id = '2FAForm';
+//   form.className = 'w-[450px] p-10 bg-gray-800 rounded-lg border-2 border-white';
+
+//   // Verification a deux etapes
+//   const usernameDiv = document.createElement('div');
+//   usernameDiv.className = 'mb-4';
+//   const usernameLabel = document.createElement('label');
+//   usernameLabel.htmlFor = '2Fa';
+//   usernameLabel.className = ' text-2xl font-bold mb-8 flex mt-4 mb-5 px-6 py-2  text-center';
+//   usernameLabel.textContent = 'Two-Factor Verification.';
+  
+
+//   const textDiv = document.createElement('div');
+//   textDiv.className = 'mb-4';
+//   const textLabel = document.createElement('label');
+//   textLabel.htmlFor = '2Fa';
+//   textLabel.className = 'block text-base  mb-5 px-6 py-2 text-center';
+//   textLabel.textContent = 'Protect your account with an extra layer of security.';
+
+//   usernameDiv.appendChild(usernameLabel);
+// //   usernameDiv.appendChild(usernameInput);
+
+// // Bouton Activation (plein largeur)
+// const ActivationButton = document.createElement('button');
+// ActivationButton.type = 'button';
+// ActivationButton.className = 'w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg';
+// ActivationButton.textContent = '🔒 Enable Two-Factor Authentication';
+
+// // Conteneur pour centrer le bouton "Later"
+// const laterContainer = document.createElement('div');
+// laterContainer.className = 'flex justify-center mt-4';
+
+// // Bouton "Later" (centré avec largeur auto)
+// const laterButton = document.createElement('button');
+// laterButton.type = 'button';
+// laterButton.className = 'px-6 py-2 bg-gray-700 hover:bg-red-700 text-white font-semibold rounded-lg';
+// laterButton.textContent = 'Later';
+
+// laterContainer.appendChild(laterButton);
+
+//   //button.addEventListener('click', handleLogin);
+//   // Error Message
+//   const errorMessage = document.createElement('p');
+//   errorMessage.className = 'mt-4 text-red-500';
+//   errorMessage.style.display = 'none';
+
+//   const updateError = () => {
+//     if (error) {
+//       errorMessage.textContent = error;
+//       errorMessage.style.display = 'block';
+//     } else {
+//       errorMessage.textContent = '';
+//       errorMessage.style.display = 'none';
+//     }
+//   };
+
+//   // Assemble form
+// form.appendChild(usernameDiv);
+// form.appendChild(textLabel);
+// form.appendChild(ActivationButton);
+// form.appendChild(laterContainer);
+
+// form.appendChild(errorMessage);
+
+// container.appendChild(form);
+
+//   return container;
+// }
+
+
+export function create2FAPage(navigate: (path: string) => void): HTMLElement {
+  let error = '';
+
+  const container = document.createElement('div');
+  container.className = 'flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
+
+  const form = document.createElement('form');
+  form.id = '2FAForm';
+  form.className = 'w-[450px] p-10 bg-gray-800 rounded-lg border-2 border-white text-center';
+
+  // Titre
+  const title = document.createElement('h2');
+  title.className = 'text-2xl font-bold mb-4';
+  title.textContent = 'Two-Factor Verification.';
+
+  // Description
+  const description = document.createElement('p');
+  description.className = 'text-base mb-8';
+  description.textContent = 'Protect your account with an extra layer of security.';
+
+  // Bouton d'activation
+  const activationButton = document.createElement('button');
+  activationButton.type = 'button';
+  activationButton.className = 'w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg mb-4';
+  activationButton.textContent = '🔒 Enable Two-Factor Authentication';
+
+  // Bouton "Later"
+  const laterButton = document.createElement('button');
+  laterButton.type = 'button';
+  laterButton.className = 'px-6 py-2 bg-gray-700 hover:bg-red-700 text-white font-semibold rounded-lg';
+  laterButton.textContent = 'Later';
+
+  // Message d'erreur
+  const errorMessage = document.createElement('p');
+  errorMessage.className = 'mt-4 text-red-500';
+  errorMessage.style.display = 'none';
+
+  const updateError = () => {
+    if (error) {
+      errorMessage.textContent = error;
+      errorMessage.style.display = 'block';
+    } else {
+      errorMessage.textContent = '';
+      errorMessage.style.display = 'none';
+    }
+  };
+
+  form.appendChild(title);
+  form.appendChild(description);
+  form.appendChild(activationButton);
+  form.appendChild(laterButton);
+  form.appendChild(errorMessage);
+
+  container.appendChild(form);
+
+  return container;
+}
+import { IS_DEV_MODE } from '../config';
+
+export function createAuthPage(navigate: (path: string) => void): HTMLElement {
+  let error = '';
+
+  const handleLogin = async () => {
+    console.log('handleLogin exécutée');
+    const usernameInput = document.getElementById('username') as HTMLInputElement;
+    const passwordInput = document.getElementById('password') as HTMLInputElement;
+
+    const username = usernameInput?.value;
+    const password = passwordInput?.value;
+
+    error = '';
+    updateError();
+
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await res.json();
+      console.log(data);
+
+      if (!res.ok) {
+        error = data.error || 'Erreur de connexion';
+        updateError();
+        return;
+      }
+
+      try {
+      console.log('Token reçu:', data.token);
+      localStorage.setItem('token', data.token);
+      console.log('Token stocké:', localStorage.getItem('token'));
+    } catch (e) {
+      console.error('Erreur lors du stockage du token:', e);
+    }
+
+    navigate('/profile-creation');
+    } catch (err) {
+      error = 'Erreur réseau';
+      updateError();
+    }
+  };
+
+  const container = document.createElement('div');
+  container.className = 'flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
+
+  const title = document.createElement('h1');
+  title.className = 'text-4xl font-bold mb-8';
+  title.textContent = 'Sign in';
+
+  const form = document.createElement('form');
+  form.id = 'authForm';
+  form.className = 'w-80 p-6 bg-gray-800 rounded-lg border-2 border-white';
+
+  // Username
+  const usernameDiv = document.createElement('div');
+  usernameDiv.className = 'mb-4';
+  const usernameLabel = document.createElement('label');
+  usernameLabel.htmlFor = 'username';
+  usernameLabel.className = 'block text-lg mb-2';
+  usernameLabel.textContent = 'Username';
+  const usernameInput = document.createElement('input');
+  usernameInput.type = 'text';
+  usernameInput.id = 'username';
+  usernameInput.placeholder = 'Username';
+  usernameInput.className = 'w-full p-2 bg-gray-700 text-white rounded-lg';
+  usernameInput.required = true;
+  usernameDiv.appendChild(usernameLabel);
+  usernameDiv.appendChild(usernameInput);
+
+  // Password
+  const passwordDiv = document.createElement('div');
+  passwordDiv.className = 'mb-6';
+  const passwordLabel = document.createElement('label');
+  passwordLabel.htmlFor = 'password';
+  passwordLabel.className = 'block text-lg mb-2';
+  passwordLabel.textContent = 'Password';
+  const passwordInput = document.createElement('input');
+  passwordInput.type = 'password';
+  passwordInput.id = 'password';
+  passwordInput.placeholder = 'Password';
+  passwordInput.className = 'w-full p-2 bg-gray-700 text-white rounded-lg';
+  passwordInput.required = true;
+  passwordDiv.appendChild(passwordLabel);
+  passwordDiv.appendChild(passwordInput);
+
+  // Submit button
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg';
+  button.textContent = 'Sign in';
+  button.addEventListener('click', handleLogin);
+
+  // Error Message
+  const errorMessage = document.createElement('p');
+  errorMessage.className = 'mt-4 text-red-500';
+  errorMessage.style.display = 'none';
+
+  const updateError = () => {
+    if (error) {
+      errorMessage.textContent = error;
+      errorMessage.style.display = 'block';
+    } else {
+      errorMessage.textContent = '';
+      errorMessage.style.display = 'none';
+    }
+  };
+
+  // Ajout bouton DEV si actif
+  if (IS_DEV_MODE) {
+    const devBanner = document.createElement('div');
+    devBanner.className = 'w-full bg-yellow-500 text-black text-center py-2 font-semibold z-50';
+    devBanner.textContent = '⚠️ MODE DÉVELOPPEMENT ACTIVÉ ⚠️';
+    container.appendChild(devBanner);
+    const devLoginBtn = document.createElement('button');
+    devLoginBtn.type = 'button';
+    devLoginBtn.textContent = 'Connexion Dev';
+    devLoginBtn.className =
+      'w-full mt-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg';
+    devLoginBtn.addEventListener('click', () => {
+      localStorage.setItem('token', 'dev-token');
+      navigate('/profile-creation');
+    });
+    form.appendChild(devLoginBtn);
+  }
+
+  // Assemble form
+  form.appendChild(usernameDiv);
+  form.appendChild(passwordDiv);
+  form.appendChild(button);
+  form.appendChild(errorMessage);
+
+  // Assemble page
+  container.appendChild(title);
+  container.appendChild(form);
+
+  return container;
+}
+import { createSidebar } from "../utils/sidebar";
+
+export function createCustomizationPage(navigate: (path: string) => void): HTMLElement {
+  const container = document.createElement('div');
+  container.className = 'relative flex flex-col h-screen bg-gray-900 text-white overflow-hidden';
+
+  const sidebar = createSidebar(navigate);
+  container.appendChild(sidebar);
+
+  //---------------------Background Image--------------------/
+  const backgroundImage = document.createElement('div');
+  backgroundImage.id = 'backgroundImage';
+  backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+  backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
+  container.appendChild(backgroundImage);
+
+  //---------------------Thème Selector--------------------/
+  const customizations = document.createElement('div');
+  customizations.className = 'flex  space-x-8 justify-center items-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 bg-black/50 p-4 rounded-lg';
+
+  const themes = [
+    { name: 'Thème 1', path: '/assets/background/korea2.jpg' },
+    { name: 'Thème 2', path: '/assets/background/colibri.jpg' },
+    { name: 'Thème 3', path: '/assets/background/cieletoile.jpg' },
+  ];
+
+  themes.forEach(({ name, path }) => {
+    const img = document.createElement('img');
+    img.src = path;
+    img.alt = name;
+    img.className = 'flex-1 max-w-xs h-auto rounded-lg cursor-pointer hover:border hover:border-white transition-all duration-100';
+
+    img.addEventListener('click', async () => {
+      backgroundImage.style.backgroundImage = `url(${path})`;
+
+      const token = localStorage.getItem('token');
+      try {
+        await fetch('/api/theme', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ image: path.replace('/assets/game-themes/', '') }),
+        });
+      } catch (err) {
+        console.error('Erreur lors de la sauvegarde du thème', err);
+      }
+    });
+
+    customizations.appendChild(img);
+  });
+
+  container.appendChild(customizations);
+
+  // Sidebar hover events
+  sidebar.addEventListener('mouseenter', () => {
+    document.querySelectorAll('.sidebar-label').forEach(label => {
+      (label as HTMLElement).classList.remove('opacity-0');
+      (label as HTMLElement).classList.add('opacity-100');
+    });
+
+    const backgroundImage = document.getElementById('backgroundImage');
+    if (backgroundImage) {
+      backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+    }
+
+  });
+
+  sidebar.addEventListener('mouseleave', () => {
+    document.querySelectorAll('.sidebar-label').forEach(label => {
+      (label as HTMLElement).classList.add('opacity-0');
+      (label as HTMLElement).classList.remove('opacity-100');
+    });
+
+    const backgroundImage = document.getElementById('backgroundImage');
+    if (backgroundImage) {
+      backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+    }
+
+  });
+  return container;
+}
+import { createPongScene } from '../games/pong3d/PongScene';
+import { createSidebar } from "../utils/sidebar"; 
+
+export function createGamePage(navigate: (path: string) => void): HTMLElement {
+
+  const container = document.createElement('div');
+  container.className = 'flex flex-col h-screen bg-gray-900 text-white';
+  
+  const sidebar = createSidebar(navigate);
+  container.appendChild(sidebar);
+
+   //---------------------Background Image--------------------/
+ 
+   const backgroundImage = document.createElement('div');
+   backgroundImage.id = 'backgroundImage';
+   backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+   backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
+   container.appendChild(backgroundImage);
+
+
+  const profileTitle = document.createElement('h2');
+  profileTitle.className = 'text-xl font-semibold mb-4 text-center';
+  profileTitle.textContent = 'Profil';
+
+  const avatar = document.createElement('img');
+  avatar.src = '/assets/photo_profil.png';
+  avatar.alt = 'Player Profile';
+  avatar.className = 'w-24 h-24 rounded-full border-4 border-white cursor-pointer';
+  avatar.addEventListener('click', () => navigate('/user-profile'));
+
+  const avatarWrapper = document.createElement('div');
+  avatarWrapper.className = 'flex justify-center mb-4';
+  avatarWrapper.appendChild(avatar);
+
+  const infoBox = document.createElement('div');
+  infoBox.className = 'bg-gray-700 p-4 rounded-lg border-2 border-white';
+  infoBox.innerHTML = `
+    <ul class="space-y-4 text-center text-lg text-white">
+      <li><strong>Username:</strong> PlayerOne</li>
+      <li><strong>Level:</strong> 5</li>
+      <li><strong>Wins:</strong> 10</li>
+    </ul>
+  `;
+
+  // Central game display
+  const gameArea = document.createElement('div');
+  gameArea.className = 'flex-1 bg-gray-900 flex justify-center items-center';
+
+  const gameFrame = document.createElement('div');
+  gameFrame.className = 'w-3/4 h-3/4 border-4 border-white relative overflow-hidden bg-black';
+
+  // 🎮 Canvas Babylon.js
+  const canvas = document.createElement('canvas');
+  canvas.id = 'pong-canvas';
+  canvas.className = 'w-full h-full absolute top-0 left-0';
+  canvas.style.display = 'block';
+  canvas.style.backgroundColor = 'black';
+
+  // ▶️ Bouton lancer Pong
+  const playBtn = document.createElement('button');
+  playBtn.textContent = 'Jouer à Pong 3D';
+  playBtn.className =
+    'absolute bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300';
+  playBtn.style.top = '40%';
+  playBtn.style.left = '50%';
+  playBtn.style.transform = 'translate(-50%, -50%)';
+  playBtn.addEventListener('click', () => {
+    createPongScene(canvas);
+    playBtn.remove();
+    memoryBtn.remove(); // Enlève aussi le bouton Memory
+  });
+
+  // 🎴 Bouton aller au Memory
+  const memoryBtn = document.createElement('button');
+  memoryBtn.textContent = 'Jouer à Memory';
+  memoryBtn.className =
+    'absolute bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300';
+  memoryBtn.style.top = '60%';
+  memoryBtn.style.left = '50%';
+  memoryBtn.style.transform = 'translate(-50%, -50%)';
+  memoryBtn.addEventListener('click', () => {
+    navigate('/memory');
+  });
+
+  const scoreBoard = document.createElement("div");
+  scoreBoard.className = "absolute top-6 left-1/2 transform -translate-x-1/2 text-white text-2xl font-bold";
+  scoreBoard.innerText = "0 - 0";
+
+  const announce = document.createElement("div");
+  announce.className = "absolute top-16 left-1/2 transform -translate-x-1/2 text-yellow-300 text-xl font-semibold";
+  announce.innerText = "";
+  
+  gameFrame.appendChild(canvas);
+  gameFrame.appendChild(scoreBoard);
+  gameFrame.appendChild(announce);
+  gameFrame.appendChild(playBtn);
+  gameFrame.appendChild(memoryBtn); // <-- nouveau bouton Memory
+  gameArea.appendChild(gameFrame);
+
+  // Main layout
+  const layout = document.createElement('div');
+  // layout.className = 'flex flex-1';
+  layout.className = 'flex flex-1';
+  layout.id = 'game-layout';
+  
+
+  layout.appendChild(gameArea);
+
+  // Bouton retour
+  const backBtn = document.createElement('button');
+  backBtn.className =
+    'fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300';
+  backBtn.textContent = 'Retour à la personnalisation';
+  backBtn.addEventListener('click', () => navigate('/customization'));
+
+  container.appendChild(layout);
+  container.appendChild(backBtn);
+  
+  sidebar.addEventListener('mouseenter', () => {
+    document.querySelectorAll('.sidebar-label').forEach(label => {
+      (label as HTMLElement).classList.remove('opacity-0');
+      (label as HTMLElement).classList.add('opacity-100');
+    });
+
+    const backgroundImage = document.getElementById('backgroundImage');
+    if (backgroundImage) {
+      backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+    }
+    const layout = document.getElementById('game-layout');
+    if (layout) {
+        layout.classList.add('ml-44'); // 11rem = 176px, correspond à w-64 (256px) - w-20 (80px)
+    }
+
+    const profileSection = document.getElementById('profileCard')?.parentElement;
+    if (profileSection) {
+      profileSection.className = `
+      relative mt-24
+      flex flex-row items-start justify-center gap-12
+      z-30
+    `.replace(/\s+/g, ' ').trim();
+    
+    }
+  });
+
+  sidebar.addEventListener('mouseleave', () => {
+    document.querySelectorAll('.sidebar-label').forEach(label => {
+      (label as HTMLElement).classList.add('opacity-0');
+      (label as HTMLElement).classList.remove('opacity-100');
+    });
+
+    const backgroundImage = document.getElementById('backgroundImage');
+    if (backgroundImage) {
+      backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+    }
+    const layout = document.getElementById('game-layout');
+        if (layout) {
+    layout.classList.remove('ml-44');
+    }
+
+    const profileSection = document.getElementById('profileCard')?.parentElement;
+    if (profileSection) {
+      profileSection.className = `
+      relative mt-24
+      flex flex-row items-start justify-center gap-12
+      z-30
+    `.replace(/\s+/g, ' ').trim();
+    
+    }
+  });
+
+  return container;
+}
+export function createGoogleOauthPage(navigate: (path: string) => void): HTMLElement {
+    const container = document.createElement('div');
+    container.className = 'flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
+  
+    const title = document.createElement('h1');
+    title.className = 'text-3xl font-bold';
+    title.textContent = 'Connexion Google...';
+  
+    const spinner = document.createElement('div');
+    spinner.className = 'mt-4 animate-spin rounded-full h-10 w-10 border-b-2 border-white';
+  
+    container.appendChild(title);
+    container.appendChild(spinner);
+  
+    // get token from url
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+  
+    if (token) {
+      // store token and redirect
+      localStorage.setItem('token', token);
+      setTimeout(() => navigate('/profile-creation'), 1000); // 1초 후 이동
+    } else {
+      title.textContent = 'Erreur : aucun token trouvé';
+      spinner.style.display = 'none';
+    }
+  
+    return container;
+  }
+  export function createHomePage(): HTMLElement {
+  // Fonction pour démarrer le jeu
+  const handleSignIn = () => {
+    window.location.href = '/auth';  // Redirection classique
+  };
+  const handleSignUp = () => {
+    window.location.href = '/signup';  // Redirection classique
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = '/api/auth/google'; // 백엔드 Google OAuth 경로
+  };
+  
+  // Création des éléments
+  const container = document.createElement('div');
+  container.className = 'relative flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
+
+  const background = document.createElement('div');
+  background.className = 'absolute inset-0 bg-cover bg-center opacity-40';
+  background.style.backgroundImage = "url(/assets/photo_pong.png)";
+  container.appendChild(background);
+
+  const content = document.createElement('div');
+  content.className = 'relative z-10 flex flex-col justify-center items-center';
+
+  const title = document.createElement('h1');
+  title.className = 'text-5xl font-extrabold mb-4';
+  title.textContent = 'Bienvenue sur Transcendance !';
+
+  const paragraph = document.createElement('p');
+  paragraph.className = 'text-xl mb-8';
+  paragraph.textContent = 'Préparez-vous à jouer à un jeu classique avec vos amis.';
+  
+  const signup = document.createElement('button');
+  signup.id = 'signup';
+  signup.className = 'bg-white hover:bg-gray-100 text-blue-600 border border-gray-300 font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300';
+  signup.textContent = 'Sign up';
+  signup.addEventListener('click', handleSignUp);
+
+  const signin = document.createElement('button');
+  signin.id = 'SignIn';
+  signin.className = 'bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300';
+  signin.textContent = 'Sign in';
+  signin.addEventListener('click', handleSignIn);
+  // button.addEventListener('enter', handleStartGame);
+  
+  const googleButton = document.createElement('button');
+  googleButton.id = 'google-login';
+  googleButton.className = 'bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300';
+  googleButton.textContent = 'Sign in/up with Google';
+  googleButton.addEventListener('click', handleGoogleLogin);
+  const buttonContainer = document.createElement('div');
+  buttonContainer.className = 'flex space-x-4'; // ou 'flex flex-col space-y-4' pour vertical
+
+  buttonContainer.appendChild(signup);
+  buttonContainer.appendChild(signin);
+
+  // Assemblage
+  content.appendChild(title);
+  content.appendChild(paragraph);
+  content.appendChild(buttonContainer); // Ajoute les deux boutons ensemble
+  // content.appendChild(signup);
+  // content.appendChild(signin);
+  container.appendChild(content);
+  content.appendChild(googleButton);
+
+  return container;
+}
+
+
+import { createSidebar } from "../utils/sidebar"; 
+
+export function createMemoryGamePage(navigate: (path: string) => void): HTMLElement {
+    let moves = 0; // Compteur de coups
+  
+    const container = document.createElement('div');
+    container.className = 'flex flex-col h-screen bg-gray-900 text-white';
+    const sidebar = createSidebar(navigate);
+    container.appendChild(sidebar);
+    //---------------------Background Image--------------------/
+ 
+     const backgroundImage = document.createElement('div');
+     backgroundImage.id = 'backgroundImage';
+     backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+     backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
+     container.appendChild(backgroundImage);
+
+  
+    // Game Area
+    const gameArea = document.createElement('div');
+    gameArea.className = 'flex-1 bg-gray-900 flex justify-center items-center';
+  
+    const gameFrame = document.createElement('div');
+    gameFrame.className = 'w-5/6 h-5/6 border-4 border-white relative overflow-hidden bg-black grid place-content-center';
+    gameFrame.style.backgroundImage = 'url(/assets/background/game_background.jpg)';
+    gameFrame.style.backgroundSize = 'cover';
+    gameFrame.style.backgroundPosition = 'center';
+    gameFrame.classList.add('max-w-[90%]', 'max-h-[80%]');
+  
+    const cardsContainer = document.createElement('div');
+    cardsContainer.className = 'grid grid-cols-6 gap-2';
+  
+    const images = ['comet', 'knight', 'moon', 'star', 'sword', 'dnd'];
+    let cards = [...images, ...images];
+    cards.sort(() => Math.random() - 0.5);
+  
+    let flippedCards: { card: HTMLElement, inner: HTMLElement, icon: string }[] = [];
+    let lockBoard = false;
+  
+    // Fonction pour créer une carte
+    function createMemoryCard(icon: string): HTMLElement {
+      const card = document.createElement('div');
+      card.className = 'memory-card w-20 h-28 perspective'; // taille plus compacte
+      card.style.perspective = '1000px';
+  
+      const innerCard = document.createElement('div');
+      innerCard.className = 'memory-inner relative w-full h-full transition-transform duration-500';
+      innerCard.style.transformStyle = 'preserve-3d';
+      innerCard.style.transform = 'rotateY(0deg)';
+  
+      const front = document.createElement('div');
+      front.className = 'memory-front absolute w-full h-full rounded-lg';
+      front.style.backgroundImage = 'url(/assets/icons/card_background.jpg)';
+      front.style.backgroundSize = 'cover';
+      front.style.backgroundPosition = 'center';    
+      front.style.backfaceVisibility = 'hidden';
+  
+      const back = document.createElement('div');
+      back.className = 'memory-back absolute w-full h-full rounded-lg';
+      back.style.backgroundImage = `url(/assets/icons/${icon}.jpg)`;
+      back.style.backgroundSize = 'cover';
+      back.style.backgroundPosition = 'center';
+      back.style.backfaceVisibility = 'hidden';
+      back.style.transform = 'rotateY(180deg)'; // Image retournée
+  
+      innerCard.appendChild(front);
+      innerCard.appendChild(back);
+      card.appendChild(innerCard);
+  
+      return card;
+    }
+  
+    cards.forEach(icon => {
+      const card = createMemoryCard(icon);
+      const innerCard = card.querySelector('.memory-inner') as HTMLElement;
+  
+      card.addEventListener('click', () => {
+        if (lockBoard || card.classList.contains('flipped')) return;
+  
+        card.classList.add('flipped');
+        innerCard.style.transform = 'rotateY(180deg)';
+        flippedCards.push({ card, inner: innerCard, icon });
+  
+        moves++; // Compter les coups
+  
+        if (flippedCards.length === 2) {
+          lockBoard = true;
+          setTimeout(checkMatch, 800);
+        }
+      });
+  
+      cardsContainer.appendChild(card);
+    });
+  
+    gameFrame.appendChild(cardsContainer);
+  
+    function checkMatch() {
+      const [first, second] = flippedCards;
+  
+      if (first.icon === second.icon) {
+        first.card.removeEventListener('click', () => { });
+        second.card.removeEventListener('click', () => { });
+      } else {
+        first.inner.style.transform = 'rotateY(0deg)';
+        second.inner.style.transform = 'rotateY(0deg)';
+        first.card.classList.remove('flipped');
+        second.card.classList.remove('flipped');
+      }
+      flippedCards = [];
+      lockBoard = false;
+  
+      const allFlipped = Array.from(gameFrame.querySelectorAll('.memory-card')).every(card => card.classList.contains('flipped'));
+      if (allFlipped) {
+        setTimeout(showVictoryAnimation, 500);
+      }
+    }
+  
+    function showVictoryAnimation() {
+      const victoryOverlay = document.createElement('div');
+      victoryOverlay.className = 'fixed inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
+      
+      const victoryText = document.createElement('div');
+      victoryText.textContent = `🎉 Bravo ! 🎉`;
+  
+      const moveText = document.createElement('div');
+      moveText.className = 'text-2xl mt-4';
+      moveText.textContent = `Tu as terminé en ${moves} coups !`;
+  
+      const replayBtn = document.createElement('button');
+      replayBtn.className = 'mt-6 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300';
+      replayBtn.textContent = 'Rejouer';
+      replayBtn.addEventListener('click', () => {
+        moves = 0;
+        container.innerHTML = '';
+        container.appendChild(createMemoryGamePage(navigate));
+      });
+  
+      victoryOverlay.appendChild(victoryText);
+      victoryOverlay.appendChild(moveText);
+      victoryOverlay.appendChild(replayBtn);
+  
+      container.appendChild(victoryOverlay);
+    }
+  
+    const layout = document.createElement('div');
+    layout.className = 'flex flex-1';
+    layout.id = 'game-layout';
+    // layout.appendChild(leftPanel);
+    layout.appendChild(gameArea);
+  
+    gameArea.appendChild(gameFrame);
+  
+    const backBtn = document.createElement('button');
+    backBtn.className = 'fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300';
+    backBtn.textContent = 'Retour à la personnalisation';
+    backBtn.addEventListener('click', () => navigate('/customization'));
+  
+
+    container.appendChild(layout);
+    container.appendChild(backBtn);
+  
+    sidebar.addEventListener('mouseenter', () => {
+      document.querySelectorAll('.sidebar-label').forEach(label => {
+        (label as HTMLElement).classList.remove('opacity-0');
+        (label as HTMLElement).classList.add('opacity-100');
+      });
+  
+      const backgroundImage = document.getElementById('backgroundImage');
+      if (backgroundImage) {
+        backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+      }
+      const layout = document.getElementById('game-layout');
+      if (layout) {
+          layout.classList.add('ml-44'); // 11rem = 176px, correspond à w-64 (256px) - w-20 (80px)
+      }
+  
+      const profileSection = document.getElementById('profileCard')?.parentElement;
+      if (profileSection) {
+        profileSection.className = `
+        relative mt-24
+        flex flex-row items-start justify-center gap-12
+        z-30
+      `.replace(/\s+/g, ' ').trim();
+      
+      }
+    });
+  
+    sidebar.addEventListener('mouseleave', () => {
+      document.querySelectorAll('.sidebar-label').forEach(label => {
+        (label as HTMLElement).classList.add('opacity-0');
+        (label as HTMLElement).classList.remove('opacity-100');
+      });
+  
+      const backgroundImage = document.getElementById('backgroundImage');
+      if (backgroundImage) {
+        backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+      }
+      const layout = document.getElementById('game-layout');
+          if (layout) {
+      layout.classList.remove('ml-44');
+      }
+  
+      const profileSection = document.getElementById('profileCard')?.parentElement;
+      if (profileSection) {
+        profileSection.className = `
+        relative mt-24
+        flex flex-row items-start justify-center gap-12
+        z-30
+      `.replace(/\s+/g, ' ').trim();
+      
+      }
+    });
+  
+    return container;
+  }
+  import { createPongScene } from "../games/pong3d/PongScene";
+
+export function createPong3DPage(navigate: (path: string) => void): HTMLElement {
+  // Conteneur principal qui définit la taille
+  const container = document.createElement("div");
+  container.className = "w-full h-screen relative"; // plein écran, parent du canvas
+
+  // Canvas Babylon.js
+  const canvas = document.createElement("canvas");
+  canvas.id = "pong-canvas";
+  canvas.style.width = "100%";
+  canvas.style.height = "100%";
+  canvas.style.display = "block"; // évite marges auto
+
+  container.appendChild(canvas);
+
+  // Bouton retour positionné dans le coin
+  const backButton = document.createElement("button");
+  backButton.textContent = "Retour à l'accueil";
+  backButton.className = "absolute top-4 left-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 shadow-md";
+  backButton.onclick = () => navigate("/");
+
+  container.appendChild(backButton);
+
+  // Lancement du jeu
+  createPongScene(canvas);
+
+  return container;
+}
+
+export function createProfileCreationPage(navigate: (path: string) => void): HTMLElement {
+  let username = '';
+  const profilePicture = '/assets/photo_profil.png';
+  let selectedOption: 'game' | 'profile' = 'game';
+
+  // --- Gestionnaire de soumission ---
+  const handleGame = () => {
+    sessionStorage.setItem('username', username);
+    sessionStorage.setItem('profilePicture', profilePicture);
+      navigate('/game');
+  };
+  
+  const handleUserProfil = () => {
+    sessionStorage.setItem('username', username);
+    sessionStorage.setItem('profilePicture', profilePicture);
+      navigate('/user-profile');
+  };
+  
+  // --- Création du conteneur ---
+  const container = document.createElement('div');
+  container.className = 'flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
+  
+  // --- Mise à jour de l’état sélectionné ---
+  const updateSelectionUI = () => {
+    gameBtn.className = baseBtnClass + (selectedOption === 'game' ? ' bg-blue-600' : ' bg-gray-600');
+    customBtn.className = baseBtnClass + (selectedOption === 'profile' ? ' bg-blue-600' : ' bg-gray-600');
+  };
+
+  const form = document.createElement('form');
+  form.id = 'profileForm';
+  form.className = 'w-80 p-6 bg-gray-800 rounded-lg border-2 border-white';
+  // --- Message de bienvenue ---
+  const welcomeMsg = document.createElement('h1');
+  welcomeMsg.className = 'text-3xl font-bold mb-4 text-center';
+  welcomeMsg.textContent = 'Bienvenue !'; // par défaut
+  form.appendChild(welcomeMsg);
+
+  // --- Champ username ---
+  const usernameDiv = document.createElement('div');
+  usernameDiv.className = 'mb-4';
+
+  const usernameLabel = document.createElement('label');
+  usernameLabel.htmlFor = 'username';
+  usernameLabel.className = 'block text-lg mb-2';
+  usernameLabel.textContent = "Nom d'utilisateur";
+
+  // --- Photo de profil ---
+  const pictureDiv = document.createElement('div');
+  pictureDiv.className = 'mb-4';
+
+  // const pictureLabel = document.createElement('label');
+  // pictureLabel.className = 'block text-lg mb-2';
+  // pictureLabel.textContent = 'Photo de profil';
+
+  const picturePreview = document.createElement('img');
+  picturePreview.src = profilePicture;
+  //picturePreview.src = `/assets/profile-pictures/${selectedImage}`;
+  picturePreview.alt = 'Player Profile';
+  picturePreview.className = 'w-24 h-24 rounded-full border-4 border-white';
+
+  const pictureContainer = document.createElement('div');
+  pictureContainer.className = 'flex justify-center mb-4';
+  pictureContainer.appendChild(picturePreview);
+
+  // pictureDiv.appendChild(pictureLabel);
+  pictureDiv.appendChild(pictureContainer);
+
+  // --- Choix game/customization ---
+  const choiceDiv = document.createElement('div');
+  choiceDiv.className = 'mb-4';
+
+  const buttonsContainer = document.createElement('div');
+  buttonsContainer.className = 'flex justify-around';
+
+  const baseBtnClass = 'px-4 py-2 hover:bg-blue-700 text-white font-semibold rounded-lg';
+
+  const gameBtn = document.createElement('button');
+  gameBtn.type = 'button';
+  gameBtn.textContent = 'Aller au jeu';
+  gameBtn.addEventListener('click', () => {
+    selectedOption = 'game';
+    updateSelectionUI();
+    handleGame();
+  });
+
+  const customBtn = document.createElement('button');
+  customBtn.type = 'button';
+  customBtn.textContent = 'Personnaliser';
+  customBtn.addEventListener('click', () => {
+    selectedOption = 'profile';
+    updateSelectionUI();
+    handleUserProfil();
+  });
+  buttonsContainer.appendChild(gameBtn);
+  buttonsContainer.appendChild(customBtn);
+  choiceDiv.appendChild(buttonsContainer);
+
+
+  // --- Deconnexion ---
+  const logoutBtn = document.createElement('button');
+  logoutBtn.textContent = 'Se déconnecter';
+  logoutBtn.className = 'mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold';
+  logoutBtn.addEventListener('click', () => {
+  localStorage.removeItem('token');
+  navigate('/'); // ou /login ou /signup, selon ton point d’entrée
+  });
+  // --- Assemblage du formulaire ---
+  // form.appendChild(usernameDiv);
+  form.appendChild(pictureDiv);
+  form.appendChild(choiceDiv);
+  // form.appendChild(submitBtn);
+
+  // container.appendChild(title);
+  container.appendChild(form);
+  container.appendChild(logoutBtn);
+
+    // --- Chargement /api/me ---
+  const imageSelector = document.createElement('div');
+  imageSelector.className = 'flex gap-4 justify-center mb-2 flex-wrap';
+  const token = localStorage.getItem('token');
+  console.log('Token récupéré depuis localStorage :', token);
+    const images = [
+    'star_icon.jpg',
+    'moon_icon.jpg',
+    'sun_icon.jpg',
+    'fire_icon.jpg',
+    'bigstar_icon.jpg',
+    'default.jpg'
+  ];
+  let selectedImage = '/assets/profile-pictures/default.jpg';
+  images.forEach(img => {
+    const avatar = document.createElement('img');
+    avatar.src = `/assets/profile-pictures/${img}`;
+    avatar.className = 'w-12 h-12 rounded-full border-2 border-gray-400 hover:border-blue-500 cursor-pointer';
+    avatar.addEventListener('click', () => {
+      selectedImage = img;
+      picturePreview.src = `/assets/profile-pictures/${img}`;
+    });
+    imageSelector.appendChild(avatar);
+  });
+  if (token) {
+    console.log('Token utilisé pour /api/me:', token);
+    fetch('/api/me', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      // .then(res => res.json())
+      // .then(user => {
+        .then(res => {
+          console.log('Statut de la réponse:', res.status);
+          return res.json();
+        })
+        .then(user => {
+          console.log('Données utilisateur reçues:', user);
+        username = user.username;
+        selectedImage = user.image; //|| 'default.jpg';
+        picturePreview.src = `/assets/profile-pictures/${selectedImage}`;
+        welcomeMsg.textContent = `Bienvenue ${user.username} !`;
+      })
+      .catch(err => console.error('Erreur chargement profil:', err));
+  }
+ updateSelectionUI(); // Applique les bonnes couleurs au démarrage
+
+  return container;
+}
+export function createSignUpPage(navigate: (path: string) => void): HTMLElement {
+  let error = '';
+
+  const handleSignUp = async () => {
+    console.log('handleSignup exécutée');
+    const usernameInput = document.getElementById('username') as HTMLInputElement;
+    const passwordInput = document.getElementById('password') as HTMLInputElement;
+    const emailInput = document.getElementById('email') as HTMLInputElement;
+
+    const username = usernameInput?.value.trim();
+    const email = emailInput?.value.trim();
+    const password = passwordInput?.value;
+
+    error = '';
+    updateError();
+
+    try {
+      const res = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username,email, password }),
+      });
+
+      const data = await res.json();
+      console.log(data);
+
+      if (!res.ok) {
+        error = data.error || 'Signup failed';
+        updateError();
+        return;
+      }
+
+      localStorage.setItem('token', data.token);
+      navigate('/profile-creation'); // Utilisation du routeur SPA
+    } catch (err) {
+      error = 'Network error';
+      updateError();
+    }
+  };
+
+  // Création de l’UI
+  const container = document.createElement('div');
+  container.className = 'flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
+
+  const title = document.createElement('h1');
+  title.className = 'text-4xl font-bold mb-8';
+  title.textContent = 'Sign up';
+
+  const form = document.createElement('form');
+  form.id = 'authForm';
+  form.className = 'w-80 p-6 bg-gray-800 rounded-lg border-2 border-white';
+
+  // Username
+  const usernameDiv = document.createElement('div');
+  usernameDiv.className = 'mb-4';
+  const usernameLabel = document.createElement('label');
+  usernameLabel.htmlFor = 'username';
+  usernameLabel.className = 'block text-lg mb-2';
+  usernameLabel.textContent = 'Username';
+  const usernameInput = document.createElement('input');
+  usernameInput.type = 'text';
+  usernameInput.id = 'username';
+  usernameInput.placeholder = 'Username';
+  usernameInput.className = 'w-full p-2 bg-gray-700 text-white rounded-lg';
+  usernameInput.required = true;
+  usernameDiv.appendChild(usernameLabel);
+  usernameDiv.appendChild(usernameInput);
+
+  // Email
+  const emailDiv = document.createElement('div');
+  //usernameDiv.className = 'mb_';
+  const emailLabel = document.createElement('label');
+  emailLabel.htmlFor = 'email';
+  emailLabel.className = 'block text-lg mb-2';
+  emailLabel.textContent = 'Email';
+  const emailInput = document.createElement('input');
+  emailInput.type = 'email';
+  emailInput.id = 'email';
+  emailInput.placeholder = 'Email';
+  emailInput.className = 'w-full p-2 bg-gray-700 text-white rounded-lg mb-4';
+  emailInput.required = true;
+  emailDiv.appendChild(emailLabel);
+  emailDiv.appendChild(emailInput);
+
+  // Password
+  const passwordDiv = document.createElement('div');
+  passwordDiv.className = 'mb-6';
+  const passwordLabel = document.createElement('label');
+  passwordLabel.htmlFor = 'password';
+  passwordLabel.className = 'block text-lg mb-2';
+  passwordLabel.textContent = 'Password';
+  const passwordInput = document.createElement('input');
+  passwordInput.type = 'password';
+  passwordInput.id = 'password';
+  passwordInput.placeholder = 'Password';
+  passwordInput.className = 'w-full p-2 bg-gray-700 text-white rounded-lg';
+  passwordInput.required = true;
+  passwordDiv.appendChild(passwordLabel);
+  passwordDiv.appendChild(passwordInput);
+
+  // Button
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg';
+  button.textContent = 'Sign up';
+  button.addEventListener('click', handleSignUp);
+
+  // Error Message
+  const errorMessage = document.createElement('p');
+  errorMessage.className = 'mt-4 text-red-500';
+  errorMessage.style.display = 'none';
+
+  const updateError = () => {
+    if (error) {
+      errorMessage.textContent = error;
+      errorMessage.style.display = 'block';
+    } else {
+      errorMessage.textContent = '';
+      errorMessage.style.display = 'none';
+    }
+  };
+
+  // Assemble form
+  form.appendChild(usernameDiv);
+  form.appendChild(emailDiv);
+  form.appendChild(passwordDiv);
+  form.appendChild(button);
+  form.appendChild(errorMessage);
+
+  // Assemble page
+  container.appendChild(title);
+  container.appendChild(form);
+
+  return container;
+}
+export function createUserProfilePage(navigate: (path: string) => void): HTMLElement {
+
+    let profilePicture = sessionStorage.getItem('profilePicture') || '/public/assets/photo_profil.png';
+    let isModalOpen = false;
+    let profileTheme = 'bg-gray-900';
+    let backgroundImage = '/assets/profile-themes/default_cover.jpg';
+    const playerLevel = 5;
+    const gameHistory = [
+      { opponent: 'AI', result: 'Win', date: '2025-04-09' },
+      { opponent: 'PlayerTwo', result: 'Loss', date: '2025-04-08' },
+      { opponent: 'AI', result: 'Win', date: '2025-04-07' },
+    ];
+  
+    const getPlayerBadge = (level: number) => {
+      if (level <= 5) return 'Novice';
+      if (level <= 10) return 'Intermediate';
+      return 'Expert';
+    };
+  
+    const updateProfilePicture = (src: string) => {
+      profilePicture = src;
+      sessionStorage.setItem('profilePicture', src);
+      profileImg.src = profilePicture;
+      closeModal();
+    };
+  
+    const updateTheme = (theme: string, bg: string) => {
+      profileTheme = theme;
+      backgroundImage = bg;
+      bgLayer.style.backgroundImage = `url(${backgroundImage})`;
+    };
+  
+    const openModal = () => {
+      isModalOpen = true;
+      modalOverlay.style.display = 'flex';
+    };
+  
+    const closeModal = () => {
+      isModalOpen = false;
+      modalOverlay.style.display = 'none';
+    };
+  
+    const container = document.createElement('div');
+    container.className = 'relative flex flex-col h-screen text-white overflow-hidden';
+  
+    const bgLayer = document.createElement('div');
+    bgLayer.className = 'absolute inset-0 bg-cover bg-center z-0';
+    bgLayer.style.backgroundImage = `url(${backgroundImage})`;
+  
+    const header = document.createElement('header');
+    header.className = 'bg-blue-800 p-4 shadow-lg fixed top-0 left-0 w-full z-20';
+    const h1 = document.createElement('h1');
+    h1.className = 'text-3xl font-bold text-center';
+    h1.textContent = 'Profil Utilisateur';
+    header.appendChild(h1);
+  
+    const contentWrap = document.createElement('div');
+    contentWrap.className = 'flex flex-1 justify-center items-center mt-20 z-10';
+  
+    const card = document.createElement('div');
+    card.className = 'w-3/4 p-6 rounded-lg border-2 border-white bg-gray-900/80';
+  
+    // Thème buttons
+    const themes = [
+      ['bg-red-600', '/assets/profile-themes/stars.jpg'],
+      ['bg-green-600', '/assets/profile-themes/moon_sun_black.jpg'],
+      ['bg-blue-600', '/assets/profile-themes/moon_sun_blue.jpg'],
+    ];
+  
+    const themeRow = document.createElement('div');
+    themeRow.className = 'flex justify-between mb-4';
+    themes.forEach(([theme, bg]) => {
+      const btn = document.createElement('button');
+      btn.className = `px-4 py-2 ${theme} hover:bg-opacity-80 text-white font-semibold rounded-lg`;
+      btn.textContent = `Thème ${themes.indexOf([theme, bg]) + 1}`;
+      btn.addEventListener('click', () => updateTheme(theme, bg));
+      themeRow.appendChild(btn);
+    });
+  
+    // Profil image
+    const profileWrap = document.createElement('div');
+    profileWrap.className = 'flex justify-center mb-4 relative';
+  
+    const profileImg = document.createElement('img');
+    profileImg.src = profilePicture;
+    profileImg.alt = 'Player Profile';
+    profileImg.className = 'w-32 h-32 rounded-full border-4 border-white';
+  
+    const sparkleBtn = document.createElement('button');
+    sparkleBtn.textContent = '✨';
+    sparkleBtn.className = 'absolute top-0 right-0 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700';
+    sparkleBtn.addEventListener('click', openModal);
+  
+    profileWrap.appendChild(profileImg);
+    profileWrap.appendChild(sparkleBtn);
+  
+    // Infos
+    const infoBox = document.createElement('div');
+    infoBox.className = 'bg-gray-700/80 p-4 rounded-lg border-2 border-white mb-4';
+    infoBox.innerHTML = `
+      <ul class="space-y-4 text-center text-lg">
+        <li><strong>Username:</strong> PlayerOne</li>
+        <li><strong>Level:</strong> ${playerLevel} (${getPlayerBadge(playerLevel)})</li>
+        <li><strong>Wins:</strong> 10</li>
+      </ul>
+    `;
+  
+    // Historique
+    const historyBox = document.createElement('div');
+    historyBox.className = 'bg-gray-700/80 p-4 rounded-lg border-2 border-white mb-4';
+    const historyTitle = document.createElement('h3');
+    historyTitle.className = 'text-xl text-center mb-4';
+    historyTitle.textContent = 'Historique des Parties';
+    const historyList = document.createElement('ul');
+    historyList.className = 'space-y-2';
+    gameHistory.forEach((game) => {
+      const li = document.createElement('li');
+      li.textContent = `${game.date} - Opponent: ${game.opponent} - Result: ${game.result}`;
+      historyList.appendChild(li);
+    });
+  
+    historyBox.appendChild(historyTitle);
+    historyBox.appendChild(historyList);
+  
+    // Back button
+    const backBtn = document.createElement('button');
+    backBtn.className =
+      'fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg z-30';
+    backBtn.textContent = 'Retour';
+    backBtn.addEventListener('click', () => window.history.back());
+  
+    // Modale de changement de photo
+    const modalOverlay = document.createElement('div');
+    modalOverlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50';
+    modalOverlay.style.display = 'none';
+  
+    const modalContent = document.createElement('div');
+    modalContent.className = 'bg-gray-800 p-6 rounded-lg w-3/4 md:w-1/2';
+  
+    const modalTitle = document.createElement('h2');
+    modalTitle.className = 'text-2xl font-bold text-white text-center mb-4';
+    modalTitle.textContent = 'Choisissez une nouvelle photo';
+  
+    const grid = document.createElement('div');
+    grid.className = 'grid grid-cols-3 gap-4';
+    const images = ['star_icon.jpg', 'bigstar_icon.jpg', 'moon_icon.jpg', 'sun_icon.jpg', 'fire_icon.jpg'];
+    images.forEach((image, index) => {
+      const choice = document.createElement('div');
+      choice.className = 'cursor-pointer';
+      choice.innerHTML = `<img src="/assets/profile-pictures/${image}" alt="Option ${index + 1}" class="w-full h-32 object-cover rounded-lg" />`;
+      choice.addEventListener('click', () =>
+        updateProfilePicture(`/assets/profile-pictures/${image}`)
+      );
+      grid.appendChild(choice);
+    });
+  
+    const upload = document.createElement('div');
+    upload.className =
+      'cursor-pointer bg-gray-600 flex justify-center items-center text-white font-semibold rounded-lg';
+    upload.textContent = '+ Télécharger';
+    upload.addEventListener('click', () => fileInput.click());
+    grid.appendChild(upload);
+  
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.className = 'hidden';
+    fileInput.addEventListener('change', (e) => {
+      const file = (e.target as HTMLInputElement)?.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (reader.result) updateProfilePicture(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  
+    const closeModalBtn = document.createElement('button');
+    closeModalBtn.className =
+      'mt-4 w-full py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg';
+    closeModalBtn.textContent = 'Fermer';
+    closeModalBtn.addEventListener('click', closeModal);
+  
+    modalContent.appendChild(modalTitle);
+    modalContent.appendChild(grid);
+    modalContent.appendChild(fileInput);
+    modalContent.appendChild(closeModalBtn);
+    modalOverlay.appendChild(modalContent);
+  
+    // Assemble page
+    card.appendChild(themeRow);
+    card.appendChild(profileWrap);
+    card.appendChild(infoBox);
+    card.appendChild(historyBox);
+    contentWrap.appendChild(card);
+  
+    container.appendChild(bgLayer);
+    container.appendChild(header);
+    container.appendChild(contentWrap);
+    container.appendChild(backBtn);
+    container.appendChild(modalOverlay);
+  
+    return container;
+  }
+  import { createSidebar } from "../utils/sidebar"; 
+
+export function createUserProfilePage(navigate: (path: string) => void): HTMLElement {
+  const container = document.createElement('div');
+  container.className = 'relative min-h-screen bg-gray-900 text-white overflow-hidden';
+
+  const sidebar = createSidebar(navigate);
+  container.appendChild(sidebar);
+
+  
+  //---------------------Background Image--------------------/
+ 
+  const backgroundImage = document.createElement('div');
+  backgroundImage.id = 'backgroundImage';
+  // backgroundImage.className = 'absolute top-0 left-[5rem] lg:left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+
+  backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+  backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
+
+  container.appendChild(backgroundImage);
+
+
+  // --- Profile Section (Cadre + Formulaire côte à côte) ---
+  const profileSection = document.createElement('div');
+  profileSection.className = `
+    relative  mt-24
+    flex flex-row items-start justify-center gap-x-20
+    z-30
+  `.replace(/\s+/g, ' ').trim();
+
+  // --- Profile Card ---
+  const profileCard = document.createElement('div');
+  profileCard.id = 'profileCard';
+  profileCard.className = `
+    relative bg-white/10 backdrop-blur-md p-10
+    rounded-2xl shadow-2xl
+    flex flex-col items-center gap-7
+    w-80
+    transform transition-all duration-300
+    hover:scale-105 hover:shadow-3xl
+  `.replace(/\s+/g, ' ').trim();
+
+  // Bordure animée autour de l'image
+  const spinningBorder = document.createElement('div');
+  spinningBorder.className = `
+    relative w-36 h-36
+    flex items-center justify-center
+  `.replace(/\s+/g, ' ').trim();
+
+  const animatedBorder = document.createElement('div');
+  animatedBorder.className = `
+    absolute inset-0
+    rounded-full
+    bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500
+    animate-spin-slow
+  `.replace(/\s+/g, ' ').trim();
+
+  const staticBackground = document.createElement('div');
+  staticBackground.className = `
+    relative w-32 h-32
+    bg-gray-900 rounded-full
+    flex items-center justify-center
+    overflow-hidden
+  `.replace(/\s+/g, ' ').trim();
+
+  const profilePicture = sessionStorage.getItem('profilePicture') || '/public/assets/profil-pictures/default.jpg';
+  const profileImg = document.createElement('img');
+  profileImg.src = profilePicture;
+  profileImg.alt = 'Player Profile';
+  profileImg.className = `
+    w-full h-full object-cover rounded-full
+    border-4 border-gray-900
+    cursor-pointer
+    transition-transform duration-300 hover:scale-110
+  `.replace(/\s+/g, ' ').trim();
+
+  staticBackground.appendChild(profileImg);
+  spinningBorder.appendChild(animatedBorder);
+  spinningBorder.appendChild(staticBackground);
+  profileCard.appendChild(spinningBorder);
+
+  const username = document.createElement('h2');
+  username.id = 'usernameValue';
+  username.className = 'text-xl font-semibold text-white';
+  username.textContent = 'Username';
+  profileCard.appendChild(username);
+
+
+ // Changer la photo de profil au clic
+ profileImg.addEventListener('click', () => {
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'image/*';
+  fileInput.style.display = 'none';
+
+  fileInput.addEventListener('change', (event) => {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files[0]) {
+      const file = target.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        profileImg.src = result;
+        sessionStorage.setItem('profilePicture', result);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  document.body.appendChild(fileInput);
+  fileInput.click();
+  document.body.removeChild(fileInput);
+});
+
+  // --------- Formulaire de modification à droite ----------/
+// Formulaire pour modification
+  const formContainer = document.createElement('div');
+  formContainer.className = `
+    flex flex-col gap-4 bg-gray-800 bg-opacity-50 p-8 rounded-xl shadow-md w-96
+  `.replace(/\s+/g, ' ').trim();
+
+  const emailRow = document.createElement('div');
+  emailRow.className = 'flex justify-between items-center';
+  const emailLabel = document.createElement('span');
+  emailLabel.textContent = 'Email:';
+  const emailValue = document.createElement('span');
+  emailValue.id = 'emailValue';
+  emailValue.textContent = 'Loading...';
+  emailRow.appendChild(emailLabel);
+  emailRow.appendChild(emailValue);
+
+  const passwordRow = document.createElement('div');
+  passwordRow.className = 'flex justify-between items-center';
+  const passwordLabel = document.createElement('span');
+  passwordLabel.textContent = 'Password:';
+  const passwordValue = document.createElement('span');
+  passwordValue.textContent = '********';
+  passwordRow.appendChild(passwordLabel);
+  passwordRow.appendChild(passwordValue);
+
+  const usernameInput = document.createElement('input');
+  usernameInput.type = 'text';
+  usernameInput.placeholder = 'New username';
+  usernameInput.className = `
+    mt-4 p-2 rounded-lg bg-gray-900 text-white placeholder-gray-400
+    border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500
+  `.replace(/\s+/g, ' ').trim();
+
+  const updateButton = document.createElement('button');
+  updateButton.textContent = 'Update Username';
+  updateButton.className = `
+    mt-2 p-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-semibold
+    transition-colors duration-300
+  `.replace(/\s+/g, ' ').trim();
+
+  const successMessage = document.createElement('p');
+  successMessage.textContent = '✅ Profile updated successfully!';
+  successMessage.className = 'text-green-400 font-semibold mt-4 hidden';
+
+  updateButton.addEventListener('click', async () => {
+    const newUsername = usernameInput.value.trim();
+    if (newUsername.length === 0) {
+      alert('Username cannot be empty!');
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('You must be logged in.');
+      return;
+    }
+
+    try {
+      updateButton.disabled = true; // Désactive le bouton pendant la requête
+      const res = await fetch('/api/me', {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username: newUsername })
+      });
+
+      if (res.ok) {
+        const usernameDisplay = document.getElementById('usernameValue');
+        if (usernameDisplay) usernameDisplay.textContent = newUsername;
+
+        //met a jour username dans le profil, dans la valeur stockee et la sidebar
+        sessionStorage.setItem('username', newUsername);
+        const sidebarUsername = document.getElementById('sidebar-username');
+        if (sidebarUsername) sidebarUsername.textContent = newUsername;
+
+        successMessage.classList.remove('hidden');
+        setTimeout(() => successMessage.classList.add('hidden'), 3000); // Message disparaît après 3s
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Failed to update.');
+      }
+    } catch (err) {
+      console.error('Update error:', err);
+      alert('Server error');
+    } finally {
+      updateButton.disabled = false; // Réactive le bouton
+    }
+  });
+
+  formContainer.appendChild(usernameInput);
+  formContainer.appendChild(emailRow);
+  formContainer.appendChild(passwordRow);
+  formContainer.appendChild(updateButton);
+  formContainer.appendChild(successMessage);
+
+  profileSection.appendChild(profileCard);
+  profileSection.appendChild(formContainer);
+  container.appendChild(profileSection);
+  // Sidebar hover events
+  sidebar.addEventListener('mouseenter', () => {
+    document.querySelectorAll('.sidebar-label').forEach(label => {
+      (label as HTMLElement).classList.remove('opacity-0');
+      (label as HTMLElement).classList.add('opacity-100');
+    });
+
+    const backgroundImage = document.getElementById('backgroundImage');
+    if (backgroundImage) {
+      backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+    }
+
+    const profileSection = document.getElementById('profileCard')?.parentElement;
+    if (profileSection) {
+      profileSection.className = `
+      relative mt-24
+      flex flex-row items-start justify-center gap-12
+      z-30
+    `.replace(/\s+/g, ' ').trim();
+    
+    }
+  });
+
+  sidebar.addEventListener('mouseleave', () => {
+    document.querySelectorAll('.sidebar-label').forEach(label => {
+      (label as HTMLElement).classList.add('opacity-0');
+      (label as HTMLElement).classList.remove('opacity-100');
+    });
+
+    const backgroundImage = document.getElementById('backgroundImage');
+    if (backgroundImage) {
+      backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+    }
+
+    const profileSection = document.getElementById('profileCard')?.parentElement;
+    if (profileSection) {
+      profileSection.className = `
+      relative mt-24
+      flex flex-row items-start justify-center gap-12
+      z-30
+    `.replace(/\s+/g, ' ').trim();
+    
+    }
+  });
+// Chargement dynamique des infos utilisateur
+const token = localStorage.getItem('token');
+if (token) {
+  fetch('/api/me', {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+    .then(res => res.json())
+    .then(user => {
+      const usernameDisplay = document.getElementById('usernameValue');
+      const emailValue = document.getElementById('emailValue');
+      sessionStorage.setItem('username', user.username); // stocker ici
+      if (usernameDisplay) usernameDisplay.textContent = user.username;
+      if (emailValue) emailValue.textContent = user.email;
+      // mise à jour immédiate si sidebar déjà affichée
+      const sidebarUsername = document.getElementById('sidebar-username');
+      if (sidebarUsername) sidebarUsername.textContent = user.username;
+      })
+    .catch(err => console.error('Erreur chargement profil:', err));
+}
+  return container;
+}
+
+
+// src/utils/auth.ts
+
+export function isAuthenticated(): boolean {
+    const token = localStorage.getItem('token');
+    return !!token;
+  }
+  type RouteMap = { [path: string]: (navigate: (path: string) => void) => HTMLElement };
+
+/**
+ * Permet de protéger une route : redirige vers /auth si aucun token n’est présent.
+ */
+export function protectedRoute(
+  page: (navigate: (path: string) => void) => HTMLElement
+): (navigate: (path: string) => void) => HTMLElement {
+  return (navigate) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/auth');
+      const redirecting = document.createElement('div');
+      redirecting.textContent = 'Redirection vers la page de connexion...';
+      redirecting.className = 'text-white text-center mt-10 text-xl';
+      return redirecting;
+    }
+    return page(navigate);
+  };
+}
+
+export function initRouter(routes: RouteMap, rootId = 'app') {
+  const root = document.getElementById(rootId);
+  if (!root) return;
+
+  function navigate(path: string) {
+    window.history.pushState({}, '', path);
+    renderRoute(path);
+  }
+
+  function renderRoute(path: string) {
+    const page = routes[path];
+    if (page && root) {
+      root.innerHTML = '';
+      root.appendChild(page(navigate));
+    }
+  }
+
+  window.addEventListener('popstate', () => {
+    renderRoute(window.location.pathname);
+  });
+
+  renderRoute(window.location.pathname);
+
+  return navigate;
+}
+
+export function createSidebar(navigate: (path: string) => void): HTMLElement {
+    const sidebar = document.createElement('div');
+    sidebar.id = 'sidebar';
+    // sidebar.className = 'fixed top-0 left-0 h-full bg-gray-800 bg-opacity-75 transition-all duration-300 ease-in-out z-20 flex flex-col justify-between p-4 w-20 hover:w-64 overflow-hidden';
+    sidebar.className = 'fixed top-0 left-0 h-full bg-gray-800 bg-opacity-75 transition-all duration-300 ease-in-out z-20 flex flex-col justify-between p-4 w-20 hover:w-64 overflow-visible';
+
+    // --- Partie haute de la sidebar ---
+    const topContainer = document.createElement('div');
+    topContainer.className = 'flex flex-col gap-1';
+  
+    // --- Profil Section ---
+    const profileSection = document.createElement('div');
+    profileSection.className = 'flex flex-col items-center mb-28 transition-all duration-300';
+  
+    const profileImage = document.createElement('img');
+    profileImage.src = sessionStorage.getItem('profilePicture') || '/assets/profile-pictures/default.jpg';
+    profileImage.className = 'w-36 h-36 rounded-full mb-2 border-2 border-white object-cover transition-transform duration-300 hover:scale-110';
+    profileImage.id = 'profile-img-sidebar';
+  
+    const usernameText = document.createElement('span');
+    usernameText.id = 'sidebar-username';
+    usernameText.className = 'text-white text-lg opacity-0 sidebar-label transition-opacity duration-300 mb-1';
+    //met a jour username avec ce qui est stocke
+    usernameText.textContent = sessionStorage.getItem('username') || 'Username';
+
+  
+    const statsContainer = document.createElement('div');
+    statsContainer.id = 'sidebar-stats-container';
+    statsContainer.className = 'flex gap-2 mt-2 opacity-0 sidebar-label transition-opacity duration-300';
+  
+    const winsBox = document.createElement('div');
+    winsBox.className = 'bg-green-700 text-white px-3 py-2 rounded-md flex items-center gap-1';
+    const winEmoji = document.createElement('span');
+    winEmoji.textContent = ' 🏆 ';
+    const winCount = document.createElement('span');
+    winCount.id = 'win-count';
+    winCount.textContent = '0';
+    winsBox.appendChild(winEmoji);
+    winsBox.appendChild(winCount);
+  
+    const lossesBox = document.createElement('div');
+    lossesBox.className = 'bg-red-600 text-white px-3 py-2 rounded-md flex items-center gap-1';
+    const lossEmoji = document.createElement('span');
+    lossEmoji.textContent = ' 💀 ';
+    const lossCount = document.createElement('span');
+    lossCount.id = 'loss-count';
+    lossCount.textContent = '0';
+    lossesBox.appendChild(lossEmoji);
+    lossesBox.appendChild(lossCount);
+  
+    statsContainer.appendChild(winsBox);
+    statsContainer.appendChild(lossesBox);
+  
+    profileSection.appendChild(profileImage);
+    profileSection.appendChild(usernameText);
+    profileSection.appendChild(statsContainer);
+    topContainer.appendChild(profileSection);
+  
+    // --- Menu principal ---
+    const menuItems = [
+      { icon: '/assets/side-bar/profil.png', label: 'Profile', route: '/user-profile' },
+      { icon: '/assets/side-bar/custom.png', label: 'Customization', route: '/customization' },
+      { icon: '/assets/side-bar/leaderboard.png', label: 'Leaderboard', route: '/leaderboard' },
+      { icon: '/assets/side-bar/friends.png', label: 'Friends', route: '/friends' },
+      { icon: '/assets/side-bar/pong.png', label: 'Games', route: '/game' },
+    ];
+  
+    menuItems.forEach(item => {
+      const menuItem = document.createElement('div');
+      menuItem.className = 'flex items-center gap-4 p-2 cursor-pointer hover:bg-blue-700 rounded-md transition-colors duration-200';
+  
+      const icon = document.createElement('img');
+      icon.src = item.icon;
+      icon.className = 'w-8 h-8';
+  
+      const label = document.createElement('span');
+      label.textContent = item.label;
+      label.className = 'whitespace-nowrap opacity-0 sidebar-label transition-opacity duration-300';
+  
+      menuItem.appendChild(icon);
+      menuItem.appendChild(label);
+      menuItem.addEventListener('click', () => navigate(item.route));
+  
+      topContainer.appendChild(menuItem);
+    });
+  
+    // --- Partie basse de la sidebar ---
+    const bottomContainer = document.createElement('div');
+    bottomContainer.className = 'flex flex-col gap-2';
+  
+    const bottomItems = [
+      { icon: '/assets/side-bar/aboutUs.png', label: 'About us', route: '/about' },
+      { icon: '/assets/side-bar/logout.png', label: 'Log out', route: '/' },
+    ];
+  
+    bottomItems.forEach(item => {
+      const menuItem = document.createElement('div');
+      menuItem.className = 'flex items-center gap-4 p-2 cursor-pointer hover:bg-blue-700 rounded-md transition-colors duration-200';
+  
+      const icon = document.createElement('img');
+      icon.src = item.icon;
+      icon.className = 'w-8 h-8';
+  
+      const label = document.createElement('span');
+      label.textContent = item.label;
+      label.className = 'whitespace-nowrap opacity-0 sidebar-label transition-opacity duration-300';
+  
+      menuItem.appendChild(icon);
+      menuItem.appendChild(label);
+      menuItem.addEventListener('click', () => navigate(item.route));
+  
+      bottomContainer.appendChild(menuItem);
+    });
+  
+    // Assemble toute la sidebar
+    sidebar.appendChild(topContainer);
+    sidebar.appendChild(bottomContainer);
+
+    // Mouvement de la sidebar
+    sidebar.addEventListener('mouseenter', () => {
+        // const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
+        // if (profileImg) {
+        //  // profileImg.style.transform = 'scale(3)';
+
+        //   profileImg.classList.remove('w-12', 'h-12');
+        //   profileImg.classList.add('w-36', 'h-36');
+        // }
+      
+        document.querySelectorAll('.sidebar-label').forEach(label => {
+          (label as HTMLElement).classList.remove('opacity-0');
+          (label as HTMLElement).classList.add('opacity-100');
+        });
+      });
+      
+      sidebar.addEventListener('mouseleave', () => {
+        // const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
+        // if (profileImg) {
+        //  //profileImg.style.transform = 'scale(1)';
+
+        //   profileImg.classList.remove('w-36', 'h-36');
+        //   profileImg.classList.add('w-12', 'h-12');
+        // }
+      
+        document.querySelectorAll('.sidebar-label').forEach(label => {
+          (label as HTMLElement).classList.add('opacity-0');
+          (label as HTMLElement).classList.remove('opacity-100');
+        });
+      });
+      
+    // // --- Charger dynamiquement les infos du joueur ---
+    // const token = localStorage.getItem('token');
+    // if (token) {
+    //   fetch('/api/me', {
+    //     headers: { Authorization: `Bearer ${token}` }
+    //   })
+    //     .then(res => res.json())
+    //     .then(user => {
+    //       const usernameText = document.getElementById('sidebar-username');
+    //       const winCount = document.getElementById('win-count');
+    //       const lossCount = document.getElementById('loss-count');
+    //       if (usernameText) usernameText.textContent = user.username;
+    //       if (winCount) winCount.textContent = (user.wins || 0).toString();
+    //       if (lossCount) lossCount.textContent = (user.losses || 0).toString();
+    //     })
+    //     .catch(err => console.error('Erreur chargement sidebar:', err));
+    // }
+  
+    return sidebar;
+  }
+  
