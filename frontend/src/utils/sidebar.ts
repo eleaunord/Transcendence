@@ -6,15 +6,15 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
 
     // --- Partie haute de la sidebar ---
     const topContainer = document.createElement('div');
-    topContainer.className = 'flex flex-col gap-4';
+    topContainer.className = 'flex flex-col gap-1';
   
     // --- Profil Section ---
     const profileSection = document.createElement('div');
-    profileSection.className = 'flex flex-col items-center mb-44 transition-all duration-300';
+    profileSection.className = 'flex flex-col items-center mb-28 transition-all duration-300';
   
     const profileImage = document.createElement('img');
     profileImage.src = sessionStorage.getItem('profilePicture') || '/assets/profile-pictures/default.jpg';
-    profileImage.className = 'w-12 h-12 rounded-full mb-2 border-2 border-white object-cover transition-transform duration-300 hover:scale-110';
+    profileImage.className = 'w-36 h-36 rounded-full mb-2 border-2 border-white object-cover transition-transform duration-300 hover:scale-110';
     profileImage.id = 'profile-img-sidebar';
   
     const usernameText = document.createElement('span');
@@ -84,7 +84,7 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
   
     // --- Partie basse de la sidebar ---
     const bottomContainer = document.createElement('div');
-    bottomContainer.className = 'flex flex-col gap-4';
+    bottomContainer.className = 'flex flex-col gap-2';
   
     const bottomItems = [
       { icon: '/assets/side-bar/aboutUs.png', label: 'About us', route: '/about' },
@@ -116,13 +116,13 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
 
     // Mouvement de la sidebar
     sidebar.addEventListener('mouseenter', () => {
-        const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
-        if (profileImg) {
-         // profileImg.style.transform = 'scale(3)';
+        // const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
+        // if (profileImg) {
+        //  // profileImg.style.transform = 'scale(3)';
 
-          profileImg.classList.remove('w-12', 'h-12');
-          profileImg.classList.add('w-36', 'h-36');
-        }
+        //   profileImg.classList.remove('w-12', 'h-12');
+        //   profileImg.classList.add('w-36', 'h-36');
+        // }
       
         document.querySelectorAll('.sidebar-label').forEach(label => {
           (label as HTMLElement).classList.remove('opacity-0');
@@ -131,13 +131,13 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
       });
       
       sidebar.addEventListener('mouseleave', () => {
-        const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
-        if (profileImg) {
-         //profileImg.style.transform = 'scale(1)';
+        // const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
+        // if (profileImg) {
+        //  //profileImg.style.transform = 'scale(1)';
 
-          profileImg.classList.remove('w-36', 'h-36');
-          profileImg.classList.add('w-12', 'h-12');
-        }
+        //   profileImg.classList.remove('w-36', 'h-36');
+        //   profileImg.classList.add('w-12', 'h-12');
+        // }
       
         document.querySelectorAll('.sidebar-label').forEach(label => {
           (label as HTMLElement).classList.add('opacity-0');
