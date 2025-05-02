@@ -22,7 +22,7 @@ export async function meRoutes(app: FastifyInstance) {
     }
   });
    // Mise à jour du username
-   app.patch('/api/me', async (req, reply) => {
+   app.patch('/me', async (req, reply) => {
     const auth = req.headers.authorization;
     if (!auth) return reply.code(401).send({ error: 'Missing token' });
 
@@ -32,13 +32,13 @@ export async function meRoutes(app: FastifyInstance) {
       const userId = payload.userId;
 
       const { username } = req.body as { username: string };
-      if (!username || typeof username !== 'string') {
-        return reply.code(400).send({ error: 'Invalid username' });
-      }
+    
       // Vérification du username (3 à 20 caractères, lettres, chiffres ou underscore)
       const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-      if (!usernameRegex.test(username)) {
-        return reply.code(400).send({ error: 'Invalid username. Use 3-20 letters, numbers or underscores.' });
+      if (!username || typeof username !== 'string' || !usernameRegex.test(username)) {
+      return reply.code(400).send({
+        error: 'Invalid username. Use 3-20 letters, numbers or underscores.'
+      });
       }
       // Mise à jour en base de données
       db.prepare('UPDATE users SET username = ? WHERE id = ?').run(username, userId);
