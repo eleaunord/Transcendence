@@ -19,7 +19,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:8080';
 
 export async function authRoutes(app: FastifyInstance) {
  // ----- Authentification Classique ------ \\
-  app.post('/api/signup', async (req, reply) => {
+  app.post('/signup', async (req, reply) => {
     const { username: rawUsername, email: rawEmail, password } = req.body as any;
     // Nettoyage des espaces
     const username = rawUsername?.trim();
@@ -60,7 +60,7 @@ export async function authRoutes(app: FastifyInstance) {
     reply.code(201).send({ message: 'User created successfully', token });  
   });
 
-  app.post('/api/login', async (req, reply) => {
+  app.post('/login', async (req, reply) => {
     const { username, password } = req.body as any;
 
     const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username) as User | undefined;
@@ -217,7 +217,7 @@ export async function authRoutes(app: FastifyInstance) {
     }
   });
 
-  app.get('/api/users', async () => {
+  app.get('/users', async () => {
     const users = db.prepare('SELECT id, username, email FROM users').all();
     return users;
   });
