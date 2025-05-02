@@ -38,7 +38,7 @@ export function createPong3DPage(navigate: (path: string) => void): HTMLElement 
   container.appendChild(backButton);
 
   // Lancement du jeu
-  createPongScene(canvas);
-
+  createPongScene(canvas, { mode: "local" });
+  
   return container;
 }

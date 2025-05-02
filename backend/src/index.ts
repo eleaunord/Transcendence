@@ -3,6 +3,7 @@ import Fastify from 'fastify';
 import { authRoutes } from './routes/auth';
 import { meRoutes } from './routes/me';
 import { themeRoutes } from './routes/theme';
+import { matchRoutes } from './routes/match';
 import './db/migrations'; // open migration file and execute first.
 
 // // ========== Constantes =========
@@ -26,6 +27,7 @@ app.addContentTypeParser('application/json', { parseAs: 'string' }, (req, body, 
 authRoutes(app);
 meRoutes(app);
 themeRoutes(app);
+matchRoutes(app);
 
 // Démarrage du serveur
 const PORT = parseInt(process.env.PORT || '3001');
