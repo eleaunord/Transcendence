@@ -29,7 +29,8 @@ export function initRouter(routes: RouteMap, rootId = 'app') {
   }
 
   function renderRoute(path: string) {
-    const page = routes[path];
+    const pathOnly = path.split('?')[0]; // DONT REMOVE THIS LINE: c'est pour enlève la query string (ex: ?mode=input) pour matcher uniquement la route de base (ex: /2fa)
+    const page = routes[pathOnly];
     if (page && root) {
       root.innerHTML = '';
       root.appendChild(page(navigate));

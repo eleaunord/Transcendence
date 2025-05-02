@@ -1,212 +1,115 @@
-// export function create2FAPage(navigate: (path: string) => void): HTMLElement {
-//   console.log('✅ Page 2FA chargée');
-
-//   let error = '';
-
-//   const container = document.createElement('div');
-//   container.className = 'flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
-
-//   const form = document.createElement('form');
-//   form.id = '2FAForm';
-//   form.className = 'w-[450px] p-10 bg-gray-800 rounded-lg border-2 border-white';
-
-//   // Header
-//   const usernameDiv = document.createElement('div');
-//   usernameDiv.className = 'mb-4';
-//   const usernameLabel = document.createElement('label');
-//   usernameLabel.className = 'text-2xl font-bold mb-8 flex mt-4 mb-5 px-6 py-2 text-center';
-//   usernameLabel.textContent = 'Vérification en deux étapes.';
-//   usernameDiv.appendChild(usernameLabel);
-
-//   // Subtext
-//   const textDiv = document.createElement('div');
-//   textDiv.className = 'mb-4';
-//   const textLabel = document.createElement('label');
-//   textLabel.className = 'block text-base mb-5 px-6 py-2 text-center';
-//   textLabel.textContent = 'Protégez votre compte avec une couche de sécurité supplémentaire.';
-//   textDiv.appendChild(textLabel);
-
-//   // Buttons
-//   const ActivationButton = document.createElement('button');
-//   ActivationButton.type = 'button';
-//   ActivationButton.className = 'w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg';
-//   ActivationButton.textContent = '🔒 Activer la double authentification';
-
-//   const laterContainer = document.createElement('div');
-//   laterContainer.className = 'flex justify-center mt-4';
-
-//   const laterButton = document.createElement('button');
-//   laterButton.type = 'button';
-//   laterButton.className = 'px-6 py-2 bg-gray-700 hover:bg-red-700 text-white font-semibold rounded-lg';
-//   laterButton.textContent = 'Plus tard';
-//   laterButton.addEventListener('click', () => navigate('/'));
-
-//   ActivationButton.addEventListener('click', () => {
-//     alert('Fonction 2FA à venir');
-//   });
-
-//   laterContainer.appendChild(laterButton);
-
-//   const errorMessage = document.createElement('p');
-//   errorMessage.className = 'mt-4 text-red-500';
-//   errorMessage.style.display = 'none';
-
-//   const updateError = () => {
-//     if (error) {
-//       errorMessage.textContent = error;
-//       errorMessage.style.display = 'block';
-//     } else {
-//       errorMessage.textContent = '';
-//       errorMessage.style.display = 'none';
-//     }
-//   };
-
-//   form.appendChild(usernameDiv);
-//   form.appendChild(textDiv);
-//   form.appendChild(ActivationButton);
-//   form.appendChild(laterContainer);
-//   form.appendChild(errorMessage);
-//   container.appendChild(form);
-
-//   return container;
-// }
-
-
-
-// import { IS_DEV_MODE } from '../config';
-
-// export function create2FAPage(navigate: (path: string) => void): HTMLElement {
-//   let error = '';
-
-
-//   const container = document.createElement('div');
-//   container.className = 'flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
-
-//   const form = document.createElement('form');
-//   form.id = '2FAForm';
-//   form.className = 'w-[450px] p-10 bg-gray-800 rounded-lg border-2 border-white';
-
-//   // Verification a deux etapes
-//   const usernameDiv = document.createElement('div');
-//   usernameDiv.className = 'mb-4';
-//   const usernameLabel = document.createElement('label');
-//   usernameLabel.htmlFor = '2Fa';
-//   usernameLabel.className = ' text-2xl font-bold mb-8 flex mt-4 mb-5 px-6 py-2  text-center';
-//   usernameLabel.textContent = 'Two-Factor Verification.';
+export function create2FAPage(navigate: (path: string) => void, mode: 'activation' | 'input' = 'activation'): HTMLElement {
+	console.log('[2FA PAGE] mode:', mode);
+	const container = document.createElement('div');
+	container.className = 'flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
   
-
-//   const textDiv = document.createElement('div');
-//   textDiv.className = 'mb-4';
-//   const textLabel = document.createElement('label');
-//   textLabel.htmlFor = '2Fa';
-//   textLabel.className = 'block text-base  mb-5 px-6 py-2 text-center';
-//   textLabel.textContent = 'Protect your account with an extra layer of security.';
-
-//   usernameDiv.appendChild(usernameLabel);
-// //   usernameDiv.appendChild(usernameInput);
-
-// // Bouton Activation (plein largeur)
-// const ActivationButton = document.createElement('button');
-// ActivationButton.type = 'button';
-// ActivationButton.className = 'w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg';
-// ActivationButton.textContent = '🔒 Enable Two-Factor Authentication';
-
-// // Conteneur pour centrer le bouton "Later"
-// const laterContainer = document.createElement('div');
-// laterContainer.className = 'flex justify-center mt-4';
-
-// // Bouton "Later" (centré avec largeur auto)
-// const laterButton = document.createElement('button');
-// laterButton.type = 'button';
-// laterButton.className = 'px-6 py-2 bg-gray-700 hover:bg-red-700 text-white font-semibold rounded-lg';
-// laterButton.textContent = 'Later';
-
-// laterContainer.appendChild(laterButton);
-
-//   //button.addEventListener('click', handleLogin);
-//   // Error Message
-//   const errorMessage = document.createElement('p');
-//   errorMessage.className = 'mt-4 text-red-500';
-//   errorMessage.style.display = 'none';
-
-//   const updateError = () => {
-//     if (error) {
-//       errorMessage.textContent = error;
-//       errorMessage.style.display = 'block';
-//     } else {
-//       errorMessage.textContent = '';
-//       errorMessage.style.display = 'none';
-//     }
-//   };
-
-//   // Assemble form
-// form.appendChild(usernameDiv);
-// form.appendChild(textLabel);
-// form.appendChild(ActivationButton);
-// form.appendChild(laterContainer);
-
-// form.appendChild(errorMessage);
-
-// container.appendChild(form);
-
-//   return container;
-// }
-
-
-export function create2FAPage(navigate: (path: string) => void): HTMLElement {
-  let error = '';
-
-  const container = document.createElement('div');
-  container.className = 'flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
-
-  const form = document.createElement('form');
-  form.id = '2FAForm';
-  form.className = 'w-[450px] p-10 bg-gray-800 rounded-lg border-2 border-white text-center';
-
-  // Titre
-  const title = document.createElement('h2');
-  title.className = 'text-2xl font-bold mb-4';
-  title.textContent = 'Two-Factor Verification.';
-
-  // Description
-  const description = document.createElement('p');
-  description.className = 'text-base mb-8';
-  description.textContent = 'Protect your account with an extra layer of security.';
-
-  // Bouton d'activation
-  const activationButton = document.createElement('button');
-  activationButton.type = 'button';
-  activationButton.className = 'w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg mb-4';
-  activationButton.textContent = '🔒 Enable Two-Factor Authentication';
-
-  // Bouton "Later"
-  const laterButton = document.createElement('button');
-  laterButton.type = 'button';
-  laterButton.className = 'px-6 py-2 bg-gray-700 hover:bg-red-700 text-white font-semibold rounded-lg';
-  laterButton.textContent = 'Later';
-
-  // Message d'erreur
-  const errorMessage = document.createElement('p');
-  errorMessage.className = 'mt-4 text-red-500';
-  errorMessage.style.display = 'none';
-
-  const updateError = () => {
-    if (error) {
-      errorMessage.textContent = error;
-      errorMessage.style.display = 'block';
-    } else {
-      errorMessage.textContent = '';
-      errorMessage.style.display = 'none';
-    }
-  };
-
-  form.appendChild(title);
-  form.appendChild(description);
-  form.appendChild(activationButton);
-  form.appendChild(laterButton);
-  form.appendChild(errorMessage);
-
-  container.appendChild(form);
-
-  return container;
-}
+	const form = document.createElement('form');
+	form.id = '2FAForm';
+	form.className = 'w-[450px] p-10 bg-gray-800 rounded-lg border-2 border-white text-center';
+  
+	const title = document.createElement('h2');
+	title.className = 'text-2xl font-bold mb-4';
+	title.textContent = mode === 'activation' ? 'Two-Factor Verification' : 'Enter 2FA Code';
+  
+	form.appendChild(title);
+  
+	if (mode === 'activation') {
+	  // get token/email from URL
+	  const urlParams = new URLSearchParams(window.location.search);
+	  const token = urlParams.get('token');
+	  const email = urlParams.get('email');
+  
+	  if (token) sessionStorage.setItem('token', token);
+	  if (email) sessionStorage.setItem('userEmail', email);
+  
+	  const description = document.createElement('p');
+	  description.className = 'text-base mb-8';
+	  description.textContent = 'Protect your account with an extra layer of security.';
+	  form.appendChild(description);
+  
+	  const activateBtn = document.createElement('button');
+	  activateBtn.type = 'button';
+	  activateBtn.textContent = '🔒 Enable Two-Factor Authentication';
+	  activateBtn.className = 'w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg mb-4';
+  
+	  activateBtn.onclick = async () => {
+		const token = sessionStorage.getItem('token');
+		if (!token) return alert('Token not found');
+  
+		const res = await fetch('http://localhost:3001/api/enable-2fa', {
+		  method: 'POST',
+		  headers: {
+			Authorization: `Bearer ${token}`,
+		  },
+		});
+  
+		if (!res.ok) {
+		  const err = await res.json();
+		  alert('Failed to send 2FA code: ' + (err.error || 'unknown error'));
+		  return;
+		}
+  
+		alert('A 2FA code has been sent to your email.');
+		navigate('/2fa?mode=input');
+	  };
+  
+	  const skipBtn = document.createElement('button');
+	  skipBtn.type = 'button';
+	  skipBtn.textContent = 'Later';
+	  skipBtn.className = 'px-6 py-2 bg-gray-700 hover:bg-red-700 text-white font-semibold rounded-lg';
+  
+	  skipBtn.onclick = () => navigate('/profile-creation');
+  
+	  form.appendChild(activateBtn);
+	  form.appendChild(skipBtn);
+	}
+  
+	if (mode === 'input') {
+	  const token = sessionStorage.getItem('token');
+	  const email = sessionStorage.getItem('userEmail');
+  
+	  const input = document.createElement('input');
+	  input.placeholder = '6-digit code';
+	  input.className = 'w-full mb-4 p-2 text-black rounded';
+	  input.maxLength = 6;
+  
+	  const verifyBtn = document.createElement('button');
+	  verifyBtn.type = 'button';
+	  verifyBtn.textContent = 'Verify';
+	  verifyBtn.className = 'w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg';
+  
+	  verifyBtn.onclick = async () => {
+		const code = input.value;
+		if (!token || !email || !code) {
+		  alert('Missing info');
+		  return;
+		}
+  
+		const res = await fetch('http://localhost:3001/api/verify-2fa', {
+		  method: 'POST',
+		  headers: {
+			Authorization: `Bearer ${token}`,
+			'Content-Type': 'application/json',
+		  },
+		  body: JSON.stringify({ code }),
+		});
+  
+		const data = await res.json();
+		if (res.ok) {
+		  sessionStorage.setItem('token', data.token);
+		  sessionStorage.setItem('2fa_verified', 'true');
+		  alert('2FA Verified!');
+		  navigate('/profile-creation');
+		} else {
+		  alert(data.error || 'Verification failed');
+		}
+	  };
+  
+	  form.appendChild(input);
+	  form.appendChild(verifyBtn);
+	}
+  
+	container.appendChild(form);
+	return container;
+  }
+  
