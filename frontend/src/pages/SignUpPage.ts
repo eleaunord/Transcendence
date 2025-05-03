@@ -31,6 +31,15 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
       }
 
       localStorage.setItem('token', data.token);
+      // Ajoute une image par défaut pour tout nouvel utilisateur
+      await fetch('/api/me/image', {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${data.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ image: '/assets/profile-pictures/default.jpg' })
+      });
       navigate('/profile-creation'); // Utilisation du routeur SPA
     } catch (err) {
       error = 'Network error';

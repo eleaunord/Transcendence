@@ -34,6 +34,25 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
       console.log('Token reçu:', data.token);
       localStorage.setItem('token', data.token);
       console.log('Token stocké:', localStorage.getItem('token'));
+      // 🆕 Récupération des infos utilisateur après login
+      try {
+        const res = await fetch('/api/me', {
+          headers: {
+            Authorization: `Bearer ${data.token}`
+          }
+        });
+
+        if (res.ok) {
+          const user = await res.json();
+          sessionStorage.setItem('username', user.username);
+          sessionStorage.setItem('profilePicture', user.image);
+          console.log('Utilisateur chargé :', user);
+        } else {
+          console.warn('Impossible de charger le profil utilisateur');
+        }
+      } catch (e) {
+        console.error('Erreur lors du chargement de /api/me :', e);
+      }
     } catch (e) {
       console.error('Erreur lors du stockage du token:', e);
     }

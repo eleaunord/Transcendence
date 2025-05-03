@@ -1,5 +1,6 @@
 
 // migrations.ts
+import { profile } from 'console';
 import db from  './db';
 
 
@@ -31,3 +32,6 @@ safeAlter('google_id', 'TEXT');
 safeAlter('is_2fa_enabled', 'INTEGER DEFAULT 0');
 safeAlter('two_fa_code', 'TEXT');
 safeAlter('two_fa_expires_at', 'TEXT');
+
+//Image profile(securise)
+safeAlter('image', 'TEXT');

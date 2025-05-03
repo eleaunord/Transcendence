@@ -102,7 +102,28 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
         const result = e.target?.result as string;
         profileImg.src = result;
         sessionStorage.setItem('profilePicture', result);
-        //creer un event des qu'une nouvelle photo est selectionnee
+      
+        // mise à jour de l'image sur le backend
+        const token = localStorage.getItem('token');
+        if (token) {
+          fetch('/api/me/image', {
+            method: 'PATCH',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ image: result })
+          })
+          .then(res => {
+            if (!res.ok) throw new Error('Upload failed');
+          })
+          .catch(err => {
+            console.error('Erreur mise à jour avatar :', err);
+            alert('Erreur lors de la sauvegarde de la photo');
+          });
+        }
+      
+        // notifier autres composants
         const updateEvent = new CustomEvent('profilePictureUpdated', { detail: result });
         window.dispatchEvent(updateEvent);
       };
@@ -272,13 +293,21 @@ if (token) {
     .then(user => {
       const usernameDisplay = document.getElementById('usernameValue');
       const emailValue = document.getElementById('emailValue');
-      sessionStorage.setItem('username', user.username); // stocker ici
+      const profileImg = document.querySelector('img[alt="Player Profile"]') as HTMLImageElement;
+    
       if (usernameDisplay) usernameDisplay.textContent = user.username;
       if (emailValue) emailValue.textContent = user.email;
-      // mise à jour immédiate si sidebar déjà affichée
+      
+      sessionStorage.setItem('username', user.username);
+    
+      if (user.image) {
+        profileImg.src = user.image;
+        sessionStorage.setItem('profilePicture', user.image);
+      }
+    
       const sidebarUsername = document.getElementById('sidebar-username');
       if (sidebarUsername) sidebarUsername.textContent = user.username;
-      })
+    })
     .catch(err => console.error('Erreur chargement profil:', err));
 }
   return container;

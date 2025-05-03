@@ -51,4 +51,27 @@ export async function meRoutes(app: FastifyInstance) {
       reply.code(401).send({ error: 'Invalid or expired token' });
     }
   });
+
+  app.patch('/me/image', async (req, reply) => {
+    const auth = req.headers.authorization;
+    if (!auth) return reply.code(401).send({ error: 'Missing token' });
+  
+    try {
+      const token = auth.split(' ')[1];
+      const payload = jwt.verify(token, JWT_SECRET) as any;
+      const userId = payload.userId;
+  
+      const { image } = req.body as { image: string };
+      if (!image || typeof image !== 'string') {
+        return reply.code(400).send({ error: 'Invalid image data' });
+      }
+  
+      db.prepare('UPDATE users SET image = ? WHERE id = ?').run(image, userId);
+  
+      const updatedUser = db.prepare('SELECT id, username, email, image FROM users WHERE id = ?').get(userId);
+      reply.send(updatedUser);
+    } catch (err) {
+      reply.code(401).send({ error: 'Invalid or expired token' });
+    }
+  });
 }
