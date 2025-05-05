@@ -23,17 +23,29 @@ async function migrate() {
 
   // GAME : création de la table match
   await db.exec(`
-    CREATE TABLE IF NOT EXISTS match (
+    CREATE TABLE IF NOT EXISTS games (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      player1 TEXT NOT NULL,
-      player2 TEXT NOT NULL,
-      score1 INTEGER,
-      score2 INTEGER,
-      winner TEXT,
-      played_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      user_id INTEGER NOT NULL,
+      opponent_id INTEGER NOT NULL,
+      winner_id INTEGER,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id),
+      FOREIGN KEY (opponent_id) REFERENCES users(id)
     );
   `);
-  console.log('✅ Table `match` vérifiée ou créée');
+  console.log('✅ Table `games` créée');
+  
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS scores (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      game_id INTEGER NOT NULL,
+      player_id INTEGER NOT NULL,
+      score INTEGER NOT NULL,
+      FOREIGN KEY (game_id) REFERENCES games(id),
+      FOREIGN KEY (player_id) REFERENCES users(id)
+    );
+  `);
+  console.log('✅ Table `scores` créée');
 }
 
 // Exécuter la migration
