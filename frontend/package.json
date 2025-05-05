@@ -11,13 +11,14 @@
     "build:css": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch"
   },
   "dependencies": {
-    "@babylonjs/core": "^8.4.1",
+    "@babylonjs/core": "^8.6.1",
     "@babylonjs/gui": "^8.4.1",
     "@babylonjs/loaders": "^8.4.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
     "@tailwindcss/postcss": "^4.1.2",
+    "@types/babylonjs": "^2.3.31",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.21.0",
     "globals": "^15.15.0",

@@ -16,7 +16,7 @@ import {
   Mesh
 } from "@babylonjs/core";
 
-export function createPongScene(canvas: HTMLCanvasElement, options: { mode: 'local' | 'ai' }): Engine {
+export async function createPongScene(canvas: HTMLCanvasElement, options: { mode: 'local' | 'ai' }): Promise<Engine> {
   const isAI = options.mode === 'ai';
   const scoreBoard = document.getElementById("scoreBoard");
   const announce = document.getElementById("announce");
@@ -24,6 +24,28 @@ export function createPongScene(canvas: HTMLCanvasElement, options: { mode: 'loc
   const engine = new Engine(canvas, true);
   const scene = new Scene(engine);
   scene.clearColor = new Color4(0, 0, 0, 1.0);
+
+  let matchId: number | null = null;
+
+  async function startMatch() {
+    try {
+      const response = await fetch('http://localhost:3001/match/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          player1: 'PlayerOne',
+          player2: options.mode === 'ai' ? 'AI' : 'PlayerTwo'
+        })
+      });
+      const data = await response.json();
+      matchId = data.matchId;
+      console.log('🎮 Nouveau match créé avec ID :', matchId);
+    } catch (err) {
+      console.error('❌ Erreur création match :', err);
+    }
+  }
+
+  await startMatch();
 
   const SCORE_LIMIT = 5;
   let scorePlayer = 0;
@@ -195,7 +217,7 @@ export function createPongScene(canvas: HTMLCanvasElement, options: { mode: 'loc
 
     if (hitP1) {
       ballDir.x *= -1;
-      ball.position.x = paddle1.position.x + 0.3; // plus que 0.16
+      ball.position.x = paddle1.position.x + 0.3;
       flashColor(paddle1, new Color3(1, 1, 0));
     }
     else if (hitP2) {
@@ -225,6 +247,20 @@ export function createPongScene(canvas: HTMLCanvasElement, options: { mode: 'loc
       if (scorePlayer === SCORE_LIMIT || scoreIA === SCORE_LIMIT) {
         gameOver = true;
         ballDir.scaleInPlace(0);
+
+        if (matchId !== null) {
+          fetch('http://localhost:3001/match/end', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              matchId,
+              score1: scorePlayer,
+              score2: scoreIA
+            })
+          }).then(() => {
+            console.log('✅ Match enregistré !', { matchId, score1: scorePlayer, score2: scoreIA });
+          }).catch(err => console.error('❌ Erreur enregistrement match :', err));
+        }
 
         const button = document.createElement("button");
         button.textContent = "Rejouer la partie";
