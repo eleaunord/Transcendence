@@ -10,11 +10,8 @@ function safeAlter(column: string, type: string) {
     console.log(` ==== Added column '${column}' to users table ==== `);
   }
 }
-<<<<<<< HEAD
-=======
 
 // --- add new vairables in DB --- \\
->>>>>>> 0205_merge_front_back
 
 // Fonction principale qui gère toutes les migrations
 async function migrate() {

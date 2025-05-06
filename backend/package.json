@@ -20,12 +20,8 @@
     "better-sqlite3": "^11.9.1",
     "dotenv": "^16.5.0",
     "fastify": "^5.2.2",
-<<<<<<< HEAD
-    "jsonwebtoken": "^9.0.2"
-=======
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.10.1"
->>>>>>> 0205_merge_front_back
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
