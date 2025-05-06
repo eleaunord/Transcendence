@@ -9,11 +9,16 @@ import { protectedRoute } from './utils/router';
 import { createSignUpPage } from './pages/SignUpPage';
 import { createGoogleOauthPage } from './pages/GoogleOauth';
 import { create2FAPage } from './pages/2FAPages';
-import { createPong3DPage } from './pages/Pong3DPage';
+// import { createPong3DPage } from './pages/Pong3DPage';
 import { createMemoryGamePage } from './pages/MemoryGamePage';
 import { createFriendsPage } from './pages/FriendsPage';
 import { createLeaderboardPage } from './pages/LeaderboardPage';
 import { createAboutPage } from './pages/AboutUsPage';
+import { createLocalPage } from './pages/LocalPage';
+import { createAIPage } from './pages/AIPage';
+import { createTournamentPage } from './pages/TournamentPage';
+import { createVersusPage } from './pages/VersusPage';
+import { createModePage } from './pages/ModePage';
 
 // Fonction utilitaire pour injecter `navigate` dans chaque page
 function withNavigate(navigate: (path: string) => void) {
@@ -43,13 +48,17 @@ const routes = {
     const mode = params.get('mode') === 'input' ? 'input' : 'activation';
     return create2FAPage(navigate, mode);
   }),
-  //'/pong': useWithNavigate(protectedRoute(createPong3DPage)),
+  // '/pong': useWithNavigate(protectedRoute(createPong3DPage)),
   '/memory': useWithNavigate(protectedRoute(createMemoryGamePage)),
   '/friends': useWithNavigate(protectedRoute(createFriendsPage)),
   '/leaderboard': useWithNavigate(protectedRoute(createLeaderboardPage)),
   '/about': useWithNavigate(protectedRoute(createAboutPage)),
-};
-
+  '/local': useWithNavigate(protectedRoute(createLocalPage)),
+  '/ai': useWithNavigate(protectedRoute(createAIPage)),
+  '/tournament': useWithNavigate(protectedRoute(createTournamentPage)),
+  '/versus': useWithNavigate(protectedRoute(createVersusPage)),
+  '/mode': useWithNavigate(protectedRoute(createModePage)),
+}
 // Maintenant qu'on a les routes, on peut initialiser proprement
 navigate = initRouter(routes)!;
 console.log('🏁 Router chargé');

@@ -1,15 +1,3 @@
-# all: 
-# 	@echo "Building and starting containers..."
-# 	docker compose -f docker-compose.yml up --build -d
-	
-# down: 
-# 	@echo "Stopping and cleaning containers..."
-# 	docker compose -f docker-compose.yml down -v
-# 	docker system prune -af
-
-# re: down all
-
-
 # Nom du projet Docker Compose
 COMPOSE = docker-compose
 
