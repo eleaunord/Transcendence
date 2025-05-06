@@ -88,7 +88,7 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
   
     const bottomItems = [
       { icon: '/assets/side-bar/aboutUs.png', label: 'About us', route: '/about' },
-      { icon: '/assets/side-bar/logout.png', label: 'Log out', route: '/auth' },
+      { icon: '/assets/side-bar/logout.png', label: 'Log out', route: '/' },
     ];
   
     bottomItems.forEach(item => {

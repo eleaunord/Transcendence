@@ -20,13 +20,19 @@
     "better-sqlite3": "^11.9.1",
     "dotenv": "^16.5.0",
     "fastify": "^5.2.2",
+<<<<<<< HEAD
     "jsonwebtoken": "^9.0.2"
+=======
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.10.1"
+>>>>>>> 0205_merge_front_back
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/better-sqlite3": "^7.6.13",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.14.0",
+    "@types/nodemailer": "^6.4.17",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.2"
   }

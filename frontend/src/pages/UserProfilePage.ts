@@ -207,7 +207,7 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   profileSection.appendChild(profileCard);
   profileSection.appendChild(formContainer);
   container.appendChild(profileSection);
-  // Sidebar hover events
+  // Sidebar hover events (mouvement sidebar)
   sidebar.addEventListener('mouseenter', () => {
     document.querySelectorAll('.sidebar-label').forEach(label => {
       (label as HTMLElement).classList.remove('opacity-0');
@@ -270,5 +270,6 @@ if (token) {
 }
   return container;
 }
+
 
 

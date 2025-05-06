@@ -8,7 +8,7 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function meRoutes(app: FastifyInstance) {
-  app.get('/api/me', async (req, reply) => {
+  app.get('/me', async (req, reply) => {
     const auth = req.headers.authorization;
     if (!auth) return reply.code(401).send({ error: 'Missing token' });
 
