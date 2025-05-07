@@ -19,14 +19,26 @@ async function main() {
     }
   });
  
-/* we dont need this. it already exits below : app.register*/
+/* we dont need this. it already exits below : app.register 
+
+
 // Enregistre les routes
 authRoutes(app);
 meRoutes(app);
 themeRoutes(app);
 matchRoutes(app);
-leaderboardRoutes(app); // NEW
+leaderboardRoutes(app); // NEW  
 
+
+je sais que c'est une nouvelle route : leaderboardRoutes(app) 
+mais, cette route est deja enregistreee plus bas, donc c’est une duplication inutile
+  
+await app.register(leaderboardRoutes, { prefix: '/api' });
+
+le rest des routes pareil.
+on garde le code en bas. pas besoin de ce block.
+
+*/
 
   app.get('/', async () => {
     return { message: 'Backend is running' };
@@ -42,7 +54,6 @@ leaderboardRoutes(app); // NEW
   await app.register(authRoutes, { prefix: '/api' });
   await app.register(meRoutes, { prefix: '/api' });
   await app.register(themeRoutes, { prefix: '/api' });
-    
   await app.register(leaderboardRoutes, { prefix: '/api' });
 
   const PORT = parseInt(process.env.PORT || '3001');

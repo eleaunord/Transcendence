@@ -31,11 +31,17 @@ export function create2FAPage(navigate: (path: string) => void, mode: 'activatio
 	  activateBtn.type = 'button';
 	  activateBtn.textContent = '🔒 Enable Two-Factor Authentication';
 	  activateBtn.className = 'w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg mb-4';
-  
-	  activateBtn.onclick = async () => {
-		const token = sessionStorage.getItem('token');
-		if (!token) return alert('Token not found');
-  
+	  console.log('[2FA] Activate button created'); // DEBUG 추가!
+
+		activateBtn.onclick = async () => {
+		console.log('[2FA] Enable button clicked'); // DEBUG 추가!
+		const token = localStorage.getItem('token'); // 수정한 부분 
+		console.log('[2FA TOKEN] Local token:', token);
+		if (!token) {
+			alert('Token not found');
+			return;
+		}
+	
 		const res = await fetch('http://localhost:3001/api/enable-2fa', {
 		  method: 'POST',
 		  headers: {
@@ -65,8 +71,11 @@ export function create2FAPage(navigate: (path: string) => void, mode: 'activatio
 	}
   
 	if (mode === 'input') {
-	  const token = sessionStorage.getItem('token');
+	  const token = sessionStorage.getItem('token') || localStorage.getItem('token');
 	  const email = sessionStorage.getItem('userEmail');
+
+	  console.log('[2FA VERIFY] token:', token); // 디버깅
+	  console.log('[2FA VERIFY] email:', email); // 디버깅
   
 	  const input = document.createElement('input');
 	  input.placeholder = '6-digit code';
@@ -80,7 +89,9 @@ export function create2FAPage(navigate: (path: string) => void, mode: 'activatio
   
 	  verifyBtn.onclick = async () => {
 		const code = input.value;
-		if (!token || !email || !code) {
+		console.log('[2FA VERIFY] code:', code); // 디버깅
+		
+		if (!token || !code) {
 		  alert('Missing info');
 		  return;
 		}

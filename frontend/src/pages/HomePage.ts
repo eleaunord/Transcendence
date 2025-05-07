@@ -9,7 +9,7 @@ export function createHomePage(navigate: (path: string) => void): HTMLElement {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = '/api/auth/google'; // 백엔드 Google OAuth 경로ㅋ
+    window.location.href = '/api/auth/google'; // 백엔드 Google OAuth 경로
   };
 
   // Création des éléments

@@ -154,7 +154,8 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
       .then(user => {
         username = user.username;
         selectedImage = user.image; //|| 'default.jpg';
-        picturePreview.src = `/assets/profile-pictures/${selectedImage}`;
+        // picturePreview.src = `/assets/profile-pictures/${selectedImage}`;
+        picturePreview.src = user.image;
         welcomeMsg.textContent = `Bienvenue ${user.username} !`;
       })
       .catch(err => console.error('Erreur chargement profil:', err));
