@@ -26,6 +26,9 @@ async function migrate() {
   //Image profile(securise)
   safeAlter('image', 'TEXT');
 
+  // Account creation time
+  safeAlter('created_at', 'TIMESTAMP');
+
   // GAME : création de la table match
   await db.exec(`
     CREATE TABLE IF NOT EXISTS games (

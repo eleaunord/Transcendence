@@ -46,10 +46,11 @@ export async function authRoutes(app: FastifyInstance) {
     }
 
     const existing = db.prepare('SELECT * FROM users WHERE username = ? OR email = ?').get(username, email);
-    if (existing) return reply.code(409).send({ error: 'Username or email already exists' });
+    if (existing) 
+      return reply.code(409).send({ error: 'Username or email already exists' });
 
     const hashed = await bcrypt.hash(password, 10);
-    db.prepare('INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)').run(username, email, hashed);
+    db.prepare('INSERT INTO users (username, email, password_hash, created_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)').run(username, email, hashed);
 
     // On récupère le user pour générer un token
     const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username) as User;
