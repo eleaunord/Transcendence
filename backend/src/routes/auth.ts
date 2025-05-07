@@ -148,7 +148,8 @@ export async function authRoutes(app: FastifyInstance) {
 
       const user = db.prepare('SELECT * FROM users WHERE id = ?').get(decoded.userId) as User | undefined;
       console.log('[2FA] decoded userId:', decoded.userId); //debug
-      if (!user) return reply.code(404).send({ error: 'User not found' });
+      if (!user) 
+        return reply.code(404).send({ error: 'User not found' });
 
       const code = generate2FACode();
       const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5분 유효
