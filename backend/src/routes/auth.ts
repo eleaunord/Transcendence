@@ -71,6 +71,7 @@ export async function authRoutes(app: FastifyInstance) {
     if (!match) return reply.code(401).send({ error: 'Incorrect password' });
 
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
+    console.log('[STANDARD LOGIN] USER EMAIL:', user.email);
     reply.send({ token });
   });
 
@@ -146,6 +147,7 @@ export async function authRoutes(app: FastifyInstance) {
       const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
 
       const user = db.prepare('SELECT * FROM users WHERE id = ?').get(decoded.userId) as User | undefined;
+      console.log('[2FA] decoded userId:', decoded.userId); //debug
       if (!user) return reply.code(404).send({ error: 'User not found' });
 
       const code = generate2FACode();

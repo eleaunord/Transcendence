@@ -23,6 +23,9 @@ async function migrate() {
   safeAlter('two_fa_code', 'TEXT');
   safeAlter('two_fa_expires_at', 'TEXT');
 
+  //Image profile(securise)
+  safeAlter('image', 'TEXT');
+
   // GAME : création de la table match
   await db.exec(`
     CREATE TABLE IF NOT EXISTS games (

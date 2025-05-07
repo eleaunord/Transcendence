@@ -10,12 +10,6 @@ import './db/migrations';
 async function main() {
   const app = Fastify();
 
-  // Active CORS
-  // await app.register(cors, {
-  //   origin: '*',
-  // });
-
-  // Parseur JSON
   app.addContentTypeParser('application/json', { parseAs: 'string' }, (req, body, done) => {
     try {
       const json = JSON.parse(body as string);
@@ -24,14 +18,15 @@ async function main() {
       done(err as Error);
     }
   });
+ 
+/* we dont need this. it already exits below : app.register*/
+// Enregistre les routes
+authRoutes(app);
+meRoutes(app);
+themeRoutes(app);
+matchRoutes(app);
+leaderboardRoutes(app); // NEW
 
-  // Enregistre les routes
-  authRoutes(app);
-  meRoutes(app);
-  themeRoutes(app);
-  matchRoutes(app);
-
-  leaderboardRoutes(app); // NEW
 
   app.get('/', async () => {
     return { message: 'Backend is running' };

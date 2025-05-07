@@ -1,16 +1,17 @@
-export function createHomePage(): HTMLElement {
+export function createHomePage(navigate: (path: string) => void): HTMLElement {
   // Fonction pour démarrer le jeu
   const handleSignIn = () => {
-    window.location.href = '/auth';  // Redirection classique
+    navigate('/auth'); // SPA 라우팅 → 상태 유지됨
   };
+
   const handleSignUp = () => {
-    window.location.href = '/signup';  // Redirection classique
+    navigate('/signup');  // Redirection classique
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = '/api/auth/google'; // 백엔드 Google OAuth 경로
+    window.location.href = '/api/auth/google'; // 백엔드 Google OAuth 경로ㅋ
   };
-  
+
   // Création des éléments
   const container = document.createElement('div');
   container.className = 'relative flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
@@ -66,5 +67,3 @@ export function createHomePage(): HTMLElement {
 
   return container;
 }
-
-
