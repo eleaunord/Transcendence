@@ -13,10 +13,9 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
      const backgroundImage = document.createElement('div');
      backgroundImage.id = 'backgroundImage';
      backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-     backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
-     
-     applyUserTheme(backgroundImage);
+  
      container.appendChild(backgroundImage);
+     applyUserTheme(backgroundImage);
 
   
     // Game Area

@@ -16,12 +16,9 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   // backgroundImage.className = 'absolute top-0 left-[5rem] lg:left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
 
   backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-  backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
-  
+
   container.appendChild(backgroundImage);
-  (async () => {
-    await applyUserTheme(backgroundImage);
-  })();
+  applyUserTheme(backgroundImage);
 
   // --- Profile Section (Cadre + Formulaire côte à côte) ---
   const profileSection = document.createElement('div');

@@ -1,4 +1,5 @@
 import { createSidebar } from "../utils/sidebar";
+import { applyUserTheme } from "../utils/theme";
 
 export function createCustomizationPage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
@@ -11,28 +12,10 @@ export function createCustomizationPage(navigate: (path: string) => void): HTMLE
   const backgroundImage = document.createElement('div');
   backgroundImage.id = 'backgroundImage';
   backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-  backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
-  const savedTheme = sessionStorage.getItem('theme');
-  
-  if (savedTheme) {
-    backgroundImage.style.backgroundImage = `url(${savedTheme})`;
-  } else {
-    const token = localStorage.getItem('token');
-    if (token) {
-      fetch('/api/me', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-        .then(res => res.json())
-        .then(user => {
-          const theme = user.theme || '/assets/profile-themes/arabesque.png';
-          document.body.style.backgroundImage = `url(${theme})`;
-          sessionStorage.setItem('theme', theme);
-        })
-        .catch(err => console.error('Erreur lors de la récupération du thème:', err));
-    }
-  }
-  container.appendChild(backgroundImage);
 
+  container.appendChild(backgroundImage);
+  applyUserTheme(backgroundImage);
+  
   //---------------------Thème Selector--------------------/
   const customizations = document.createElement('div');
   customizations.className = 'flex  space-x-8 justify-center items-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 bg-black/50 p-4 rounded-lg';

@@ -1,3 +1,4 @@
+
 export async function applyUserTheme(bg: HTMLElement) {
   if (!bg) return;
 
@@ -12,12 +13,7 @@ export async function applyUserTheme(bg: HTMLElement) {
         headers: { Authorization: `Bearer ${token}` },
       });
       const user = await res.json();
-
-      if (typeof user.theme === 'string') {
-        theme = user.theme;
-      } else {
-        theme = '/assets/profile-themes/arabesque.png'; // Valeur par défaut
-      }
+      theme = user.theme || '/assets/profile-themes/arabesque.png';
     } catch (err) {
       console.error('Erreur récupération thème utilisateur :', err);
       theme = '/assets/profile-themes/arabesque.png'; // Valeur par défaut en cas d'erreur
@@ -26,9 +22,50 @@ export async function applyUserTheme(bg: HTMLElement) {
 
   if (typeof theme === 'string') {
     sessionStorage.setItem('theme', theme);
-    bg.style.backgroundImage = `url(${theme})`;
+
+    // Précharger l'image
+    const img = new Image();
+    img.src = theme;
+    img.onload = () => {
+      bg.style.backgroundImage = `url(${theme})`;
+      bg.style.opacity = '1'; // Afficher l'image une fois chargée
+    };
   }
 }
+
+
+
+// export async function applyUserTheme(bg: HTMLElement) {
+//   if (!bg) return;
+
+//   let theme: string | null = sessionStorage.getItem('theme');
+
+//   if (!theme) {
+//     const token = localStorage.getItem('token');
+//     if (!token) return;
+
+//     try {
+//       const res = await fetch('/api/me', {
+//         headers: { Authorization: `Bearer ${token}` },
+//       });
+//       const user = await res.json();
+
+//       if (typeof user.theme === 'string') {
+//         theme = user.theme;
+//       } else {
+//         theme = '/assets/profile-themes/arabesque.png'; // Valeur par défaut
+//       }
+//     } catch (err) {
+//       console.error('Erreur récupération thème utilisateur :', err);
+//       theme = '/assets/profile-themes/arabesque.png'; // Valeur par défaut en cas d'erreur
+//     }
+//   }
+
+//   if (typeof theme === 'string') {
+//     sessionStorage.setItem('theme', theme);
+//     bg.style.backgroundImage = `url(${theme})`;
+//   }
+// }
 
 
 
