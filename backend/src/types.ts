@@ -4,6 +4,7 @@ export interface User {
   email: string;
   password_hash?: string;
   image?: string;
+  theme?: string;
   google_id?: string;
   is_2fa_enabled?: number;
   two_fa_code?: string;

@@ -12,6 +12,25 @@ export function createCustomizationPage(navigate: (path: string) => void): HTMLE
   backgroundImage.id = 'backgroundImage';
   backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
   backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
+  const savedTheme = sessionStorage.getItem('theme');
+  
+  if (savedTheme) {
+    backgroundImage.style.backgroundImage = `url(${savedTheme})`;
+  } else {
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetch('/api/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then(res => res.json())
+        .then(user => {
+          const theme = user.theme || '/assets/profile-themes/arabesque.png';
+          document.body.style.backgroundImage = `url(${theme})`;
+          sessionStorage.setItem('theme', theme);
+        })
+        .catch(err => console.error('Erreur lors de la récupération du thème:', err));
+    }
+  }
   container.appendChild(backgroundImage);
 
   //---------------------Thème Selector--------------------/
@@ -33,15 +52,18 @@ export function createCustomizationPage(navigate: (path: string) => void): HTMLE
     img.addEventListener('click', async () => {
       backgroundImage.style.backgroundImage = `url(${path})`;
 
+      sessionStorage.setItem('theme', path);
+
       const token = localStorage.getItem('token');
       try {
-        await fetch('/api/theme', {
-          method: 'POST',
+        await fetch('/api/me/theme', {
+          method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ image: path.replace('/assets/game-themes/', '') }),
+          //body: JSON.stringify({ image: path.replace('/assets/game-themes/', '') }),
+          body: JSON.stringify({ theme: path }), 
         });
       } catch (err) {
         console.error('Erreur lors de la sauvegarde du thème', err);

@@ -109,6 +109,8 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
   logoutBtn.className = 'mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold';
   logoutBtn.addEventListener('click', () => {
     localStorage.removeItem('token');
+    sessionStorage.clear();
+    localStorage.clear();
     navigate('/');
   });
 

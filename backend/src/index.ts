@@ -3,11 +3,13 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors'; // DONT REMOVE :added to solve "CORS (Cross-Origin Resource Sharing)" problem
 import { authRoutes } from './routes/auth';
 import { meRoutes } from './routes/me';
-import { themeRoutes } from './routes/theme';
+//import { themeRoutes } from './routes/theme';
 import './db/migrations';
 
 async function main() {
-  const app = Fastify();
+  const app = Fastify({
+    bodyLimit: 20 * 1024 * 1024, // 20 Mo pour upload image profil
+  });
 
   app.addContentTypeParser('application/json', { parseAs: 'string' }, (req, body, done) => {
     try {
@@ -27,7 +29,7 @@ async function main() {
   // Enregistrement des routes
   await app.register(authRoutes, { prefix: '/api' });
   await app.register(meRoutes, { prefix: '/api' });
-  await app.register(themeRoutes, { prefix: '/api' });
+  //await app.register(themeRoutes, { prefix: '/api' });
 
   const PORT = parseInt(process.env.PORT || '3001');
   const HOST = process.env.HOST || '0.0.0.0';

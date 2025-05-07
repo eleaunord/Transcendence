@@ -14,8 +14,13 @@ db.prepare(`
 	  username TEXT NOT NULL UNIQUE,
 	  email TEXT NOT NULL UNIQUE,
 	  password_hash TEXT DEFAULT NULL,
-	  image TEXT DEFAULT 'default.jpg'
+	  image TEXT DEFAULT 'default.jpg',
+	  theme TEXT DEFAULT '/assets/profile-themes/arabesque.png'
   )
+`).run();
+
+db.prepare(`
+UPDATE users SET theme = '/assets/profile-themes/arabesque.png' WHERE theme IS NULL;
 `).run();
 
 // //    ===Création de la table "games" ===

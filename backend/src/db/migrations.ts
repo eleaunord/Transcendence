@@ -33,5 +33,8 @@ safeAlter('is_2fa_enabled', 'INTEGER DEFAULT 0');
 safeAlter('two_fa_code', 'TEXT');
 safeAlter('two_fa_expires_at', 'TEXT');
 
-//Image profile(securise)
-safeAlter('image', 'TEXT');
+// //Image profile(pour securiser)
+// safeAlter('image', 'TEXT');
+
+// Theme de fond personnalisé
+safeAlter('theme', "TEXT DEFAULT '/assets/profile-themes/arabesque.png'");

@@ -1,4 +1,5 @@
 import { createSidebar } from "../utils/sidebar"; 
+import { applyUserTheme } from "../utils/theme";
 
 export function createUserProfilePage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
@@ -16,9 +17,11 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
 
   backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
   backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
-
+  
   container.appendChild(backgroundImage);
-
+  (async () => {
+    await applyUserTheme(backgroundImage);
+  })();
 
   // --- Profile Section (Cadre + Formulaire côte à côte) ---
   const profileSection = document.createElement('div');
@@ -97,6 +100,13 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
     const target = event.target as HTMLInputElement;
     if (target.files && target.files[0]) {
       const file = target.files[0];
+
+    // 🔒 Vérification de la taille du fichier
+    if (file.size > 2 * 1024 * 1024) { // 2 Mo
+      alert("Image trop volumineuse. Choisissez une image de moins de 2 Mo.");
+      return;
+    }
+
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;

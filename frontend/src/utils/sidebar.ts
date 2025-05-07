@@ -114,7 +114,16 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
   
       menuItem.appendChild(icon);
       menuItem.appendChild(label);
-      menuItem.addEventListener('click', () => navigate(item.route));
+      if (item.label === 'Log out') {
+        menuItem.addEventListener('click', () => {
+          localStorage.removeItem('token');
+          sessionStorage.clear();
+          localStorage.clear();
+          navigate(item.route);
+        });
+      } else {
+        menuItem.addEventListener('click', () => navigate(item.route));
+      }
   
       bottomContainer.appendChild(menuItem);
     });

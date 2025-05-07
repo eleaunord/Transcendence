@@ -1,5 +1,6 @@
 import { createPongScene } from '../games/pong3d/PongScene';
 import { createSidebar } from "../utils/sidebar"; 
+import { applyUserTheme } from '../utils/theme';
 
 export function createGamePage(navigate: (path: string) => void): HTMLElement {
 
@@ -15,6 +16,8 @@ export function createGamePage(navigate: (path: string) => void): HTMLElement {
    backgroundImage.id = 'backgroundImage';
    backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
    backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
+   
+   applyUserTheme(backgroundImage);
    container.appendChild(backgroundImage);
 
 
