@@ -18,6 +18,13 @@ export interface GoogleUser {
   picture: string;
 }
 
+export interface LeaderboardRow {
+  id: number;
+  username: string;
+  total_points: number;
+}
+
+
 // interface Game {
 //     id: number;
 //     user_id: number;
