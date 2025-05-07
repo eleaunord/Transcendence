@@ -5,6 +5,8 @@ import { meRoutes } from './routes/me';
 import { themeRoutes } from './routes/theme';
 import { matchRoutes } from './routes/match';
 import { leaderboardRoutes } from './routes/leaderboard';  // NEW
+import { friendsRoutes } from './routes/friends'; // NEW
+
 import './db/migrations';
 
 async function main() {
@@ -25,31 +27,35 @@ async function main() {
     }
   });
 
-  // Enregistre les routes
-  authRoutes(app);
-  meRoutes(app);
-  themeRoutes(app);
-  matchRoutes(app);
+  // Enregistre les routes // pas besoin d'enregistrer 2 fois
+  // friendsRoutes(app); // NEW
+  // authRoutes(app);
+  // meRoutes(app);
+  // themeRoutes(app);
+  // matchRoutes(app);
 
-  leaderboardRoutes(app); // NEW
-
-  app.get('/', async () => {
-    return { message: 'Backend is running' };
-  });
+  //leaderboardRoutes(app); // NEW
 
   // register CORS
   await app.register(cors, {
     origin: 'http://localhost:8080',
     credentials: true,
+    // added
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   });
 
   // Enregistrement des routes
   await app.register(authRoutes, { prefix: '/api' });
   await app.register(meRoutes, { prefix: '/api' });
   await app.register(themeRoutes, { prefix: '/api' });
-    
+  await app.register(friendsRoutes, { prefix: '/api' });
   await app.register(leaderboardRoutes, { prefix: '/api' });
 
+  app.get('/', async () => {
+    return { message: 'Backend is running' };
+  });
+  
   const PORT = parseInt(process.env.PORT || '3001');
   const HOST = process.env.HOST || '0.0.0.0';
 

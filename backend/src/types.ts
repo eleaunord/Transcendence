@@ -24,6 +24,12 @@ export interface LeaderboardRow {
   total_points: number;
 }
 
+export interface FriendRow {
+  id: number;           // unique ID of the friend
+  username: string;     //  username of the friend
+  status: 'online' | 'offline';  // status of the friend (online or offline)
+}
+
 
 // interface Game {
 //     id: number;
