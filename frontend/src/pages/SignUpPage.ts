@@ -2,6 +2,7 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
   let error = '';
 
   const handleSignUp = async () => {
+    console.log('handleSignup exécutée');
     const usernameInput = document.getElementById('username') as HTMLInputElement;
     const passwordInput = document.getElementById('password') as HTMLInputElement;
     const emailInput = document.getElementById('email') as HTMLInputElement;
@@ -21,6 +22,7 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
       });
 
       const data = await res.json();
+      console.log(data);
 
       if (!res.ok) {
         error = data.error || 'Signup failed';
@@ -29,7 +31,38 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
       }
 
       localStorage.setItem('token', data.token);
-      navigate('/profile-creation'); // Utilisation du routeur SPA
+
+      try {
+        const resMe = await fetch('/api/me', {
+          headers: {
+            Authorization: `Bearer ${data.token}`
+          }
+        });
+
+        if (resMe.ok) {
+          const user = await resMe.json();
+          sessionStorage.setItem('username', user.username);
+          sessionStorage.setItem('userEmail', user.email); // 추가
+          sessionStorage.setItem('profilePicture', user.image);
+          console.log('[SIGNUP] Utilisateur chargé :', user);
+        } else {
+          console.warn('[SIGNUP] Impossible de charger /api/me');
+        }
+      } catch (e) {
+        console.error('[SIGNUP] Erreur lors du chargement de /api/me :', e);
+      }
+
+      // Ajoute une image par défaut pour tout nouvel utilisateur
+      await fetch('/api/me/image', {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${data.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ image: '/assets/profile-pictures/default.jpg' })
+      });
+      // 0505 changed 'profile-creation' to '/2fa'
+      navigate('/2fa'); // Utilisation du routeur SPA
     } catch (err) {
       error = 'Network error';
       updateError();

@@ -4,6 +4,7 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
   let error = '';
 
   const handleLogin = async () => {
+    console.log('handleLogin exécutée');
     const usernameInput = document.getElementById('username') as HTMLInputElement;
     const passwordInput = document.getElementById('password') as HTMLInputElement;
 
@@ -21,6 +22,7 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
       });
 
       const data = await res.json();
+      console.log(data);
 
       if (!res.ok) {
         error = data.error || 'Erreur de connexion';
@@ -28,13 +30,47 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
         return;
       }
 
+      try {
+      console.log('Token reçu:', data.token);
+      
+      // 추가: remove original token
+      localStorage.removeItem('token');
+      sessionStorage.removeItem('token');
+      // 추가: set new token
       localStorage.setItem('token', data.token);
-      navigate('/profile-creation');
+      
+      console.log('Token stocké:', localStorage.getItem('token'));
+
+      // Récupération des infos utilisateur après login
+      try {
+        const res = await fetch('/api/me', {
+          headers: {
+            Authorization: `Bearer ${data.token}`
+          }
+        });
+
+        if (res.ok) {
+          const user = await res.json();
+          sessionStorage.setItem('username', user.username);
+          sessionStorage.setItem('userEmail', user.email); // 추가 한 부분!
+          sessionStorage.setItem('profilePicture', user.image);
+          console.log('Utilisateur chargé :', user);
+        } else {
+          console.warn('Impossible de charger le profil utilisateur');
+        }
+      } catch (e) {
+        console.error('Erreur lors du chargement de /api/me :', e);
+      }
+    } catch (e) {
+      console.error('Erreur lors du stockage du token:', e);
+    }
+    navigate('/2fa');
     } catch (err) {
       error = 'Erreur réseau';
       updateError();
     }
   };
+
 
   const container = document.createElement('div');
   container.className = 'flex flex-col justify-center items-center h-screen bg-gray-900 text-white';

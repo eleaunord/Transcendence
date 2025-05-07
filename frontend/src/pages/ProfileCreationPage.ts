@@ -103,8 +103,14 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
   logoutBtn.className = 'mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold';
   logoutBtn.addEventListener('click', () => {
   localStorage.removeItem('token');
+  sessionStorage.removeItem('token');
+  sessionStorage.removeItem('username');
+  sessionStorage.removeItem('userEmail');
+  sessionStorage.removeItem('profilePicture');
+  sessionStorage.removeItem('2fa_verified');
   navigate('/'); // ou /login ou /signup, selon ton point d’entrée
   });
+  
   // --- Assemblage du formulaire ---
   // form.appendChild(usernameDiv);
   form.appendChild(pictureDiv);
