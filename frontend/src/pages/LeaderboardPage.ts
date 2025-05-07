@@ -6,6 +6,21 @@ interface PlayerScore {
   totalPoints: number;
 }
 
+// Fallback mock data in case API fails + TO TEST 
+const MOCK_LEADERBOARD_DATA: PlayerScore[] = [
+  { id: 1, username: "GamerPro99", totalPoints: 12450 },
+  { id: 2, username: "PixelMaster", totalPoints: 10820 },
+  { id: 3, username: "LegendaryGamer", totalPoints: 9740 },
+  { id: 4, username: "NinjaPlayer", totalPoints: 8650 },
+  { id: 5, username: "RocketQueen", totalPoints: 7920 },
+  { id: 6, username: "EpicWarrior", totalPoints: 7210 },
+  { id: 7, username: "ShadowHunter", totalPoints: 6580 },
+  { id: 8, username: "MagicWizard", totalPoints: 5940 },
+  { id: 9, username: "SpeedRacer", totalPoints: 5320 },
+  { id: 10, username: "CosmicPlayer", totalPoints: 4780 }
+];
+
+
 export function createLeaderboardPage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
   container.className = 'relative min-h-screen bg-gray-900 text-white overflow-hidden';
@@ -82,18 +97,23 @@ export function createLeaderboardPage(navigate: (path: string) => void): HTMLEle
       // If the error is a network error or a failed response
       if (error instanceof Error && error.message.includes('Failed to fetch leaderboard')) {
         errorMessage.textContent = 'Error fetching leaderboard data. Please check your internet connection or try again later.';
-      } else {
-        errorMessage.textContent = 'An unexpected error occurred. Please try again later.';
       }
 
       leaderboardCard.appendChild(errorMessage);
       console.error('Failed to fetch leaderboard data:', error);
+
+      // MOCK DATA for testing
+      //const table = createLeaderboardTable(MOCK_LEADERBOARD_DATA);
+      //leaderboardCard.appendChild(table);
     });
 
   return container;
 }
 
 async function fetchLeaderboardData(): Promise<PlayerScore[]> {
+
+  //throw new Error('Simulated API failure');
+  
   // Update the API URL to match what's being used in the browser
   const API_BASE_URL = window.location.hostname === 'localhost' 
     ? 'http://localhost:3001' 
