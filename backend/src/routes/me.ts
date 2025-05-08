@@ -15,13 +15,13 @@ export async function meRoutes(app: FastifyInstance) {
     try {
       const token = auth.split(' ')[1];
       const payload = jwt.verify(token, JWT_SECRET) as any;
-      const user = db.prepare('SELECT id, username, email, image FROM users WHERE id = ?').get(payload.userId);
+      const user = db.prepare('SELECT id, username, email, image, theme FROM users WHERE id = ?').get(payload.userId);
+
       reply.send(user);
     } catch {
       reply.code(401).send({ error: 'Invalid or expired token' });
     }
   });
-
    // Mise à jour du username
    app.patch('/me', async (req, reply) => {
     const auth = req.headers.authorization;
@@ -45,7 +45,8 @@ export async function meRoutes(app: FastifyInstance) {
       db.prepare('UPDATE users SET username = ? WHERE id = ?').run(username, userId);
 
       // On retourne l'utilisateur mis à jour
-      const updatedUser = db.prepare('SELECT id, username, email, image FROM users WHERE id = ?').get(userId);
+      const updatedUser = db.prepare('SELECT id, username, email, image, theme FROM users WHERE id = ?').get(userId);
+
       reply.send(updatedUser);
 
     } catch (err) {
@@ -70,6 +71,29 @@ export async function meRoutes(app: FastifyInstance) {
       db.prepare('UPDATE users SET image = ? WHERE id = ?').run(image, userId);
   
       const updatedUser = db.prepare('SELECT id, username, email, image FROM users WHERE id = ?').get(userId);
+      reply.send(updatedUser);
+    } catch (err) {
+      reply.code(401).send({ error: 'Invalid or expired token' });
+    }
+  });
+
+  app.patch('/me/theme', async (req, reply) => {
+    const auth = req.headers.authorization;
+    if (!auth) return reply.code(401).send({ error: 'Missing token' });
+  
+    try {
+      const token = auth.split(' ')[1];
+      const payload = jwt.verify(token, JWT_SECRET) as any;
+      const userId = payload.userId;
+  
+      const { theme } = req.body as { theme: string };
+      if (!theme || typeof theme !== 'string') {
+        return reply.code(400).send({ error: 'Invalid theme data' });
+      }
+  
+      db.prepare('UPDATE users SET theme = ? WHERE id = ?').run(theme, userId);
+  
+      const updatedUser = db.prepare('SELECT id, username, email, image, theme FROM users WHERE id = ?').get(userId);
       reply.send(updatedUser);
     } catch (err) {
       reply.code(401).send({ error: 'Invalid or expired token' });

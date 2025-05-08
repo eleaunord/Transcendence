@@ -1,5 +1,11 @@
 // migrations.ts
-import db from './db';
+import { profile } from 'console';
+import db from  './db';
+
+
+// ========== SQLite Setup ==========
+// === Connexion à la base de données ===
+// === Création de la table users (si elle n'existe pas) ===
 
 // Fonction pour ajouter une colonne si elle n'existe pas
 function safeAlter(column: string, type: string) {
@@ -25,6 +31,9 @@ async function migrate() {
 
   //Image profile(securise)
   safeAlter('image', 'TEXT');
+
+  // Theme de fond personnalisé
+  safeAlter('theme', "TEXT DEFAULT '/assets/profile-themes/arabesque.png'");
 
   // GAME : création de la table match
   await db.exec(`
@@ -55,3 +64,5 @@ async function migrate() {
 
 // Exécuter la migration
 migrate().catch(console.error);
+
+

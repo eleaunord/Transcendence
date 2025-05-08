@@ -1,4 +1,5 @@
 import { createSidebar } from "../utils/sidebar";
+import { applyUserTheme } from "../utils/theme";
 
 export function createCustomizationPage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
@@ -11,9 +12,10 @@ export function createCustomizationPage(navigate: (path: string) => void): HTMLE
   const backgroundImage = document.createElement('div');
   backgroundImage.id = 'backgroundImage';
   backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-  backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
-  container.appendChild(backgroundImage);
 
+  container.appendChild(backgroundImage);
+  applyUserTheme(backgroundImage);
+  
   //---------------------Thème Selector--------------------/
   const customizations = document.createElement('div');
   customizations.className = 'flex  space-x-8 justify-center items-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 bg-black/50 p-4 rounded-lg';
@@ -33,15 +35,18 @@ export function createCustomizationPage(navigate: (path: string) => void): HTMLE
     img.addEventListener('click', async () => {
       backgroundImage.style.backgroundImage = `url(${path})`;
 
+      sessionStorage.setItem('theme', path);
+
       const token = localStorage.getItem('token');
       try {
-        await fetch('/api/theme', {
-          method: 'POST',
+        await fetch('/api/me/theme', {
+          method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ image: path.replace('/assets/game-themes/', '') }),
+          //body: JSON.stringify({ image: path.replace('/assets/game-themes/', '') }),
+          body: JSON.stringify({ theme: path }), 
         });
       } catch (err) {
         console.error('Erreur lors de la sauvegarde du thème', err);

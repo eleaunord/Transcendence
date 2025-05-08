@@ -1,4 +1,5 @@
-import { createSidebar } from "../utils/sidebar";
+import { createSidebar } from '../utils/sidebar';
+import { applyUserTheme } from '../utils/theme';
 
 export function createLeaderboardPage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
@@ -10,9 +11,10 @@ export function createLeaderboardPage(navigate: (path: string) => void): HTMLEle
 
   const backgroundImage = document.createElement('div');
   backgroundImage.id = 'backgroundImage';
-  backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300 z-10';
-  backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
+  backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+
   container.appendChild(backgroundImage);
+  applyUserTheme(backgroundImage);
 
   const leaderboardSection = document.createElement('div');
   leaderboardSection.className = 'relative mt-24 flex flex-col items-center z-30';

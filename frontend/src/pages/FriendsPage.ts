@@ -1,4 +1,5 @@
-import { createSidebar } from "../utils/sidebar";
+import { createSidebar } from "../utils/sidebar"; 
+import { applyUserTheme } from '../utils/theme';
 
 export function createFriendsPage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement("div");
@@ -8,14 +9,18 @@ export function createFriendsPage(navigate: (path: string) => void): HTMLElement
   sidebar.classList.add("z-40");
   container.appendChild(sidebar);
 
-  const backgroundImage = document.createElement("div");
-  backgroundImage.id = "backgroundImage";
-  backgroundImage.className = "absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300 z-10";
-  backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
-  container.appendChild(backgroundImage);
-
-  const mainSection = document.createElement("div");
-  mainSection.className = "relative mt-24 flex flex-col items-center z-30";
+      // Background Image
+      const backgroundImage = document.createElement('div');
+      backgroundImage.id = 'backgroundImage';
+      backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+    
+      container.appendChild(backgroundImage);
+      applyUserTheme(backgroundImage);;
+      
+  //   // Friends Section
+// Main content
+  const main = document.createElement('div');
+  main.className = 'relative z-10 ml-80 p-8 flex flex-col gap-8';
 
   const title = document.createElement("h2");
   title.textContent = "Friends List";

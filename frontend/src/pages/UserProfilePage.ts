@@ -1,4 +1,5 @@
 import { createSidebar } from "../utils/sidebar"; 
+import { applyUserTheme } from "../utils/theme";
 
 export function createUserProfilePage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
@@ -15,10 +16,9 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   // backgroundImage.className = 'absolute top-0 left-[5rem] lg:left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
 
   backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-  backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
 
   container.appendChild(backgroundImage);
-
+  applyUserTheme(backgroundImage);
 
   // --- Profile Section (Cadre + Formulaire côte à côte) ---
   const profileSection = document.createElement('div');
@@ -97,11 +97,42 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
     const target = event.target as HTMLInputElement;
     if (target.files && target.files[0]) {
       const file = target.files[0];
+
+    // 🔒 Vérification de la taille du fichier
+    if (file.size > 2 * 1024 * 1024) { // 2 Mo
+      alert("Image trop volumineuse. Choisissez une image de moins de 2 Mo.");
+      return;
+    }
+
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
         profileImg.src = result;
         sessionStorage.setItem('profilePicture', result);
+      
+        // mise à jour de l'image sur le backend
+        const token = localStorage.getItem('token');
+        if (token) {
+          fetch('/api/me/image', {
+            method: 'PATCH',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ image: result })
+          })
+          .then(res => {
+            if (!res.ok) throw new Error('Upload failed');
+          })
+          .catch(err => {
+            console.error('Erreur mise à jour avatar :', err);
+            alert('Erreur lors de la sauvegarde de la photo');
+          });
+        }
+      
+        // notifier autres composants
+        const updateEvent = new CustomEvent('profilePictureUpdated', { detail: result });
+        window.dispatchEvent(updateEvent);
       };
       reader.readAsDataURL(file);
     }
@@ -184,6 +215,12 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
       if (res.ok) {
         const usernameDisplay = document.getElementById('usernameValue');
         if (usernameDisplay) usernameDisplay.textContent = newUsername;
+
+        //met a jour username dans le profil, dans la valeur stockee et la sidebar
+        sessionStorage.setItem('username', newUsername);
+        const sidebarUsername = document.getElementById('sidebar-username');
+        if (sidebarUsername) sidebarUsername.textContent = newUsername;
+
         successMessage.classList.remove('hidden');
         setTimeout(() => successMessage.classList.add('hidden'), 3000); // Message disparaît après 3s
       } else {
@@ -263,8 +300,20 @@ if (token) {
     .then(user => {
       const usernameDisplay = document.getElementById('usernameValue');
       const emailValue = document.getElementById('emailValue');
+      const profileImg = document.querySelector('img[alt="Player Profile"]') as HTMLImageElement;
+    
       if (usernameDisplay) usernameDisplay.textContent = user.username;
       if (emailValue) emailValue.textContent = user.email;
+      
+      sessionStorage.setItem('username', user.username);
+    
+      if (user.image) {
+        profileImg.src = user.image;
+        sessionStorage.setItem('profilePicture', user.image);
+      }
+    
+      const sidebarUsername = document.getElementById('sidebar-username');
+      if (sidebarUsername) sidebarUsername.textContent = user.username;
     })
     .catch(err => console.error('Erreur chargement profil:', err));
 }
