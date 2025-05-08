@@ -151,3 +151,4 @@ export async function meRoutes(app: FastifyInstance) {
     }
   });
 }
+
