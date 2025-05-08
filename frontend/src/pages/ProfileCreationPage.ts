@@ -125,6 +125,9 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
   form.appendChild(choiceDiv);
   // form.appendChild(submitBtn);
 
+  // container.appendChild(title);
+  container.appendChild(form);
+  container.appendChild(logoutBtn);
    
   // --- Chargement /api/me ---
   //gameBtn.disabled = true;
@@ -160,8 +163,7 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
     })();
   }
 
-  // --- Assemblage du formulaire ---
-  form.appendChild(pictureDiv);
+ 
 
   // // --- Sélecteur d’images désactivé pour le moment ---
   // const imageSelector = document.createElement('div');
@@ -186,7 +188,6 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
   // });
   // form.appendChild(imageSelector);
 
-  form.appendChild(choiceDiv);
   container.appendChild(form);
   container.appendChild(logoutBtn);
 
