@@ -2,7 +2,6 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import { authRoutes } from './routes/auth';
 import { meRoutes } from './routes/me';
-import { themeRoutes } from './routes/theme';
 import { matchRoutes } from './routes/match';
 import { leaderboardRoutes } from './routes/leaderboard';  // NEW
 import './db/migrations';
@@ -55,7 +54,6 @@ on garde le code en bas. pas besoin de ce block.
   // Enregistrement des routes
   await app.register(authRoutes, { prefix: '/api' });
   await app.register(meRoutes, { prefix: '/api' });
-  await app.register(themeRoutes, { prefix: '/api' });
   await app.register(leaderboardRoutes, { prefix: '/api' });
 
   const PORT = parseInt(process.env.PORT || '3001');

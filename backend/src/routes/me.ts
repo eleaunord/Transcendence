@@ -16,12 +16,12 @@ export async function meRoutes(app: FastifyInstance) {
       const token = auth.split(' ')[1];
       const payload = jwt.verify(token, JWT_SECRET) as any;
       const user = db.prepare('SELECT id, username, email, image, theme FROM users WHERE id = ?').get(payload.userId);
-
       reply.send(user);
     } catch {
       reply.code(401).send({ error: 'Invalid or expired token' });
     }
   });
+
    // Mise à jour du username
    app.patch('/me', async (req, reply) => {
     const auth = req.headers.authorization;
@@ -46,7 +46,6 @@ export async function meRoutes(app: FastifyInstance) {
 
       // On retourne l'utilisateur mis à jour
       const updatedUser = db.prepare('SELECT id, username, email, image, theme FROM users WHERE id = ?').get(userId);
-
       reply.send(updatedUser);
 
     } catch (err) {
@@ -77,15 +76,10 @@ export async function meRoutes(app: FastifyInstance) {
     }
   });
 
+
   app.patch('/me/theme', async (req, reply) => {
     const auth = req.headers.authorization;
     if (!auth) return reply.code(401).send({ error: 'Missing token' });
-  app.get('/me/export', async (req, reply) => {
-    const auth = req.headers.authorization;
-    console.log('[EXPORT API] Authorization header:', auth); // debug 추가
-
-    if (!auth)
-      return reply.code(401).send({ error: 'Missing token' });
   
     try {
       const token = auth.split(' ')[1];
@@ -102,8 +96,24 @@ export async function meRoutes(app: FastifyInstance) {
       const updatedUser = db.prepare('SELECT id, username, email, image, theme FROM users WHERE id = ?').get(userId);
       reply.send(updatedUser);
     } catch (err) {
+      reply.code(401).send({ error: 'Invalid or expired token' });
+    }
+  });
+
+  app.get('/me/export', async (req, reply) => {
+    const auth = req.headers.authorization;
+    console.log('[EXPORT API] Authorization header:', auth); // debug 추가
+
+    if (!auth)
+      return reply.code(401).send({ error: 'Missing token' });
+  
+    try {
+      const token = auth.split(' ')[1];
+      const payload = jwt.verify(token, JWT_SECRET) as any;
+      const userId = payload.userId;
+  
       const user = db.prepare(`
-        SELECT username, email, image, google_id, is_2fa_enabled, created_at
+        SELECT username, email, image, theme, google_id, is_2fa_enabled, created_at
         FROM users WHERE id = ?
       `).get(userId);
   
