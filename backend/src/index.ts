@@ -48,9 +48,9 @@ async function main() {
     console.log(`✅ Backend running on http://${HOST}:${PORT}`);
   });
   
-  app.get('/', async () => {
-    return { message: 'Backend is running' };
-  });
+  // app.get('/', async () => {
+  //   return { message: 'Backend is running' };
+  // });
 }
 
 // process
