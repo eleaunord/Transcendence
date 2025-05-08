@@ -1,4 +1,5 @@
 import { createSidebar } from "../utils/sidebar";
+import { applyUserTheme } from "../utils/theme";
 
 export function createDeleteAccountPage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
@@ -11,8 +12,9 @@ export function createDeleteAccountPage(navigate: (path: string) => void): HTMLE
   // 배경 이미지 그대로 유지
   const backgroundImage = document.createElement('div');
   backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-  backgroundImage.style.backgroundImage = 'url(/assets/profile-themes/arabesque.png)';
+ 
   container.appendChild(backgroundImage);
+  applyUserTheme(backgroundImage);
 
   // 중앙 정렬 래퍼 (섹션을 정중앙에 배치)
   const centerWrapper = document.createElement('div');
