@@ -235,11 +235,27 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
     }
   });
 
+    //------Delete Account 버튼 추가------\\
+
+    const deleteRedirectButton = document.createElement('button');
+    deleteRedirectButton.textContent = 'Delete Account';
+    deleteRedirectButton.className = `
+      mt-4 p-2 bg-red-600 hover:bg-red-700 rounded-lg text-white font-semibold
+      transition-colors duration-300
+    `.replace(/\s+/g, ' ').trim();
+  
+    deleteRedirectButton.addEventListener('click', () => {
+      navigate('/delete-account'); // SPA 리디렉션
+    });
+
+    //------Delete Account 버튼 추가 여기까지------\\
+
   formContainer.appendChild(usernameInput);
   formContainer.appendChild(emailRow);
   formContainer.appendChild(passwordRow);
   formContainer.appendChild(updateButton);
   formContainer.appendChild(successMessage);
+  formContainer.appendChild(deleteRedirectButton); // Delete Account 버튼 추가
 
   profileSection.appendChild(profileCard);
   profileSection.appendChild(formContainer);

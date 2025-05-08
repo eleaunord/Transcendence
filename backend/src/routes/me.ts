@@ -80,6 +80,12 @@ export async function meRoutes(app: FastifyInstance) {
   app.patch('/me/theme', async (req, reply) => {
     const auth = req.headers.authorization;
     if (!auth) return reply.code(401).send({ error: 'Missing token' });
+  app.get('/me/export', async (req, reply) => {
+    const auth = req.headers.authorization;
+    console.log('[EXPORT API] Authorization header:', auth); // debug 추가
+
+    if (!auth)
+      return reply.code(401).send({ error: 'Missing token' });
   
     try {
       const token = auth.split(' ')[1];
@@ -96,6 +102,41 @@ export async function meRoutes(app: FastifyInstance) {
       const updatedUser = db.prepare('SELECT id, username, email, image, theme FROM users WHERE id = ?').get(userId);
       reply.send(updatedUser);
     } catch (err) {
+      const user = db.prepare(`
+        SELECT username, email, image, google_id, is_2fa_enabled, created_at
+        FROM users WHERE id = ?
+      `).get(userId);
+  
+      if (!user) return reply.code(404).send({ error: 'User not found' });
+  
+      reply.header('Content-Type', 'application/json');
+      reply.header('Content-Disposition', 'attachment; filename="my-data.json"');
+      reply.send(user);
+    } catch (err) {
+      console.error('[EXPORT API] JWT verification failed:', err); // debug 추가
+      reply.code(500).send({ error: 'Server error during export' });
+    }
+  });
+
+  app.delete('/me', async (req, reply) => {
+    const auth = req.headers.authorization;
+    if (!auth) return reply.code(401).send({ error: 'Missing token' });
+  
+    try {
+      const token = auth.split(' ')[1];
+      const payload = jwt.verify(token, JWT_SECRET) as any;
+      const userId = payload.userId;
+  
+      // 실제 삭제 (ON DELETE CASCADE 가 있으면 연관 테이블도 자동 정리됨)
+      const result = db.prepare('DELETE FROM users WHERE id = ?').run(userId);
+  
+      if (result.changes > 0) {
+        reply.send({ message: 'User deleted successfully' });
+      } else {
+        reply.code(404).send({ error: 'User not found' });
+      }
+    } catch (err) {
+      console.error('Delete error:', err);
       reply.code(401).send({ error: 'Invalid or expired token' });
     }
   });

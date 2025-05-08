@@ -46,10 +46,11 @@ export async function authRoutes(app: FastifyInstance) {
     }
 
     const existing = db.prepare('SELECT * FROM users WHERE username = ? OR email = ?').get(username, email);
-    if (existing) return reply.code(409).send({ error: 'Username or email already exists' });
+    if (existing) 
+      return reply.code(409).send({ error: 'Username or email already exists' });
 
     const hashed = await bcrypt.hash(password, 10);
-    db.prepare('INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)').run(username, email, hashed);
+    db.prepare('INSERT INTO users (username, email, password_hash, created_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)').run(username, email, hashed);
 
     // On récupère le user pour générer un token
     const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username) as User;
@@ -148,7 +149,8 @@ export async function authRoutes(app: FastifyInstance) {
 
       const user = db.prepare('SELECT * FROM users WHERE id = ?').get(decoded.userId) as User | undefined;
       console.log('[2FA] decoded userId:', decoded.userId); //debug
-      if (!user) return reply.code(404).send({ error: 'User not found' });
+      if (!user) 
+        return reply.code(404).send({ error: 'User not found' });
 
       const code = generate2FACode();
       const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5분 유효

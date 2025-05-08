@@ -139,6 +139,12 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
         });
         const user = await res.json();
         username = user.username;
+
+        //partie a verifier apres merge 0805
+        selectedImage = user.image; //|| 'default.jpg';
+        // picturePreview.src = `/assets/profile-pictures/${selectedImage}`;
+        picturePreview.src = user.image;
+
         welcomeMsg.textContent = `Bienvenue ${user.username} !`;
         //affiche l'image de profil stocke en base de donnees
         if (user.image) {

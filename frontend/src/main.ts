@@ -19,6 +19,10 @@ import { createAIPage } from './pages/AIPage';
 import { createTournamentPage } from './pages/TournamentPage';
 import { createVersusPage } from './pages/VersusPage';
 import { createModePage } from './pages/ModePage';
+import { createDeleteAccountPage } from './pages/DeleteAccountPage';
+import { createPrivacyPolicyPage } from './pages/PrivacyPolicyPage';
+import { createExportDataPage } from './pages/ExportDataPage';
+
 
 // Fonction utilitaire pour injecter `navigate` dans chaque page
 function withNavigate(navigate: (path: string) => void) {
@@ -58,6 +62,9 @@ const routes = {
   '/tournament': useWithNavigate(protectedRoute(createTournamentPage)),
   '/versus': useWithNavigate(protectedRoute(createVersusPage)),
   '/mode': useWithNavigate(protectedRoute(createModePage)),
+  '/delete-account': useWithNavigate(protectedRoute(createDeleteAccountPage)),
+  '/privacy-policy': useWithNavigate(protectedRoute(createPrivacyPolicyPage)),
+  '/export-data': useWithNavigate(protectedRoute(createExportDataPage)),
 }
 // Maintenant qu'on a les routes, on peut initialiser proprement
 navigate = initRouter(routes)!;

@@ -34,6 +34,8 @@ async function migrate() {
 
   // Theme de fond personnalisé
   safeAlter('theme', "TEXT DEFAULT '/assets/profile-themes/arabesque.png'");
+  // Account creation time
+  safeAlter('created_at', 'TIMESTAMP');
 
   // GAME : création de la table match
   await db.exec(`

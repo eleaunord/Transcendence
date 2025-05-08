@@ -1,3 +1,6 @@
+// il faut ajouter { icon: '/assets/side-bar/exportdata.png', label: 'Export Data', route: '/export-data' },
+
+
 export function createSidebar(navigate: (path: string) => void): HTMLElement {
     const sidebar = document.createElement('div');
     sidebar.id = 'sidebar';
@@ -147,40 +150,40 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
           (label as HTMLElement).classList.add('opacity-100');
         });
       });
-      
-      sidebar.addEventListener('mouseleave', () => {
-        // const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
-        // if (profileImg) {
-        //  //profileImg.style.transform = 'scale(1)';
+    });
+    
+    sidebar.addEventListener('mouseleave', () => {
+      // const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
+      // if (profileImg) {
+      //  //profileImg.style.transform = 'scale(1)';
 
-        //   profileImg.classList.remove('w-36', 'h-36');
-        //   profileImg.classList.add('w-12', 'h-12');
-        // }
-      
-        document.querySelectorAll('.sidebar-label').forEach(label => {
-          (label as HTMLElement).classList.add('opacity-0');
-          (label as HTMLElement).classList.remove('opacity-100');
-        });
+      //   profileImg.classList.remove('w-36', 'h-36');
+      //   profileImg.classList.add('w-12', 'h-12');
+      // }
+    
+      document.querySelectorAll('.sidebar-label').forEach(label => {
+        (label as HTMLElement).classList.add('opacity-0');
+        (label as HTMLElement).classList.remove('opacity-100');
       });
-      
-    // // --- Charger dynamiquement les infos du joueur ---
-    // const token = localStorage.getItem('token');
-    // if (token) {
-    //   fetch('/api/me', {
-    //     headers: { Authorization: `Bearer ${token}` }
-    //   })
-    //     .then(res => res.json())
-    //     .then(user => {
-    //       const usernameText = document.getElementById('sidebar-username');
-    //       const winCount = document.getElementById('win-count');
-    //       const lossCount = document.getElementById('loss-count');
-    //       if (usernameText) usernameText.textContent = user.username;
-    //       if (winCount) winCount.textContent = (user.wins || 0).toString();
-    //       if (lossCount) lossCount.textContent = (user.losses || 0).toString();
-    //     })
-    //     .catch(err => console.error('Erreur chargement sidebar:', err));
-    // }
-  
-    return sidebar;
-  }
-  
+    });
+    
+  // // --- Charger dynamiquement les infos du joueur ---
+  // const token = localStorage.getItem('token');
+  // if (token) {
+  //   fetch('/api/me', {
+  //     headers: { Authorization: Bearer ${token} }
+  //   })
+  //     .then(res => res.json())
+  //     .then(user => {
+  //       const usernameText = document.getElementById('sidebar-username');
+  //       const winCount = document.getElementById('win-count');
+  //       const lossCount = document.getElementById('loss-count');
+  //       if (usernameText) usernameText.textContent = user.username;
+  //       if (winCount) winCount.textContent = (user.wins || 0).toString();
+  //       if (lossCount) lossCount.textContent = (user.losses || 0).toString();
+  //     })
+  //     .catch(err => console.error('Erreur chargement sidebar:', err));
+  // }
+
+  return sidebar;
+}
