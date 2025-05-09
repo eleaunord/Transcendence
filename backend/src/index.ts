@@ -27,7 +27,7 @@ async function main() {
   // authRoutes(app);
   // meRoutes(app);
   // themeRoutes(app);
-  // matchRoutes(app);
+  //await matchRoutes(app);
 
   //leaderboardRoutes(app); // NEW
 
@@ -45,6 +45,7 @@ async function main() {
   await app.register(meRoutes, { prefix: '/api' });
   await app.register(friendsRoutes, { prefix: '/api' });
   await app.register(leaderboardRoutes, { prefix: '/api' });
+  await app.register(matchRoutes, { prefix: '/api' });
 
   app.get('/', async () => {
     return { message: 'Backend is running' };

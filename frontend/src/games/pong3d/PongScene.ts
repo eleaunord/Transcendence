@@ -25,27 +25,38 @@ export async function createPongScene(canvas: HTMLCanvasElement, options: { mode
   const scene = new Scene(engine);
   scene.clearColor = new Color4(0, 0, 0, 1.0);
 
-  let matchId: number | null = null;
+  let gameId: number | null = null;
 
   async function startMatch() {
     try {
-      const response = await fetch('http://localhost:3001/match/start', {
+      const user_id = 1; // ← à remplacer dynamiquement
+      const opponent_id = isAI ? 2 : 3; // 2 = IA, 3 = Guest ou autre
+  
+      const response = await fetch('http://localhost:3001/api/match/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          player1: 'PlayerOne',
-          player2: options.mode === 'ai' ? 'AI' : 'PlayerTwo'
+          user_id,
+          opponent_id
         })
       });
+  
       const data = await response.json();
-      matchId = data.matchId;
-      console.log('🎮 Nouveau match créé avec ID :', matchId);
+      console.log("🧾 Données retour du backend :", data);
+      gameId = data.gameId;
+      console.log('🎮 Nouveau match (gameId):', gameId);
     } catch (err) {
       console.error('❌ Erreur création match :', err);
     }
-  }
+  }  
 
   await startMatch();
+
+  // if (!gameId) {
+  //   console.error("❌ Aucun gameId reçu. Annulation du jeu.");
+  //   return engine;
+  // }
+
 
   const SCORE_LIMIT = 5;
   let scorePlayer = 0;
@@ -173,12 +184,12 @@ export async function createPongScene(canvas: HTMLCanvasElement, options: { mode
   window.addEventListener("keydown", (e) => {
     const speed = 0.2;
     if (gameOver) return;
-    if (["s", "ArrowDown"].includes(e.key) && paddle1.position.z > -2.4) paddle1.position.z -= speed;
-    if (["w", "ArrowUp"].includes(e.key) && paddle1.position.z < 2.4) paddle1.position.z += speed;
+    if (["s"].includes(e.key) && paddle1.position.z > -2.4) paddle1.position.z -= speed;
+    if (["w"].includes(e.key) && paddle1.position.z < 2.4) paddle1.position.z += speed;
 
     if (!isAI) {
-      if (["ArrowDown", "l"].includes(e.key) && paddle2.position.z > -2.4) paddle2.position.z -= speed;
-      if (["ArrowUp", "o"].includes(e.key) && paddle2.position.z < 2.4) paddle2.position.z += speed;
+      if (["ArrowDown"].includes(e.key) && paddle2.position.z > -2.4) paddle2.position.z -= speed;
+      if (["ArrowUp"].includes(e.key) && paddle2.position.z < 2.4) paddle2.position.z += speed;
     }
   });
 
@@ -248,19 +259,23 @@ export async function createPongScene(canvas: HTMLCanvasElement, options: { mode
         gameOver = true;
         ballDir.scaleInPlace(0);
 
-        if (matchId !== null) {
-          fetch('http://localhost:3001/match/end', {
+        if (gameId !== null) {
+          fetch('http://localhost:3001/api/match/end', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              matchId,
+              gameId,
+              user_id: 1,
+              opponent_id: isAI ? 2 : 3,
               score1: scorePlayer,
               score2: scoreIA
             })
-          }).then(() => {
-            console.log('✅ Match enregistré !', { matchId, score1: scorePlayer, score2: scoreIA });
-          }).catch(err => console.error('❌ Erreur enregistrement match :', err));
-        }
+          })
+            .then(() => {
+              console.log('✅ Match enregistré !', { gameId, score1: scorePlayer, score2: scoreIA });
+            })
+            .catch(err => console.error('❌ Erreur enregistrement match :', err));
+        }        
 
         const button = document.createElement("button");
         button.textContent = "Rejouer la partie";

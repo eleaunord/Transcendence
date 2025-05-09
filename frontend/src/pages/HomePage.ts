@@ -38,7 +38,7 @@ export function createHomePage(navigate: (path: string) => void): HTMLElement {
 
   const background = document.createElement('div');
   background.className = 'absolute inset-0 bg-cover bg-center opacity-40';
-  background.style.backgroundImage = "url(/assets/photo_pong.png)";
+  background.style.backgroundImage = "url(/assets/background/ciel.jpg)";
   container.appendChild(background);
 
   const content = document.createElement('div');
@@ -46,11 +46,11 @@ export function createHomePage(navigate: (path: string) => void): HTMLElement {
 
   const title = document.createElement('h1');
   title.className = 'text-5xl font-extrabold mb-4';
-  title.textContent = 'Bienvenue sur Transcendance !';
+  title.textContent = 'Welcome to HaneulPong !';
 
   const paragraph = document.createElement('p');
   paragraph.className = 'text-xl mb-8';
-  paragraph.textContent = 'Préparez-vous à jouer à un jeu classique avec vos amis.';
+  paragraph.textContent = 'Get ready to play a classic game with your friends.';
 
   // Création de la checkbox GDPR
   const privacyCheckboxContainer = document.createElement('div');
