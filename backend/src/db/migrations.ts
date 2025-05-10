@@ -62,6 +62,64 @@ async function migrate() {
     );
   `);
   console.log('✅ Table `scores` créée');
+
+  /* ==========================
+     AJOUT DE LA TABLE potential_friends 
+     POUR LES AMIS FICTIFS
+  ========================== */
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS potential_friends (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT NOT NULL,
+      status TEXT DEFAULT 'online',
+      profile_picture TEXT
+    );
+  `);
+  console.log('✅ Table `potential_friends` créée');
+
+  /* ==========================
+     AJOUT DE LA TABLE user_friends
+     POUR GÉRER LES LIENS ENTRE L'USER ET LES AMIS FICTIFS
+  ========================== */
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS user_friends (
+      user_id INTEGER NOT NULL,
+      friend_id INTEGER NOT NULL,
+      is_friend BOOLEAN DEFAULT 0,
+      PRIMARY KEY (user_id, friend_id),
+      FOREIGN KEY (user_id) REFERENCES users(id),
+      FOREIGN KEY (friend_id) REFERENCES potential_friends(id)
+    );
+  `);
+  console.log('✅ Table `user_friends` créée');
+
+  /* ==========================
+     ⚠️ SUPPRESSION DES ANCIENS AMIS POUR EVITER LES DOUBLONS
+  ========================== */
+  await db.exec(`DELETE FROM potential_friends`);
+  console.log('🗑️ Tous les anciens amis fictifs ont été supprimés');
+
+  /* ==========================
+     INSÉRER LES AMIS FICTIFS (5 au total)
+  ========================== */
+  const potentialFriends = [
+    { username: 'Fixer', status: 'online', profile_picture: '/assets/profile-pictures/Fixer.png' },
+    { username: 'Lady Aurora', status: 'online', profile_picture: '/assets/profile-pictures/Lady_Aurora.png' },
+    { username: 'Grunthor', status: 'offline', profile_picture: '/assets/profile-pictures/Grunthor.png' },
+    { username: 'Stormblade', status: 'online', profile_picture: '/assets/profile-pictures/Stormblade.png' },
+    { username: 'ByteWarrior', status: 'online', profile_picture: '/assets/profile-pictures/ByteWarrior.png' }
+  ];
+
+  const insertFriend = db.prepare(`
+    INSERT INTO potential_friends (username, status, profile_picture) VALUES (?, ?, ?)
+  `);
+
+  potentialFriends.forEach((friend) => {
+    insertFriend.run(friend.username, friend.status, friend.profile_picture);
+    console.log(`✅ Ami fictif ajouté : ${friend.username}`);
+  });
+
+  console.log('✅ Amis fictifs insérés dans la base de données');
 }
 
 // Exécuter la migration

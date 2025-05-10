@@ -63,15 +63,31 @@ db.prepare(`
 `).run();
 
 
-// //    ===Création de la table "friends" ===
-// db.prepare(`
-//   CREATE TABLE IF NOT EXISTS friends (
-//     id INTEGER PRIMARY KEY AUTOINCREMENT,
-//     user_id INTEGER NOT NULL,
-//     friend_id INTEGER NOT NULL,
-//     status TEXT NOT NULL,
-//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-//     FOREIGN KEY (user_id) REFERENCES users(id),
-//     FOREIGN KEY (friend_id) REFERENCES users(id)
-//   )
-// `).run()
+/* ==========================
+   AJOUT DE LA TABLE potential_friends 
+   POUR LES AMIS FICTIFS
+========================== */
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS potential_friends (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL,
+    status TEXT DEFAULT 'online',
+    profile_picture TEXT
+  );
+`).run();
+
+
+/* ==========================
+   AJOUT DE LA TABLE 
+   POUR GÉRER LES LIENS ENTRE L'USER ET LES AMIS FICTIFS
+========================== */
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS user_friends (
+    user_id INTEGER NOT NULL,
+    friend_id INTEGER NOT NULL,
+    is_friend BOOLEAN DEFAULT 0,
+    PRIMARY KEY (user_id, friend_id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (friend_id) REFERENCES potential_friends(id)
+  );
+`).run();

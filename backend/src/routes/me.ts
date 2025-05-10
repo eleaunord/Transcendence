@@ -8,6 +8,20 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function meRoutes(app: FastifyInstance) {
+  // app.get('/me', async (req, reply) => {
+  //   const auth = req.headers.authorization;
+  //   if (!auth) return reply.code(401).send({ error: 'Missing token' });
+
+  //   try {
+  //     const token = auth.split(' ')[1];
+  //     const payload = jwt.verify(token, JWT_SECRET) as any;
+  //     const user = db.prepare('SELECT id, username, email, image, theme FROM users WHERE id = ?').get(payload.userId);
+  //     reply.send(user);
+  //   } catch {
+  //     reply.code(401).send({ error: 'Invalid or expired token' });
+  //   }
+  // });
+
   app.get('/me', async (req, reply) => {
     const auth = req.headers.authorization;
     if (!auth) return reply.code(401).send({ error: 'Missing token' });
@@ -15,9 +29,64 @@ export async function meRoutes(app: FastifyInstance) {
     try {
       const token = auth.split(' ')[1];
       const payload = jwt.verify(token, JWT_SECRET) as any;
-      const user = db.prepare('SELECT id, username, email, image, theme FROM users WHERE id = ?').get(payload.userId);
-      reply.send(user);
-    } catch {
+
+      // === Récupération de l'utilisateur connecté ===
+      const user = db.prepare(`
+        SELECT id, username, email, image, theme 
+        FROM users 
+        WHERE id = ?
+      `).get(payload.userId);
+
+      if (!user) {
+        return reply.code(404).send({ error: 'User not found' });
+      }
+
+      // === Récupération des amis fictifs de l'utilisateur ===
+      const friendsQuery = `
+        SELECT 
+          pf.id,
+          pf.username,
+          pf.status,
+          pf.profile_picture
+        FROM 
+          potential_friends pf
+        JOIN 
+          user_friends upf ON pf.id = upf.friend_id
+        WHERE 
+          upf.user_id = ? AND upf.is_friend = 1
+        ORDER BY 
+          pf.username
+      `;
+      const friends = db.prepare(friendsQuery).all(payload.userId);
+
+      // === Récupération des amis potentiels non ajoutés ===
+      const potentialFriendsQuery = `
+        SELECT 
+          pf.id,
+          pf.username,
+          pf.status,
+          pf.profile_picture
+        FROM 
+          potential_friends pf
+        LEFT JOIN 
+          user_friends upf ON pf.id = upf.friend_id AND upf.user_id = ?
+        WHERE 
+          upf.is_friend IS NULL OR upf.is_friend = 0
+        ORDER BY 
+          pf.username
+      `;
+      const potentialFriends = db.prepare(potentialFriendsQuery).all(payload.userId);
+
+      // === Construction de l'objet de retour ===
+      const fullProfile = {
+        ...user,
+        friends,
+        potentialFriends
+      };
+
+      reply.send(fullProfile);
+
+    } catch (err) {
       reply.code(401).send({ error: 'Invalid or expired token' });
     }
   });
