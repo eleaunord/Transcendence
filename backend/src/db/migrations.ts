@@ -17,6 +17,19 @@ function safeAlter(column: string, type: string) {
   }
 }
 
+// NEW
+// Insert required users BEFORE any foreign key dependencies
+db.prepare(`
+  INSERT OR IGNORE INTO users (id, username, email)
+  VALUES
+    (1, 'PlayerOne', 'player1@example.com'),
+    (2, 'AI', 'ai@game.com'),
+    (3, 'Guest', 'guest@game.com')
+`).run();
+
+console.log('✅ Utilisateurs spéciaux insérés dans la table `users`');
+
+
 // --- add new vairables in DB --- \\
 
 // Fonction principale qui gère toutes les migrations

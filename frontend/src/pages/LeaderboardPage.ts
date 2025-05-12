@@ -8,18 +8,18 @@ interface PlayerScore {
 }
 
 // Fallback mock data in case API fails + TO TEST 
-const MOCK_LEADERBOARD_DATA: PlayerScore[] = [
-  { id: 1, username: "GamerPro99", totalPoints: 12450 },
-  { id: 2, username: "PixelMaster", totalPoints: 10820 },
-  { id: 3, username: "LegendaryGamer", totalPoints: 9740 },
-  { id: 4, username: "NinjaPlayer", totalPoints: 8650 },
-  { id: 5, username: "RocketQueen", totalPoints: 7920 },
-  { id: 6, username: "EpicWarrior", totalPoints: 7210 },
-  { id: 7, username: "ShadowHunter", totalPoints: 6580 },
-  { id: 8, username: "MagicWizard", totalPoints: 5940 },
-  { id: 9, username: "SpeedRacer", totalPoints: 5320 },
-  { id: 10, username: "CosmicPlayer", totalPoints: 4780 }
-];
+// const MOCK_LEADERBOARD_DATA: PlayerScore[] = [
+//   { id: 1, username: "GamerPro99", totalPoints: 12450 },
+//   { id: 2, username: "PixelMaster", totalPoints: 10820 },
+//   { id: 3, username: "LegendaryGamer", totalPoints: 9740 },
+//   { id: 4, username: "NinjaPlayer", totalPoints: 8650 },
+//   { id: 5, username: "RocketQueen", totalPoints: 7920 },
+//   { id: 6, username: "EpicWarrior", totalPoints: 7210 },
+//   { id: 7, username: "ShadowHunter", totalPoints: 6580 },
+//   { id: 8, username: "MagicWizard", totalPoints: 5940 },
+//   { id: 9, username: "SpeedRacer", totalPoints: 5320 },
+//   { id: 10, username: "CosmicPlayer", totalPoints: 4780 }
+// ];
 
 
 export function createLeaderboardPage(navigate: (path: string) => void): HTMLElement {

@@ -78,4 +78,40 @@ export async function matchRoutes(app: FastifyInstance) {
     const games = stmt.all(playerId, playerId);
     reply.send(games);
   });
+
+  // app.get('/leaderboard', async (request, reply) => {
+  //   try {
+  //     console.log('Leaderboard endpoint accessed');
+
+  //     const query = `
+  //     SELECT
+  //       u.id,
+  //       u.username,
+  //       COUNT(g.id) as wins
+  //     FROM users u
+  //     LEFT JOIN games g ON u.id = g.winner_id
+  //     GROUP BY u.id, u.username
+  //     ORDER BY wins DESC
+  //     LIMIT 10
+  //   `;
+
+  //     const rows = db.prepare(query).all();
+
+  //     const leaderboard = rows.map((row: any) => ({
+  //       id: row.id,
+  //       username: row.username,
+  //       totalPoints: row.wins * 1000 // 1 victoire = 1000 pts
+  //     }));
+
+  //     reply.header('Access-Control-Allow-Origin', 'http://localhost:8080');
+  //     reply.header('Access-Control-Allow-Credentials', 'true');
+  //     reply.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  //     reply.header('Access-Control-Allow-Headers', 'Content-Type');
+
+  //     return { leaderboard };
+  //   } catch (error) {
+  //     console.error('Error fetching leaderboard:', error);
+  //     reply.status(500).send({ error: 'Failed to fetch leaderboard data' });
+  //   }
+  // });
 }
