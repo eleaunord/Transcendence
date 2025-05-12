@@ -34,7 +34,7 @@ export async function createPongScene(canvas: HTMLCanvasElement, options: { mode
   
       const response = await fetch('http://localhost:3001/api/match/start', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', "Cache-Control": "no-cache" },
         body: JSON.stringify({
           user_id,
           opponent_id

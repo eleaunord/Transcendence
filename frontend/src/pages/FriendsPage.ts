@@ -51,7 +51,7 @@ export function createFriendsPage(navigate: (path: string) => void): HTMLElement
   const headerRow = document.createElement("tr");
   headerRow.className = "bg-gray-600/90";
 
-  ["ID", "Friend", "Status", "Action"].forEach((text) => {
+  ["Friend", "Status", "Action"].forEach((text) => {
     const th = document.createElement("th");
     th.textContent = text;
     th.className = "border border-gray-800 px-4 py-4 text-lg font-semibold";
@@ -113,7 +113,7 @@ export function createFriendsPage(navigate: (path: string) => void): HTMLElement
       const emptyRow = document.createElement("tr");
       const emptyCell = document.createElement("td");
       emptyCell.textContent = "No friends yet";
-      emptyCell.colSpan = 4;
+      emptyCell.colSpan = 3;
       emptyCell.className = "border border-gray-800 px-4 py-6 text-center text-gray-400";
       emptyRow.appendChild(emptyCell);
       tbody.appendChild(emptyRow);
@@ -124,10 +124,10 @@ export function createFriendsPage(navigate: (path: string) => void): HTMLElement
       const row = document.createElement("tr");
       row.className = "bg-gray-900 hover:bg-gray-800";
 
-      const idCell = document.createElement("td");
-      idCell.textContent = friend.id.toString();
-      idCell.className = "border border-gray-800 px-4 py-4 text-center";
-      row.appendChild(idCell);
+      // const idCell = document.createElement("td");
+      // idCell.textContent = friend.id.toString();
+      // idCell.className = "border border-gray-800 px-4 py-4 text-center";
+      // row.appendChild(idCell);
 
       const nameCell = document.createElement("td");
       nameCell.textContent = friend.username;
