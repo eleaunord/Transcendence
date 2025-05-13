@@ -2,106 +2,59 @@ import { FastifyInstance } from 'fastify';
 import jwt from 'jsonwebtoken';
 import db from '../db/db';
 import dotenv from 'dotenv';
+import { authenticateToken } from './authMiddleware';
 
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function meRoutes(app: FastifyInstance) {
-  // app.get('/me', async (req, reply) => {
-  //   const auth = req.headers.authorization;
-  //   if (!auth) return reply.code(401).send({ error: 'Missing token' });
-
-  //   try {
-  //     const token = auth.split(' ')[1];
-  //     const payload = jwt.verify(token, JWT_SECRET) as any;
-  //     const user = db.prepare('SELECT id, username, email, image, theme FROM users WHERE id = ?').get(payload.userId);
-  //     reply.send(user);
-  //   } catch {
-  //     reply.code(401).send({ error: 'Invalid or expired token' });
-  //   }
-  // });
+  app.addHook('preHandler', authenticateToken);
 
   app.get('/me', async (req, reply) => {
-    const auth = req.headers.authorization;
-    if (!auth) return reply.code(401).send({ error: 'Missing token' });
+    const userId = req.user?.id;
+    if (!userId) return reply.code(401).send({ error: 'Unauthorized' });
 
-    try {
-      const token = auth.split(' ')[1];
-      const payload = jwt.verify(token, JWT_SECRET) as any;
+    const user = db.prepare(`
+      SELECT id, username, email, image, theme, is_2fa_enabled, seen_2fa_prompt
+      FROM users WHERE id = ?
+    `).get(userId);
 
-      // === Récupération de l'utilisateur connecté ===
-      const user = db.prepare(`
-        SELECT id, username, email, image, theme 
-        FROM users 
-        WHERE id = ?
-      `).get(payload.userId);
+    if (!user) return reply.code(404).send({ error: 'User not found' });
+    
+    const friends = db.prepare(`
+      SELECT pf.id, pf.username, pf.status, pf.profile_picture
+      FROM potential_friends pf
+      JOIN user_friends upf ON pf.id = upf.friend_id
+      WHERE upf.user_id = ? AND upf.is_friend = 1
+      ORDER BY pf.username
+    `).all(userId);
 
-      if (!user) {
-        return reply.code(404).send({ error: 'User not found' });
-      }
-
-      // === Récupération des amis fictifs de l'utilisateur ===
-      const friendsQuery = `
-        SELECT 
-          pf.id,
-          pf.username,
-          pf.status,
-          pf.profile_picture
-        FROM 
-          potential_friends pf
-        JOIN 
-          user_friends upf ON pf.id = upf.friend_id
-        WHERE 
-          upf.user_id = ? AND upf.is_friend = 1
-        ORDER BY 
-          pf.username
-      `;
-      const friends = db.prepare(friendsQuery).all(payload.userId);
-
-      // === Récupération des amis potentiels non ajoutés ===
-      const potentialFriendsQuery = `
-        SELECT 
-          pf.id,
-          pf.username,
-          pf.status,
-          pf.profile_picture
-        FROM 
-          potential_friends pf
-        LEFT JOIN 
-          user_friends upf ON pf.id = upf.friend_id AND upf.user_id = ?
-        WHERE 
-          upf.is_friend IS NULL OR upf.is_friend = 0
-        ORDER BY 
-          pf.username
-      `;
-      const potentialFriends = db.prepare(potentialFriendsQuery).all(payload.userId);
-
+    const potentialFriends = db.prepare(`
+      SELECT pf.id, pf.username, pf.status, pf.profile_picture
+      FROM potential_friends pf
+      LEFT JOIN user_friends upf ON pf.id = upf.friend_id AND upf.user_id = ?
+      WHERE upf.is_friend IS NULL OR upf.is_friend = 0
+      ORDER BY pf.username
+    `).all(userId);
       // === Construction de l'objet de retour ===
-      const fullProfile = {
+      reply.send({
         ...user,
         friends,
         potentialFriends
-      };
-
-      reply.send(fullProfile);
-
-    } catch (err) {
-      reply.code(401).send({ error: 'Invalid or expired token' });
-    }
-  });
-
+      });
+    });
+  
    // Mise à jour du username
-   app.patch('/me', async (req, reply) => {
-    const auth = req.headers.authorization;
-    if (!auth) return reply.code(401).send({ error: 'Missing token' });
+  app.patch('/me', async (req, reply) => {
+   const auth = req.headers.authorization;
+   if (!auth) return reply.code(401).send({ error: 'Missing token' });
+   try {
+     const token = auth.split(' ')[1];
+     const payload = jwt.verify(token, JWT_SECRET) as any;
+     const userId = payload.userId;
 
-    try {
-      const token = auth.split(' ')[1];
-      const payload = jwt.verify(token, JWT_SECRET) as any;
-      const userId = payload.userId;
-
-      const { username } = req.body as { username: string };
+     const { username } = req.body as { username: string };
     
       // Vérification du username (3 à 20 caractères, lettres, chiffres ou underscore)
       const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
@@ -119,6 +72,20 @@ export async function meRoutes(app: FastifyInstance) {
 
     } catch (err) {
       reply.code(401).send({ error: 'Invalid or expired token' });
+    }
+  });
+
+  app.post('/me/seen-2fa', async (req, reply) => {
+    const auth = req.headers.authorization;
+    if (!auth) return reply.code(401).send({ error: 'Missing token' });
+  
+    try {
+      const token = auth.split(' ')[1];
+      const payload = jwt.verify(token, JWT_SECRET) as { userId: number };
+      db.prepare('UPDATE users SET seen_2fa_prompt = 1 WHERE id = ?').run(payload.userId);
+      reply.send({ message: 'seen_2fa_prompt updated' });
+    } catch (err) {
+      reply.code(401).send({ error: 'Invalid token' });
     }
   });
 
@@ -197,6 +164,24 @@ export async function meRoutes(app: FastifyInstance) {
     }
   });
 
+  // PATCH /api/me/2fa
+  app.patch('/me/2fa', async (req, reply) => {
+    const userId = req.user?.id;
+    if (!userId)
+        return reply.code(401).send({ error: 'Unauthorized' });
+
+    const { enable } = req.body as { enable: boolean };
+
+    if (typeof enable !== 'boolean') {
+      return reply.code(400).send({ error: 'Missing or invalid "enable" field' });
+    }
+
+    const stmt = db.prepare('UPDATE users SET is_2fa_enabled = ? WHERE id = ?');
+    stmt.run(enable ? 1 : 0, userId);
+
+    reply.send({ success: true, is_2fa_enabled: enable });
+  });
+  
   app.delete('/me', async (req, reply) => {
     const auth = req.headers.authorization;
     if (!auth) return reply.code(401).send({ error: 'Missing token' });

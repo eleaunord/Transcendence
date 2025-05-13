@@ -1,4 +1,7 @@
-export function create2FAPage(navigate: (path: string) => void, mode: 'activation' | 'input' = 'activation'): HTMLElement {
+export function create2FAPage(
+	navigate: (path: string) => void,
+	mode: 'activation' | 'input' = 'activation'
+  ): HTMLElement {
 	console.log('[2FA PAGE] mode:', mode);
 	const container = document.createElement('div');
 	container.className = 'flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
@@ -10,17 +13,32 @@ export function create2FAPage(navigate: (path: string) => void, mode: 'activatio
 	const title = document.createElement('h2');
 	title.className = 'text-2xl font-bold mb-4';
 	title.textContent = mode === 'activation' ? 'Two-Factor Verification' : 'Enter 2FA Code';
-  
 	form.appendChild(title);
   
 	if (mode === 'activation') {
-	  // get token/email from URL
 	  const urlParams = new URLSearchParams(window.location.search);
 	  const token = urlParams.get('token');
 	  const email = urlParams.get('email');
   
 	  if (token) sessionStorage.setItem('token', token);
 	  if (email) sessionStorage.setItem('userEmail', email);
+  
+	  // seen_2fa_prompt 업데이트 (await 제거)
+	  const finalToken = token || localStorage.getItem('token');
+	  if (finalToken) {
+		fetch('http://localhost:3001/api/me/seen-2fa', {
+		  method: 'POST',
+		  headers: {
+			Authorization: `Bearer ${finalToken}`,
+		  },
+		})
+		  .then(() => {
+			console.log('[2FA] seen_2fa_prompt successfully updated');
+		  })
+		  .catch((err) => {
+			console.warn('[2FA] Failed to update seen_2fa_prompt:', err);
+		  });
+	  }
   
 	  const description = document.createElement('p');
 	  description.className = 'text-base mb-8';
@@ -31,17 +49,14 @@ export function create2FAPage(navigate: (path: string) => void, mode: 'activatio
 	  activateBtn.type = 'button';
 	  activateBtn.textContent = '🔒 Enable Two-Factor Authentication';
 	  activateBtn.className = 'w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg mb-4';
-	  console.log('[2FA] Activate button created'); // DEBUG 추가!
-
-		activateBtn.onclick = async () => {
-		console.log('[2FA] Enable button clicked'); // DEBUG 추가!
-		const token = localStorage.getItem('token'); // 수정한 부분 
-		console.log('[2FA TOKEN] Local token:', token);
+  
+	  activateBtn.onclick = async () => {
+		const token = localStorage.getItem('token');
 		if (!token) {
-			alert('Token not found');
-			return;
+		  alert('Token not found');
+		  return;
 		}
-	
+  
 		const res = await fetch('http://localhost:3001/api/enable-2fa', {
 		  method: 'POST',
 		  headers: {
@@ -63,7 +78,6 @@ export function create2FAPage(navigate: (path: string) => void, mode: 'activatio
 	  skipBtn.type = 'button';
 	  skipBtn.textContent = 'Later';
 	  skipBtn.className = 'px-6 py-2 bg-gray-700 hover:bg-red-700 text-white font-semibold rounded-lg';
-  
 	  skipBtn.onclick = () => navigate('/profile-creation');
   
 	  form.appendChild(activateBtn);
@@ -72,11 +86,30 @@ export function create2FAPage(navigate: (path: string) => void, mode: 'activatio
   
 	if (mode === 'input') {
 	  const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-	  const email = sessionStorage.getItem('userEmail');
+	//   const email = sessionStorage.getItem('userEmail');
 
-	  console.log('[2FA VERIFY] token:', token); // 디버깅
-	  console.log('[2FA VERIFY] email:', email); // 디버깅
-  
+	  if (token) {
+		fetch('http://localhost:3001/api/enable-2fa', {
+		  method: 'POST',
+		  headers: {
+			Authorization: `Bearer ${token}`,
+		  },
+		})
+		  .then((res) => {
+			if (!res.ok) throw new Error('Failed to send 2FA code');
+			console.log('[2FA] Code sent automatically for verification');
+		  })
+		  .catch((err) => {
+			console.warn('[2FA] Auto-send error:', err);
+		  });
+	  }
+	
+	  // msg 출력 부분
+	  const infoMessage = document.createElement('p');
+	  infoMessage.className = 'mb-4 text-sm text-gray-300';
+	  infoMessage.textContent = 'A verification code has been sent to your email address. Please enter it below.';
+	  form.appendChild(infoMessage);
+
 	  const input = document.createElement('input');
 	  input.placeholder = '6-digit code';
 	  input.className = 'w-full mb-4 p-2 text-black rounded';
@@ -89,8 +122,6 @@ export function create2FAPage(navigate: (path: string) => void, mode: 'activatio
   
 	  verifyBtn.onclick = async () => {
 		const code = input.value;
-		console.log('[2FA VERIFY] code:', code); // 디버깅
-		
 		if (!token || !code) {
 		  alert('Missing info');
 		  return;

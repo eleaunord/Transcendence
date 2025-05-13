@@ -41,12 +41,14 @@ async function migrate() {
   safeAlter('is_2fa_enabled', 'INTEGER DEFAULT 0');
   safeAlter('two_fa_code', 'TEXT');
   safeAlter('two_fa_expires_at', 'TEXT');
+  safeAlter('seen_2fa_prompt', 'INTEGER DEFAULT 0'); // 추가 : 0805
 
   //Image profile(securise)
   safeAlter('image', 'TEXT');
 
   // Theme de fond personnalisé
   safeAlter('theme', "TEXT DEFAULT '/assets/profile-themes/arabesque.png'");
+
   // Account creation time
   safeAlter('created_at', 'TIMESTAMP');
 
@@ -137,5 +139,3 @@ async function migrate() {
 
 // Exécuter la migration
 migrate().catch(console.error);
-
-

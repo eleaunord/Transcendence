@@ -4,17 +4,29 @@ type RouteMap = { [path: string]: (navigate: (path: string) => void) => HTMLElem
  * Permet de protéger une route : redirige vers /auth si aucun token n’est présent.
  */
 export function protectedRoute(
-  page: (navigate: (path: string) => void) => HTMLElement
+  page: (navigate: (path: string) => void) => HTMLElement,
+  message: string = 'Please log in to proceed.'
 ): (navigate: (path: string) => void) => HTMLElement {
   return (navigate) => {
     const token = localStorage.getItem('token');
+    console.log('[ProtectedRoute] Token presence:', token);
+
     if (!token) {
-      navigate('/auth');
-      const redirecting = document.createElement('div');
-      redirecting.textContent = 'Redirection vers la page de connexion...';
-      redirecting.className = 'text-white text-center mt-10 text-xl';
-      return redirecting;
+      console.log('[ProtectedRoute] User not logged in → redirecting to home...');
+
+      const placeholder = document.createElement('div');
+      placeholder.textContent = 'Redirecting to home...';
+      placeholder.className = 'text-white text-center mt-40 text-xl';
+
+      localStorage.setItem('protected_route_notice', message);
+
+      setTimeout(() => {
+        navigate('/');
+      }, 0);
+
+      return placeholder;
     }
+
     return page(navigate);
   };
 }
@@ -46,3 +58,23 @@ export function initRouter(routes: RouteMap, rootId = 'app') {
   return navigate;
 }
 
+export function protected2FARoute(
+  page: (navigate: (path: string) => void) => HTMLElement
+): (navigate: (path: string) => void) => HTMLElement {
+  return (navigate) => {
+    const token = localStorage.getItem('token');
+    console.log('[2FA] token exists? :', token);
+
+    if (!token) {
+      console.log('[2FA] User not logged in → redirecting to home...');
+      setTimeout(() => {
+        localStorage.setItem('2fa_redirect_notice', '1');
+        navigate('/');
+      }, 0);
+      return document.createElement('div'); // 이걸 붙이면 비어있는 화면이 생김
+    }
+
+    console.log('[2FA] User is logged in → rendering 2FA page');
+    return page(navigate);
+  };
+}

@@ -1,11 +1,10 @@
-import { initRouter } from './utils/router';
+import { initRouter, protectedRoute, protected2FARoute } from './utils/router';
 import { createHomePage } from './pages/HomePage';
 import { createAuthPage } from './pages/AuthPage';
 import { createProfileCreationPage } from './pages/ProfileCreationPage';
 import { createCustomizationPage } from './pages/CustomizationPage';
 import { createGamePage } from './pages/GamePage';
 import { createUserProfilePage } from './pages/UserProfilePage';
-import { protectedRoute } from './utils/router';
 import { createSignUpPage } from './pages/SignUpPage';
 import { createGoogleOauthPage } from './pages/GoogleOauth';
 import { create2FAPage } from './pages/2FAPages';
@@ -40,7 +39,6 @@ const routes = {
   '/': useWithNavigate(createHomePage),
   '/auth': useWithNavigate(createAuthPage),
 
-
   '/profile-creation': useWithNavigate(protectedRoute(createProfileCreationPage)),
   '/game': useWithNavigate(protectedRoute(createGamePage)),
   '/customization': useWithNavigate(protectedRoute(createCustomizationPage)),
@@ -50,21 +48,22 @@ const routes = {
   '/2fa': useWithNavigate((navigate) => {
     const params = new URLSearchParams(window.location.search);
     const mode = params.get('mode') === 'input' ? 'input' : 'activation';
-    return create2FAPage(navigate, mode);
+    const pageFn = protected2FARoute((nav) => create2FAPage(nav, mode));
+    return pageFn(navigate);
   }),
   // '/pong': useWithNavigate(protectedRoute(createPong3DPage)),
   '/memory': useWithNavigate(protectedRoute(createMemoryGamePage)),
   '/friends': useWithNavigate(protectedRoute(createFriendsPage)),
   '/leaderboard': useWithNavigate(protectedRoute(createLeaderboardPage)),
-  '/about': useWithNavigate(protectedRoute(createAboutPage)),
+  '/about': useWithNavigate(protectedRoute(createAboutPage)), // 여기 변경해야함: maybe this shouldn't be a protected route
   '/local': useWithNavigate(protectedRoute(createLocalPage)),
   '/ai': useWithNavigate(protectedRoute(createAIPage)),
   '/tournament': useWithNavigate(protectedRoute(createTournamentPage)),
   '/versus': useWithNavigate(protectedRoute(createVersusPage)),
   '/mode': useWithNavigate(protectedRoute(createModePage)),
   '/delete-account': useWithNavigate(protectedRoute(createDeleteAccountPage)),
-  '/privacy-policy': useWithNavigate(protectedRoute(createPrivacyPolicyPage)),
-  '/export-data': useWithNavigate(protectedRoute(createExportDataPage)),
+  '/privacy-policy': useWithNavigate(createPrivacyPolicyPage),
+  '/export-data': useWithNavigate(protectedRoute(createExportDataPage)), //0805 추가
 }
 // Maintenant qu'on a les routes, on peut initialiser proprement
 navigate = initRouter(routes)!;
