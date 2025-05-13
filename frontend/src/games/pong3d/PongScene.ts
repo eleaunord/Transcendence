@@ -265,7 +265,7 @@ export async function createPongScene(canvas: HTMLCanvasElement, options: { mode
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               gameId,
-              user_id: 1,
+              user_id: 1, // user_id should be diff than 1 no ? 
               opponent_id: isAI ? 2 : 3,
               score1: scorePlayer,
               score2: scoreIA

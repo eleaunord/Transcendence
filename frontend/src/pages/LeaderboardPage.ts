@@ -7,20 +7,6 @@ interface PlayerScore {
   totalPoints: number;
 }
 
-// Fallback mock data in case API fails + TO TEST 
-// const MOCK_LEADERBOARD_DATA: PlayerScore[] = [
-//   { id: 1, username: "GamerPro99", totalPoints: 12450 },
-//   { id: 2, username: "PixelMaster", totalPoints: 10820 },
-//   { id: 3, username: "LegendaryGamer", totalPoints: 9740 },
-//   { id: 4, username: "NinjaPlayer", totalPoints: 8650 },
-//   { id: 5, username: "RocketQueen", totalPoints: 7920 },
-//   { id: 6, username: "EpicWarrior", totalPoints: 7210 },
-//   { id: 7, username: "ShadowHunter", totalPoints: 6580 },
-//   { id: 8, username: "MagicWizard", totalPoints: 5940 },
-//   { id: 9, username: "SpeedRacer", totalPoints: 5320 },
-//   { id: 10, username: "CosmicPlayer", totalPoints: 4780 }
-// ];
-
 
 export function createLeaderboardPage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
@@ -103,12 +89,20 @@ export function createLeaderboardPage(navigate: (path: string) => void): HTMLEle
 
       leaderboardCard.appendChild(errorMessage);
       console.error('Failed to fetch leaderboard data:', error);
-
-      // MOCK DATA for testing
-      //const table = createLeaderboardTable(MOCK_LEADERBOARD_DATA);
-      //leaderboardCard.appendChild(table);
     });
-
+  
+    window.addEventListener('focus', () => {
+      fetchLeaderboardData()
+        .then(topPlayers => {
+          leaderboardCard.innerHTML = '';
+          const table = createLeaderboardTable(topPlayers);
+          leaderboardCard.appendChild(table);
+        })
+        .catch(error => {
+          console.error('Error refreshing leaderboard on focus:', error);
+        });
+    });
+  
   return container;
 }
 
@@ -125,9 +119,8 @@ async function fetchLeaderboardData(): Promise<PlayerScore[]> {
     const response = await fetch(`${API_BASE_URL}/api/leaderboard`, {
       method: 'GET',
       credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers: { 'Content-Type': 'application/json' },
+      cache: 'no-store' // <- disables fetch cache
     });
 
     // Check if the response is okay (status 2xx)
