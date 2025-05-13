@@ -6,11 +6,11 @@ export interface User {
   image?: string;
   theme?: string;
   google_id?: string;
+  seen_2fa_prompt: number; // 추가 : 0805 added 2fa
   is_2fa_enabled?: number;
   two_fa_code?: string;
   two_fa_expires_at?: string;
 }
-
 // ----- Authentification via Google ------ \\
 export interface GoogleUser {
   id: string;

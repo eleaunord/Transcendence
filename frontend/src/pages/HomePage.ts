@@ -2,10 +2,6 @@
 export function createHomePage(navigate: (path: string) => void): HTMLElement {
   // Fonction pour démarrer le jeu
   const handleSignIn = () => {
-    if (!privacyCheckbox.checked) {
-      highlightCheckbox();
-      return;
-    }
     navigate('/auth'); // SPA 라우팅 → état maintenu
   };
 
@@ -43,6 +39,25 @@ export function createHomePage(navigate: (path: string) => void): HTMLElement {
 
   const content = document.createElement('div');
   content.className = 'relative z-10 flex flex-col justify-center items-center';
+
+  // 13 로그인 필요 경고 메시지 처리
+  const msg = localStorage.getItem('protected_route_notice');
+  if (msg) {
+    const warning = document.createElement('div');
+    warning.textContent = `${msg}`;
+    warning.className = 'bg-yellow-300 text-black px-4 py-2 mb-4 text-center rounded shadow';
+    content.appendChild(warning);
+    localStorage.removeItem('protected_route_notice');
+  }
+
+  // 13 추가 2FA 리다이렉션 경고 메시지 처리
+  if (localStorage.getItem('2fa_redirect_notice')) {
+    const warning = document.createElement('div');
+    warning.textContent = 'Please log in to proceed with 2FA authentication.'; //추가
+    warning.className = 'bg-yellow-300 text-black px-4 py-2 mb-4 text-center rounded shadow';
+    content.appendChild(warning);
+    localStorage.removeItem('2fa_redirect_notice');
+  }
 
   const title = document.createElement('h1');
   title.className = 'text-5xl font-extrabold mb-4';

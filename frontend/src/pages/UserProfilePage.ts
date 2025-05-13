@@ -98,11 +98,11 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
     if (target.files && target.files[0]) {
       const file = target.files[0];
 
-    // 🔒 Vérification de la taille du fichier
-    if (file.size > 2 * 1024 * 1024) { // 2 Mo
-      alert("Image trop volumineuse. Choisissez une image de moins de 2 Mo.");
-      return;
-    }
+      // 🔒 Vérification de la taille du fichier
+      if (file.size > 2 * 1024 * 1024) { // 2 Mo
+        alert("Image trop volumineuse. Choisissez une image de moins de 2 Mo.");
+        return;
+      }
 
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -235,8 +235,79 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
     }
   });
 
-    //------Delete Account 버튼 추가------\\
+    //------2FA 토글 버튼 추가------\\
+    const twoFAStatus = document.createElement('p');
+    twoFAStatus.id = 'twoFAStatus'; // 추가
+    twoFAStatus.className = 'text-lg text-white text-center relative top-5';
+    twoFAStatus.textContent = '2FA Status: Loading...';
+  
+    // const toggle2FAButton = document.createElement('button');
+    // toggle2FAButton.textContent = 'Toggle 2FA';
+    // toggle2FAButton.className = `
+    //   mt-2 p-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-white font-semibold
+    //   transition-colors duration-300
+    // `.replace(/\s+/g, ' ').trim();
 
+    const toggle2FAButton = document.createElement('button');
+    toggle2FAButton.id = 'toggle2FAButton';
+    toggle2FAButton.className = `
+      mt-2 p-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-white font-semibold
+      transition-colors duration-300
+    `.replace(/\s+/g, ' ').trim();
+  
+    toggle2FAButton.addEventListener('click', async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return alert('Not authenticated.');
+    
+      toggle2FAButton.disabled = true;
+    
+      try {
+        const isCurrentlyEnabled = twoFAStatus.textContent?.includes('ON');
+        const newValue = !isCurrentlyEnabled;
+    
+        const res = await fetch('/api/me/2fa', {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ enable: newValue })
+        });
+    
+        if (!res.ok) throw new Error('Failed to toggle 2FA');
+    
+        const result = await res.json();
+        twoFAStatus.textContent = result.is_2fa_enabled
+          ? '2FA Status: ON'
+          : '2FA Status: OFF';
+    
+        toggle2FAButton.textContent = result.is_2fa_enabled
+          ? '2FA Off'
+          : '2FA On';
+      } catch (err) {
+        console.error('2FA toggle error:', err);
+        alert('Error toggling 2FA');
+      } finally {
+        toggle2FAButton.disabled = false;
+      }
+    });
+    
+    //------2FA 토글 버튼 추가 끝------\\
+
+    //------Export My Data 버튼 추가------\\
+    const exportDataButton = document.createElement('button');
+    exportDataButton.textContent = 'Export My Data';
+    exportDataButton.className = `
+      mt-4 p-2 bg-green-600 hover:bg-green-700 rounded-lg text-white font-semibold
+      transition-colors duration-300
+    `.replace(/\s+/g, ' ').trim();
+
+    exportDataButton.addEventListener('click', () => {
+      navigate('/export-data'); // SPA 리디렉션
+    });
+    //------Export My Data 버튼 추가 끝------\\
+
+    //------Delete Account 버튼 추가------\\
     const deleteRedirectButton = document.createElement('button');
     deleteRedirectButton.textContent = 'Delete Account';
     deleteRedirectButton.className = `
@@ -247,7 +318,6 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
     deleteRedirectButton.addEventListener('click', () => {
       navigate('/delete-account'); // SPA 리디렉션
     });
-
     //------Delete Account 버튼 추가 여기까지------\\
 
   formContainer.appendChild(usernameInput);
@@ -255,6 +325,12 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   formContainer.appendChild(passwordRow);
   formContainer.appendChild(updateButton);
   formContainer.appendChild(successMessage);
+
+  formContainer.appendChild(twoFAStatus); // 2fa button
+  formContainer.appendChild(toggle2FAButton);
+
+  formContainer.appendChild(exportDataButton); // export data 버튼 추가
+
   formContainer.appendChild(deleteRedirectButton); // Delete Account 버튼 추가
 
   profileSection.appendChild(profileCard);
@@ -304,6 +380,7 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
     
     }
   });
+
 // Chargement dynamique des infos utilisateur
 const token = localStorage.getItem('token');
 if (token) {
@@ -330,11 +407,22 @@ if (token) {
     
       const sidebarUsername = document.getElementById('sidebar-username');
       if (sidebarUsername) sidebarUsername.textContent = user.username;
+
+      const twoFAStatus = document.getElementById('twoFAStatus') as HTMLParagraphElement;
+      const toggle2FAButton = document.getElementById('toggle2FAButton') as HTMLButtonElement;
+
+      if (user.is_2fa_enabled !== undefined && twoFAStatus && toggle2FAButton) {
+        twoFAStatus.textContent = user.is_2fa_enabled === 1
+          ? '2FA status: ON'
+          : '2FA status: OFF';
+
+        toggle2FAButton.textContent = user.is_2fa_enabled === 1
+          ? '2FA Off'  // 현재 활성화된 상태 → 누르면 끄는 거
+          : '2FA On';  // 현재 비활성화 상태 → 누르면 켜는 거
+      }
     })
     .catch(err => console.error('Erreur chargement profil:', err));
+
 }
   return container;
 }
-
-
-

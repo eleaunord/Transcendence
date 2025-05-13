@@ -17,6 +17,9 @@ export function createGoogleOauthPage(navigate: (path: string) => void): HTMLEle
   const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get('token');
   const email = urlParams.get('email');
+  const is2FA = urlParams.get('is_2fa_enabled') === '1' || urlParams.get('is_2fa_enabled') === 'true';
+  const seen2FA = urlParams.get('seen_2fa_prompt') === '1' || urlParams.get('seen_2fa_prompt') === 'true';
+  
 
   if (token) {
     // store token and redirect
@@ -25,8 +28,20 @@ export function createGoogleOauthPage(navigate: (path: string) => void): HTMLEle
     if (email)
         sessionStorage.setItem('userEmail', email);  // email 저장
 
+    sessionStorage.setItem('is_2fa_enabled', String(is2FA));
+    sessionStorage.setItem('seen_2fa_prompt', String(seen2FA));
+    
     console.log('[GoogleOAuth] token/email saved to sessionStorage'); // debug
-    setTimeout(() => navigate('/2fa'), 1000); // 1초 후 이동
+    setTimeout(() => {
+      if (!seen2FA) {
+        navigate('/2fa'); // 처음이면 2FA 활성화 여부 질문
+      } else if (is2FA) {
+        navigate('/2fa?mode=input'); // 이미 활성화되었으면 코드 입력
+      } else {
+        navigate('/profile-creation'); // 사용 안 한다면 프로필 설정
+      }
+    }, 1000);
+
   } else {
     title.textContent = 'Erreur : aucun token trouvé';
     spinner.style.display = 'none';

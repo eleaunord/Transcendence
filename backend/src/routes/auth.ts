@@ -73,7 +73,16 @@ export async function authRoutes(app: FastifyInstance) {
 
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
     console.log('[STANDARD LOGIN] USER EMAIL:', user.email);
-    reply.send({ token });
+    // 0805 수정
+    // reply.send({ token });
+    reply.send({
+      token,
+      user: {
+        email: user.email,
+        is_2fa_enabled: !!user.is_2fa_enabled,
+        seen_2fa_prompt: !!user.seen_2fa_prompt,
+      },
+    });
   });
 
   // ----- Google OAuth -----
@@ -118,15 +127,18 @@ export async function authRoutes(app: FastifyInstance) {
       let user = db.prepare('SELECT * FROM users WHERE google_id = ?').get(googleId) as User | undefined;
 
       if (!user) {
-        const res = db.prepare(
-          'INSERT INTO users (username, email, google_id, image) VALUES (?, ?, ?, ?)'
-        ).run(username, email, googleId, picture);
+        const res = db.prepare(`
+          INSERT INTO users (username, email, google_id, image, is_2fa_enabled, seen_2fa_prompt)
+          VALUES (?, ?, ?, ?, 0, 0)
+        `).run(username, email, googleId, picture);      
 
         user = db.prepare('SELECT * FROM users WHERE id = ?').get(res.lastInsertRowid) as User;
       }
 
       const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-      const redirectUrl = `${FRONTEND_URL}/auth/google?token=${token}&email=${encodeURIComponent(email)}`;
+      // 0805 수정
+      // const redirectUrl = `${FRONTEND_URL}/auth/google?token=${token}&email=${encodeURIComponent(email)}`;
+      const redirectUrl = `${FRONTEND_URL}/auth/google?token=${token}&email=${encodeURIComponent(email)}&is_2fa_enabled=${user.is_2fa_enabled}&seen_2fa_prompt=${user.seen_2fa_prompt}`;
       console.log('[GOOGLE OAUTH] Redirecting to:', redirectUrl);
       reply.redirect(redirectUrl);
 
@@ -135,7 +147,7 @@ export async function authRoutes(app: FastifyInstance) {
       reply.code(500).send({ error: 'Authentication failed' });
     }
   });
-
+  
   // ----- 2FA Enable -----
   app.post('/enable-2fa', async (req, reply) => {
     try {

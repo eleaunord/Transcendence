@@ -31,15 +31,15 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
       }
 
       try {
-      console.log('Token reçu:', data.token);
+        console.log('Token reçu:', data.token);
       
-      // 추가: remove original token
-      localStorage.removeItem('token');
-      sessionStorage.removeItem('token');
-      // 추가: set new token
-      localStorage.setItem('token', data.token);
+        // 추가: remove original token
+        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
+        // 추가: set new token
+        localStorage.setItem('token', data.token);
       
-      console.log('Token stocké:', localStorage.getItem('token'));
+        console.log('Token stocké:', localStorage.getItem('token'));
 
       // Récupération des infos utilisateur après login
       try {
@@ -55,16 +55,30 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
           sessionStorage.setItem('userEmail', user.email); // 추가 한 부분!
           sessionStorage.setItem('profilePicture', user.image);
           console.log('Utilisateur chargé :', user);
+
+          //0805 추가
+          const is2FA = !!user.is_2fa_enabled;
+          const seen2FA = !!user.seen_2fa_prompt;
+          if (!seen2FA) {
+            navigate('/2fa'); // 첫 로그인 → 2FA 활성화 여부 물어보는 페이지
+          } else if (is2FA) {
+            navigate('/2fa?mode=input'); // 이미 활성화됨 → 코드 입력
+          } else {
+            navigate('/profile-creation'); // 2FA 미사용 → 프로필 설정
+          }
         } else {
           console.warn('Impossible de charger le profil utilisateur');
+          error = 'Impossible de charger le profil';
+          updateError();
         }
       } catch (e) {
         console.error('Erreur lors du chargement de /api/me :', e);
+        error = 'Erreur de chargement du profil';
+        updateError();
       }
     } catch (e) {
       console.error('Erreur lors du stockage du token:', e);
     }
-    navigate('/2fa');
     } catch (err) {
       error = 'Erreur réseau';
       updateError();
