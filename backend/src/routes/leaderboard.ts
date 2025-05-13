@@ -29,7 +29,7 @@ app.get('/leaderboard', async (request, reply) => {
     }));
 
     // CORS headers
-    reply.header('Access-Control-Allow-Origin', 'http://localhost:8080');
+    reply.header('Access-Control-Allow-Origin', 'https://localhost');
     reply.header('Access-Control-Allow-Credentials', 'true');
     reply.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     reply.header('Access-Control-Allow-Headers', 'Content-Type');
@@ -48,7 +48,7 @@ app.get('/leaderboard', async (request, reply) => {
   
   // Add an OPTIONS handler for CORS preflight requests
   app.options('/api/leaderboard', (request, reply) => {
-    reply.header('Access-Control-Allow-Origin', 'http://localhost:8080');
+    reply.header('Access-Control-Allow-Origin', 'https://localhost');
     reply.header('Access-Control-Allow-Credentials', 'true');
     reply.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     reply.header('Access-Control-Allow-Headers', 'Content-Type');

@@ -15,7 +15,7 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
 const GOOGLE_REDIRECT_URL = process.env.GOOGLE_REDIRECT_URL!;
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:8080';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://localhost';
 
 export async function authRoutes(app: FastifyInstance) {
  // ----- Authentification Classique ------ \\

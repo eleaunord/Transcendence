@@ -109,30 +109,25 @@ async function migrate() {
   console.log('✅ Table `user_friends` créée');
 
   /* ==========================
-     ⚠️ SUPPRESSION DES ANCIENS AMIS POUR EVITER LES DOUBLONS
-  ========================== */
-  await db.exec(`DELETE FROM potential_friends`);
-  console.log('🗑️ Tous les anciens amis fictifs ont été supprimés');
-
-  /* ==========================
      INSÉRER LES AMIS FICTIFS (5 au total)
   ========================== */
-  const potentialFriends = [
-    { username: 'Fixer', status: 'online', profile_picture: '/assets/profile-pictures/Fixer.png' },
-    { username: 'Lady Aurora', status: 'online', profile_picture: '/assets/profile-pictures/Lady_Aurora.png' },
-    { username: 'Grunthor', status: 'offline', profile_picture: '/assets/profile-pictures/Grunthor.png' },
-    { username: 'Stormblade', status: 'online', profile_picture: '/assets/profile-pictures/Stormblade.png' },
-    { username: 'ByteWarrior', status: 'online', profile_picture: '/assets/profile-pictures/ByteWarrior.png' }
-  ];
+    const potentialFriends = [
+      { id: 1, username: 'Fixer', status: 'online', profile_picture: '/assets/profile-pictures/Fixer.png' },
+      { id: 2, username: 'Lady Aurora', status: 'online', profile_picture: '/assets/profile-pictures/Lady_Aurora.png' },
+      { id: 3, username: 'Grunthor', status: 'offline', profile_picture: '/assets/profile-pictures/Grunthor.png' },
+      { id: 4, username: 'Stormblade', status: 'online', profile_picture: '/assets/profile-pictures/Stormblade.png' },
+      { id: 5, username: 'ByteWarrior', status: 'online', profile_picture: '/assets/profile-pictures/ByteWarrior.png' }
+    ];
 
-  const insertFriend = db.prepare(`
-    INSERT INTO potential_friends (username, status, profile_picture) VALUES (?, ?, ?)
-  `);
+    const insertFriend = db.prepare(`
+      INSERT OR IGNORE INTO potential_friends (id, username, status, profile_picture)
+      VALUES (?, ?, ?, ?)
+    `);
 
-  potentialFriends.forEach((friend) => {
-    insertFriend.run(friend.username, friend.status, friend.profile_picture);
-    console.log(`✅ Ami fictif ajouté : ${friend.username}`);
-  });
+    potentialFriends.forEach((friend) => {
+      insertFriend.run(friend.id, friend.username, friend.status, friend.profile_picture);
+      console.log(`✅ Ami fictif ajouté : ${friend.username}`);
+    });
 
   console.log('✅ Amis fictifs insérés dans la base de données');
 }

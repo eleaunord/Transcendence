@@ -26,3 +26,6 @@ dist-ssr
 
 # SQLite database
 backend/database/data.db
+
+# Ignore SSL certs
+nginx/certs/
