@@ -6,8 +6,11 @@ export function createAboutPage(navigate: (path: string) => void): HTMLElement {
     container.className = 'relative min-h-screen bg-gray-900 text-white overflow-hidden';
 
     // Sidebar
+    
     const sidebar = createSidebar(navigate);
+    sidebar.classList.add('z-40');
     container.appendChild(sidebar);
+
     // Background Image
     const backgroundImage = document.createElement('div');
     backgroundImage.id = 'backgroundImage';

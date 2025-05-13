@@ -6,6 +6,7 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   container.className = 'relative min-h-screen bg-gray-900 text-white overflow-hidden';
 
   const sidebar = createSidebar(navigate);
+  sidebar.style.zIndex = '50';
   container.appendChild(sidebar);
 
   
@@ -23,10 +24,11 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   // --- Profile Section (Cadre + Formulaire côte à côte) ---
   const profileSection = document.createElement('div');
   profileSection.className = `
-    relative  mt-24
+    relative mt-24 ml-24
     flex flex-row items-start justify-center gap-x-20
-    z-30
+    z-20
   `.replace(/\s+/g, ' ').trim();
+
 
   // --- Profile Card ---
   const profileCard = document.createElement('div');
