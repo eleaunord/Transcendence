@@ -152,10 +152,30 @@ export async function createPongScene(
   halo.material = haloMat;
   halo.parent = ball;
 
-  MeshBuilder.CreateBox("topWall", { width: 9.6, height: 0.2, depth: 0.2 }, scene).position.set(0, 0.1, -3.1);
-  MeshBuilder.CreateBox("bottomWall", { width: 9.6, height: 0.2, depth: 0.2 }, scene).position.set(0, 0.1, 3.1);
-  MeshBuilder.CreateBox("leftWall", { width: 0.2, height: 0.2, depth: 6.4 }, scene).position.set(-4.8, 0.1, 0);
-  MeshBuilder.CreateBox("rightWall", { width: 0.2, height: 0.2, depth: 6.4 }, scene).position.set(4.8, 0.1, 0);
+  const wallMaterial = new StandardMaterial("wallMaterial", scene);
+  wallMaterial.diffuseColor = new Color3(0.05, 0.05, 0.3);
+  wallMaterial.emissiveColor = new Color3(0.1, 0.1, 0.4); // pour un effet lumineux
+
+  const topWall = MeshBuilder.CreateBox("topWall", { width: 9.6, height: 0.2, depth: 0.2 }, scene);
+  topWall.position.set(0, 0.1, -3.1);
+  topWall.material = wallMaterial;
+
+  const bottomWall = MeshBuilder.CreateBox("bottomWall", { width: 9.6, height: 0.2, depth: 0.2 }, scene);
+  bottomWall.position.set(0, 0.1, 3.1);
+  bottomWall.material = wallMaterial;
+
+  const leftWall = MeshBuilder.CreateBox("leftWall", { width: 0.2, height: 0.2, depth: 6.4 }, scene);
+  leftWall.position.set(-4.8, 0.1, 0);
+  leftWall.material = wallMaterial;
+
+  const rightWall = MeshBuilder.CreateBox("rightWall", { width: 0.2, height: 0.2, depth: 6.4 }, scene);
+  rightWall.position.set(4.8, 0.1, 0);
+  rightWall.material = wallMaterial;
+
+  // MeshBuilder.CreateBox("topWall", { width: 9.6, height: 0.2, depth: 0.2 }, scene).position.set(0, 0.1, -3.1);
+  // MeshBuilder.CreateBox("bottomWall", { width: 9.6, height: 0.2, depth: 0.2 }, scene).position.set(0, 0.1, 3.1);
+  // MeshBuilder.CreateBox("leftWall", { width: 0.2, height: 0.2, depth: 6.4 }, scene).position.set(-4.8, 0.1, 0);
+  // MeshBuilder.CreateBox("rightWall", { width: 0.2, height: 0.2, depth: 6.4 }, scene).position.set(4.8, 0.1, 0);
 
   let ballDir = new Vector3(0, 0, 0);
   let targetZ = 0;
@@ -168,17 +188,39 @@ export async function createPongScene(
   }
 
   function resetBall() {
-    const directionX = Math.random() > 0.5 ? 1 : -1;
-    const directionZ = Math.random() > 0.5 ? 1 : -1;
-    const baseSpeed = options.speed * 0.01;
-
-    ballDir = new Vector3(
-      baseSpeed * directionX,
-      0,
-      baseSpeed * 0.6 * directionZ
-    );
+    ballDir.set(0, 0, 0); // Stoppe la balle pendant le rebours
     ball.position.set(0, 0.2, 0);
+
+    countdownBeforeServe(() => {
+      const directionX = Math.random() > 0.5 ? 1 : -1;
+      const directionZ = Math.random() > 0.5 ? 1 : -1;
+      const baseSpeed = options.speed * 0.01;
+
+      ballDir = new Vector3(
+        baseSpeed * directionX,
+        0,
+        baseSpeed * 0.6 * directionZ
+      );
+    });
   }
+
+  function countdownBeforeServe(callback: () => void) {
+  let count = 5;
+  announce!.textContent = `Reprise dans ${count}...`;
+  announce!.style.display = "block";
+
+  const interval = setInterval(() => {
+    count--;
+    if (count > 0) {
+      announce!.textContent = `Reprise dans ${count}...`;
+    } else {
+      clearInterval(interval);
+      announce!.style.display = "none";
+      callback();
+    }
+  }, 1000);
+  }
+
 
   function resetGame() {
     scorePlayer = 0;

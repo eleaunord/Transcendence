@@ -24,6 +24,7 @@ import { createExportDataPage } from './pages/ExportDataPage';
 import { createModeMemoryPage } from './pages/ModeMemoryPage';
 import { createMemoryVersusPage } from './pages/MemoryVersusPage';
 import { createGameCustomizationPage } from './pages/GameCustomizationPage';
+import { createMemoryCustomizationPage } from './pages/MemoryCustomizationPage';
 
 // Fonction utilitaire pour injecter `navigate` dans chaque page
 function withNavigate(navigate: (path: string) => void) {
@@ -45,6 +46,7 @@ const routes = {
   '/game': useWithNavigate(protectedRoute(createGamePage)),
   '/customization': useWithNavigate(protectedRoute(createCustomizationPage)),
   '/customization-game' : useWithNavigate(protectedRoute(createGameCustomizationPage)),
+  '/customization-memory' : useWithNavigate(protectedRoute(createMemoryCustomizationPage)),
   '/user-profile': useWithNavigate(protectedRoute(createUserProfilePage)),
   '/signup': useWithNavigate(createSignUpPage),
   '/auth/google': useWithNavigate(createGoogleOauthPage),

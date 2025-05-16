@@ -49,12 +49,14 @@ export function createModeMemoryPage(navigate: (path: string) => void): HTMLElem
     modeMenu.append(versusBtn, tournamentBtn);
       // Gestion du clic sur Versus
       versusBtn.addEventListener('click', () => {
-        navigate('/memory-versus');
+        localStorage.setItem('memory-mode', 'versus');
+        navigate('/customization-memory');
       });
     
       // Gestion du clic sur Solo
       tournamentBtn.addEventListener('click', () => {
-        navigate('/memory');
+        localStorage.setItem('memory-mode', 'solo');
+        navigate('/customization-memory');
       });
 
     gameFrame.appendChild(canvas);
@@ -104,6 +106,5 @@ export function createModeMemoryPage(navigate: (path: string) => void): HTMLElem
       }
     });
   
-    return container;
-    
+    return container;   
 }
