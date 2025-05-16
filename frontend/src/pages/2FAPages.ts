@@ -26,7 +26,7 @@ export function create2FAPage(
 	  // seen_2fa_prompt 업데이트 (await 제거)
 	  const finalToken = token || localStorage.getItem('token');
 	  if (finalToken) {
-		fetch('http://localhost:3001/api/me/seen-2fa', {
+		fetch('/api/me/seen-2fa', {
 		  method: 'POST',
 		  headers: {
 			Authorization: `Bearer ${finalToken}`,
@@ -57,7 +57,7 @@ export function create2FAPage(
 		  return;
 		}
   
-		const res = await fetch('http://localhost:3001/api/enable-2fa', {
+		const res = await fetch('/api/enable-2fa', {
 		  method: 'POST',
 		  headers: {
 			Authorization: `Bearer ${token}`,
@@ -89,7 +89,7 @@ export function create2FAPage(
 	//   const email = sessionStorage.getItem('userEmail');
 
 	  if (token) {
-		fetch('http://localhost:3001/api/enable-2fa', {
+		fetch('/api/enable-2fa', {
 		  method: 'POST',
 		  headers: {
 			Authorization: `Bearer ${token}`,
@@ -127,7 +127,7 @@ export function create2FAPage(
 		  return;
 		}
   
-		const res = await fetch('http://localhost:3001/api/verify-2fa', {
+		const res = await fetch('/api/verify-2fa', {
 		  method: 'POST',
 		  headers: {
 			Authorization: `Bearer ${token}`,

@@ -39,6 +39,12 @@ export function createCustomizationPage(navigate: (path: string) => void): HTMLE
     { label: "Très petite", value: 0.5 }
   ]);
 
+  const themeGroup = createOptionGroup("Thème visuel", [
+  { label: "Classique", value: 0 },
+  { label: "Énergie", value: 1 },
+  { label: "Nébuleuse", value: 2 },
+  ]);
+
   const startButton = document.createElement('button');
   startButton.textContent = "Lancer le match";
   startButton.className = "mt-4 bg-green-600 hover:bg-green-700 text-white text-2xl font-bold py-2 px-6 rounded transition";
@@ -46,8 +52,8 @@ export function createCustomizationPage(navigate: (path: string) => void): HTMLE
     const speed = Number(getSelectedValue(speedGroup));
     const scoreToWin = Number(getSelectedValue(scoreGroup));
     const paddleSize = Number(getSelectedValue(paddleSizeGroup));
-
-    savePongSettings({ speed, scoreToWin, paddleSize });
+    const theme = getSelectedValue(themeGroup);
+    savePongSettings({ speed, scoreToWin, paddleSize, theme });
     navigate('/versus');
   };
 
