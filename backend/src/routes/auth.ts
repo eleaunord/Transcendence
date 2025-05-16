@@ -87,6 +87,7 @@ export async function authRoutes(app: FastifyInstance) {
 
   // ----- Google OAuth -----
   app.get('/auth/google', async (_, reply) => {
+    console.log('[DEBUG] Sending redirect_uri to Google:', GOOGLE_REDIRECT_URL);
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URL}&response_type=code&scope=profile email&access_type=offline`;
     reply.redirect(authUrl);
   });
