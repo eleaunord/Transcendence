@@ -112,11 +112,11 @@ async function migrate() {
      INSÉRER LES AMIS FICTIFS (5 au total)
   ========================== */
     const potentialFriends = [
-      { id: 1, username: 'Fixer', status: 'online', profile_picture: '/assets/profile-pictures/Fixer.png' },
-      { id: 2, username: 'Lady Aurora', status: 'online', profile_picture: '/assets/profile-pictures/Lady_Aurora.png' },
-      { id: 3, username: 'Grunthor', status: 'offline', profile_picture: '/assets/profile-pictures/Grunthor.png' },
-      { id: 4, username: 'Stormblade', status: 'online', profile_picture: '/assets/profile-pictures/Stormblade.png' },
-      { id: 5, username: 'ByteWarrior', status: 'online', profile_picture: '/assets/profile-pictures/ByteWarrior.png' }
+      { id: 1, username: 'Lilix', status: 'online', profile_picture: '/assets/profile-pictures/Avatar1.png' },
+      { id: 2, username: 'Gnouma', status: 'online', profile_picture: '/assets/profile-pictures/avatar5.png' },
+      { id: 3, username: 'Rime', status: 'online', profile_picture: '/assets/profile-pictures/avatar3.png' },
+      { id: 4, username: 'Shinhye', status: 'online', profile_picture: '/assets/profile-pictures/avatar2.png' },
+      { id: 5, username: 'Eleonore', status: 'online', profile_picture: '/assets/profile-pictures/Avatar4.png' }
     ];
 
     const insertFriend = db.prepare(`
