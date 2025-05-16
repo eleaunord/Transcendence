@@ -13,16 +13,16 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
 
   const form = document.createElement('form');
   form.id = 'profileForm';
-  form.className = 'w-80 p-6 bg-gray-800 rounded-lg border-2 border-white';
+  form.className = 'w-112 p-28 bg-gray-800 rounded-lg border-2 border-white';
 
   const welcomeMsg = document.createElement('h1');
-  welcomeMsg.className = 'text-3xl font-bold mb-4 text-center';
+  welcomeMsg.className = 'text-5xl font-bold mb-16 text-center';
   welcomeMsg.textContent = 'Bienvenue !';
   form.appendChild(welcomeMsg);
 
   // --- Photo de profil ---
   const pictureDiv = document.createElement('div');
-  pictureDiv.className = 'mb-4';
+  pictureDiv.className = 'mb-10';
 
   // const pictureLabel = document.createElement('label');
   // pictureLabel.className = 'block text-lg mb-2';
@@ -31,7 +31,7 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
   const picturePreview = document.createElement('img');
   picturePreview.src = selectedImage;
   picturePreview.alt = 'Player Profile';
-  picturePreview.className = 'w-24 h-24 rounded-full border-4 border-white'; // garder le style initial
+  picturePreview.className = 'w-48 h-48 rounded-full border-4 border-white'; // garder le style initial
 
   const pictureContainer = document.createElement('div');
   pictureContainer.className = 'flex justify-center mb-4';
@@ -42,16 +42,22 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
 
   // --- Choix game/customization ---
   const choiceDiv = document.createElement('div');
-  choiceDiv.className = 'mb-4';
+  choiceDiv.className = 'mb-2';
 
   const buttonsContainer = document.createElement('div');
-  buttonsContainer.className = 'flex justify-around';
+  buttonsContainer.className = 'flex justify-center gap-12 mb-2';
+ 
 
-  const baseBtnClass = 'px-4 py-2 hover:bg-blue-700 text-white font-semibold rounded-lg';
+
+  // const baseBtnClass = 'px-6 py-4 hover:bg-blue-700 text-white font-semibold rounded-lg';
+  // const baseBtnClass = 'px-6 py-4 w-48 hover:bg-blue-700 text-white font-semibold rounded-lg text-center';
+  // const baseBtnClass = 'px-6 py-4 w-48 text-base whitespace-normal text-center hover:bg-blue-700 text-white font-semibold rounded-lg';
+  const baseBtnClass = 'px-6 py-4 w-48 text-xl text-center hover:bg-blue-700 text-white font-semibold rounded-lg leading-tight';
+
 
   const gameBtn = document.createElement('button');
   gameBtn.type = 'button';
-  gameBtn.textContent = 'Aller au jeu';
+  gameBtn.textContent = 'Go to the game';
   gameBtn.addEventListener('click', async () => {
     selectedOption = 'game';
     updateSelectionUI();
@@ -76,7 +82,7 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
 
   const customBtn = document.createElement('button');
   customBtn.type = 'button';
-  customBtn.textContent = 'Personnaliser';
+  customBtn.textContent = 'Customize';
   customBtn.addEventListener('click', async () => {
     selectedOption = 'profile';
     updateSelectionUI();
