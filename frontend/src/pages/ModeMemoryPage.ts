@@ -1,7 +1,7 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
 
-export function createModePage(navigate: (path: string) => void): HTMLElement {
+export function createModeMemoryPage(navigate: (path: string) => void): HTMLElement {
     const container = document.createElement('div');
     container.className = 'flex flex-col h-screen bg-gray-900 text-white';
     
@@ -43,18 +43,18 @@ export function createModePage(navigate: (path: string) => void): HTMLElement {
         ' bg-blue-600/80 hover:bg-blue-700/50 text-white text-5xl font-bold py-4 px-14 rounded-lg shadow-lg transition duration-300';
     
       const tournamentBtn = document.createElement('button');
-      tournamentBtn.textContent = 'Mode Tournoi';
+      tournamentBtn.textContent = 'Mode Solo';
       tournamentBtn.className =
         ' bg-purple-800 hover:bg-purple-800/50 text-white text-5xl font-bold py-4 px-12 rounded-lg shadow-lg transition duration-300';
     modeMenu.append(versusBtn, tournamentBtn);
       // Gestion du clic sur Versus
       versusBtn.addEventListener('click', () => {
-        navigate('/customization-game'); // ATTENTION 
+        navigate('/memory-versus');
       });
     
-      // Gestion du clic sur Tournoi
+      // Gestion du clic sur Solo
       tournamentBtn.addEventListener('click', () => {
-        navigate('/tournament');
+        navigate('/memory');
       });
 
     gameFrame.appendChild(canvas);

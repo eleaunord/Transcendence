@@ -53,7 +53,7 @@ export function createGamePage(navigate: (path: string) => void): HTMLElement {
   memoryBtn.className =
     'bg-purple-600/65 hover:bg-purple-700 text-white text-5xl font-bold py-6 px-24 rounded-lg shadow-lg transition duration-300';
   memoryBtn.addEventListener('click', () => {
-    navigate('/memory');
+    navigate('/memory-mode');
   });
 
   modeMenu.append(playBtn, memoryBtn);

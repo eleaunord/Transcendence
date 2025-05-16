@@ -16,8 +16,45 @@ import {
   Mesh
 } from "@babylonjs/core";
 
-export async function createPongScene(canvas: HTMLCanvasElement, options: { mode: 'local' | 'ai' }): Promise<Engine> {
+export type PongOptions = {
+  mode: 'local' | 'ai';
+  speed: number;
+  scoreToWin: number;
+  paddleSize: number;
+  theme: number;
+};
+
+export async function createPongScene(
+  canvas: HTMLCanvasElement,
+  options: PongOptions,
+  returnButton: HTMLButtonElement // bouton reçu depuis l'extérieur
+): Promise<any> {
   const isAI = options.mode === 'ai';
+
+  // 🎨 Définir les styles selon le thème choisi
+  let paddleColor1 = new Color3(0.6, 0.2, 0.8);
+  let paddleColor2 = new Color3(0.2, 0.4, 1);
+  let ballColor = new Color3(1, 0.84, 0);
+  let groundTexturePath = "/assets/background/mat_wallpaper.jpg";
+
+  switch (options.theme) {
+    case 1: // Énergie
+      paddleColor1 = new Color3(1, 0.3, 0.3);
+      paddleColor2 = new Color3(1, 1, 0.3);
+      ballColor = new Color3(0.3, 1, 0.3);
+      groundTexturePath = "/assets/background/sun_energy.jpg";
+      break;
+    case 2: // Nébuleuse
+      paddleColor1 = new Color3(0.2, 0.6, 1);
+      paddleColor2 = new Color3(0.8, 0.3, 1);
+      ballColor = new Color3(0.7, 0.9, 1);
+      groundTexturePath = "/assets/background/new_moon.jpg";
+      break;
+    default: // Classique
+      // Garde les couleurs définies par défaut
+      break;
+  }
+
   const scoreBoard = document.getElementById("scoreBoard");
   const announce = document.getElementById("announce");
 
@@ -25,40 +62,7 @@ export async function createPongScene(canvas: HTMLCanvasElement, options: { mode
   const scene = new Scene(engine);
   scene.clearColor = new Color4(0, 0, 0, 1.0);
 
-  let gameId: number | null = null;
-
-  async function startMatch() {
-    try {
-      const user_id = 1; // ← à remplacer dynamiquement
-      const opponent_id = isAI ? 2 : 3; // 2 = IA, 3 = Guest ou autre
-  
-      const response = await fetch('http://localhost:3001/api/match/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', "Cache-Control": "no-cache" },
-        body: JSON.stringify({
-          user_id,
-          opponent_id
-        })
-      });
-  
-      const data = await response.json();
-      console.log("🧾 Données retour du backend :", data);
-      gameId = data.gameId;
-      console.log('🎮 Nouveau match (gameId):', gameId);
-    } catch (err) {
-      console.error('❌ Erreur création match :', err);
-    }
-  }  
-
-  await startMatch();
-
-  // if (!gameId) {
-  //   console.error("❌ Aucun gameId reçu. Annulation du jeu.");
-  //   return engine;
-  // }
-
-
-  const SCORE_LIMIT = 5;
+  const SCORE_LIMIT = options.scoreToWin;
   let scorePlayer = 0;
   let scoreIA = 0;
   let gameOver = false;
@@ -91,19 +95,19 @@ export async function createPongScene(canvas: HTMLCanvasElement, options: { mode
   glow.intensity = 0.6;
 
   const paddleMat1 = new StandardMaterial("paddleMat1", scene);
-  paddleMat1.diffuseColor = new Color3(0.6, 0.2, 0.8);
-  paddleMat1.emissiveColor = paddleMat1.diffuseColor;
+  paddleMat1.diffuseColor = paddleColor1;
+  paddleMat1.emissiveColor = paddleColor1;
 
   const paddleMat2 = new StandardMaterial("paddleMat2", scene);
-  paddleMat2.diffuseColor = new Color3(0.2, 0.4, 1);
-  paddleMat2.emissiveColor = paddleMat2.diffuseColor;
+  paddleMat2.diffuseColor = paddleColor2;
+  paddleMat2.emissiveColor = paddleColor2;
 
   const ballMat = new StandardMaterial("ballMat", scene);
-  ballMat.diffuseColor = new Color3(1, 0.84, 0);
-  ballMat.emissiveColor = new Color3(1, 0.84, 0);
+  ballMat.diffuseColor = ballColor;
+  ballMat.emissiveColor = ballColor;
 
   const groundMat = new StandardMaterial("groundMat", scene);
-  groundMat.diffuseTexture = new Texture("/assets/background/mat_wallpaper.jpg", scene);
+  groundMat.diffuseTexture = new Texture(groundTexturePath, scene);
   groundMat.specularColor = new Color3(0, 0, 0);
 
   const ground = MeshBuilder.CreateGround("ground", { width: 9.6, height: 6 }, scene);
@@ -116,6 +120,9 @@ export async function createPongScene(canvas: HTMLCanvasElement, options: { mode
   const paddle2 = MeshBuilder.CreateBox("paddle2", { width: 0.2, height: 0.4, depth: 1 }, scene);
   paddle2.position.set(4.6, 0.2, 0);
   paddle2.material = paddleMat2;
+
+  paddle1.scaling.y = options.paddleSize;
+  paddle2.scaling.y = options.paddleSize;
 
   const ball = MeshBuilder.CreateSphere("ball", { diameter: 0.3 }, scene);
   ball.position.set(0, 0.2, 0);
@@ -150,78 +157,78 @@ export async function createPongScene(canvas: HTMLCanvasElement, options: { mode
   MeshBuilder.CreateBox("leftWall", { width: 0.2, height: 0.2, depth: 6.4 }, scene).position.set(-4.8, 0.1, 0);
   MeshBuilder.CreateBox("rightWall", { width: 0.2, height: 0.2, depth: 6.4 }, scene).position.set(4.8, 0.1, 0);
 
-  let ballDir = new Vector3(0.05, 0, 0.03);
+  let ballDir = new Vector3(0, 0, 0);
   let targetZ = 0;
   let iaVelocityZ = 0;
+
+  const paddleSpeed = options.speed * 0.04;
 
   function clamp(value: number, min: number, max: number): number {
     return Math.max(min, Math.min(max, value));
   }
 
   function resetBall() {
+    const directionX = Math.random() > 0.5 ? 1 : -1;
+    const directionZ = Math.random() > 0.5 ? 1 : -1;
+    const baseSpeed = options.speed * 0.01;
+
+    ballDir = new Vector3(
+      baseSpeed * directionX,
+      0,
+      baseSpeed * 0.6 * directionZ
+    );
     ball.position.set(0, 0.2, 0);
-    ballDir = new Vector3(0.05 * (Math.random() > 0.5 ? 1 : -1), 0, 0.03 * (Math.random() > 0.5 ? 1 : -1));
   }
 
   function resetGame() {
     scorePlayer = 0;
     scoreIA = 0;
     gameOver = false;
-    if (scoreBoard) scoreBoard.innerText = "0 - 0";
-    if (announce) announce.innerText = "";
+    scoreBoard!.textContent = `${scorePlayer} - ${scoreIA}`;
+    announce!.style.display = "none";
+    returnButton.style.display = "none";
     resetBall();
   }
 
-  function flashColor(mesh: Mesh, color: Color3) {
-    const mat = mesh.material as StandardMaterial;
-    const original = mat.emissiveColor.clone();
-    mat.emissiveColor = color;
-    setTimeout(() => {
-      mat.emissiveColor = original;
-    }, 120);
+  function checkGameOver() {
+    if (scorePlayer >= SCORE_LIMIT) {
+      gameOver = true;
+      announce!.textContent = "Victoire !";
+      announce!.style.display = "block";
+      returnButton.style.display = "block"; // 👈 Affiche le bouton
+    } else if (scoreIA >= SCORE_LIMIT) {
+      gameOver = true;
+      announce!.textContent = "Défaite...";
+      announce!.style.display = "block";
+      returnButton.style.display = "block"; // 👈 Affiche le bouton
+    }
   }
 
+  resetBall();
+
   window.addEventListener("keydown", (e) => {
-    const speed = 0.2;
+    if (e.key.toLowerCase() === "r" && gameOver) {
+      resetGame();
+      return;
+    }
+
     if (gameOver) return;
-    if (["s"].includes(e.key) && paddle1.position.z > -2.4) paddle1.position.z -= speed;
-    if (["w"].includes(e.key) && paddle1.position.z < 2.4) paddle1.position.z += speed;
+
+    if (e.key === "s" && paddle1.position.z > -2.4) paddle1.position.z -= paddleSpeed;
+    if (e.key === "w" && paddle1.position.z < 2.4) paddle1.position.z += paddleSpeed;
 
     if (!isAI) {
-      if (["ArrowDown"].includes(e.key) && paddle2.position.z > -2.4) paddle2.position.z -= speed;
-      if (["ArrowUp"].includes(e.key) && paddle2.position.z < 2.4) paddle2.position.z += speed;
+      if (e.key === "ArrowDown" && paddle2.position.z > -2.4) paddle2.position.z -= paddleSpeed;
+      if (e.key === "ArrowUp" && paddle2.position.z < 2.4) paddle2.position.z += paddleSpeed;
     }
   });
 
-  if (isAI) {
-    setInterval(() => {
-      if (ballDir.x > 0) {
-        let predictedZ = ball.position.z + ballDir.z * ((paddle2.position.x - ball.position.x) / ballDir.x);
-        predictedZ = clamp(predictedZ, -2.9, 2.9);
-        const stress = Math.max(0.8, 1.5 - scoreIA * 0.05);
-        const errorMargin = 0.2 * stress;
-        targetZ = predictedZ + (Math.random() - 0.5) * errorMargin;
-      }
-    }, 1000);
-  }
-
   scene.onBeforeRenderObservable.add(() => {
     if (gameOver) return;
+
     ball.position.addInPlace(ballDir);
 
-    if (isAI) {
-      const dz = targetZ - paddle2.position.z;
-      if (Math.abs(dz) > 0.1) {
-        iaVelocityZ += Math.sign(dz) * 0.01;
-      } else {
-        iaVelocityZ *= 0.8;
-      }
-      iaVelocityZ = clamp(iaVelocityZ, -0.25, 0.25);
-      paddle2.position.z += iaVelocityZ;
-      paddle2.position.z = clamp(paddle2.position.z, -2.4, 2.4);
-    }
-
-    if (ball.position.z >= 3 || ball.position.z <= -3) ballDir.z *= -1;
+    if (ball.position.z >= 2.9 || ball.position.z <= -2.9) ballDir.z *= -1;
 
     const hitP1 = ball.position.x <= paddle1.position.x + 0.15 && Math.abs(ball.position.z - paddle1.position.z) <= 0.6;
     const hitP2 = ball.position.x >= paddle2.position.x - 0.15 && Math.abs(ball.position.z - paddle2.position.z) <= 0.6;
@@ -229,69 +236,29 @@ export async function createPongScene(canvas: HTMLCanvasElement, options: { mode
     if (hitP1) {
       ballDir.x *= -1;
       ball.position.x = paddle1.position.x + 0.3;
-      flashColor(paddle1, new Color3(1, 1, 0));
-    }
-    else if (hitP2) {
+    } else if (hitP2) {
       ballDir.x *= -1;
       ball.position.x = paddle2.position.x - 0.3;
-      flashColor(paddle2, new Color3(1, 1, 0));
     }
-    else if (ball.position.x >= 5 || ball.position.x <= -5) {
-      if (ball.position.x >= 5) scorePlayer++;
-      else scoreIA++;
 
-      if (scoreBoard) scoreBoard.innerText = `${scorePlayer} - ${scoreIA}`;
-
-      if (announce) {
-        if (scorePlayer === SCORE_LIMIT) {
-          announce.innerText = "✨ Victoire céleste ! ✨";
-        } else if (scoreIA === SCORE_LIMIT) {
-          announce.innerText = "💀 Défaite cosmique...";
-        } else {
-          announce.innerText = ball.position.x >= 5 ? "Point pour vous ✨" : "Point pour l'IA 💀";
-        }
-        setTimeout(() => {
-          if (!gameOver) announce!.innerText = "";
-        }, 2000);
-      }
-
-      if (scorePlayer === SCORE_LIMIT || scoreIA === SCORE_LIMIT) {
-        gameOver = true;
-        ballDir.scaleInPlace(0);
-
-        if (gameId !== null) {
-          fetch('http://localhost:3001/api/match/end', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              gameId,
-              user_id: 1, // user_id should be diff than 1 no ? 
-              opponent_id: isAI ? 2 : 3,
-              score1: scorePlayer,
-              score2: scoreIA
-            })
-          })
-            .then(() => {
-              console.log('✅ Match enregistré !', { gameId, score1: scorePlayer, score2: scoreIA });
-            })
-            .catch(err => console.error('❌ Erreur enregistrement match :', err));
-        }        
-
-        const button = document.createElement("button");
-        button.textContent = "Rejouer la partie";
-        button.className = "absolute top-1/2 left-1/2 transform -translate-x-1/2 bg-indigo-700 hover:bg-indigo-800 text-white py-2 px-4 rounded shadow-lg z-50";
-        button.onclick = () => {
-          button.remove();
-          resetGame();
-        };
-        canvas.parentElement?.appendChild(button);
-      } else {
-        resetBall();
-      }
+    if (ball.position.x > 4.8) {
+      scorePlayer++;
+      scoreBoard!.textContent = `${scorePlayer} - ${scoreIA}`;
+      resetBall();
+      checkGameOver();
+    } else if (ball.position.x < -4.8) {
+      scoreIA++;
+      scoreBoard!.textContent = `${scorePlayer} - ${scoreIA}`;
+      resetBall();
+      checkGameOver();
     }
   });
 
   engine.runRenderLoop(() => scene.render());
 
-  return engine;
+  return {
+    engine,
+    scene
+  };
 }
+

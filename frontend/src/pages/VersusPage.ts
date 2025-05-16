@@ -1,6 +1,7 @@
-import  {createSidebar} from '../utils/sidebar';
+import { createSidebar } from '../utils/sidebar';
 import { createPongScene } from '../games/pong3d/PongScene';
 import { applyUserTheme } from "../utils/theme";
+import { loadPongSettings } from '../utils/pongSettings';
 
 export function createVersusPage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
@@ -29,8 +30,7 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
   canvas.style.backgroundColor = 'black';
 
   const modeMenu = document.createElement("div");
-//   modeMenu.className = "absolute inset-0 flex flex-col items-center justify-center gap-6 z-20 bg-black bg-opacity-70";
-  modeMenu.className = "absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-70 gap-8 ";
+  modeMenu.className = "absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-70 gap-8";
 
   const btnLocal = document.createElement("button");
   btnLocal.textContent = "1 vs 1";
@@ -74,11 +74,33 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
     announce.className = "absolute top-16 left-1/2 transform -translate-x-1/2 text-yellow-300 text-xl font-semibold";
     announce.innerText = "";
 
+    const btnReturn = document.createElement("button");
+    btnReturn.textContent = "Rejouer";
+    btnReturn.className = `
+      absolute bottom-8 left-1/2 transform -translate-x-1/2 
+      bg-yellow-400 hover:bg-yellow-500 text-black font-bold 
+      py-3 px-8 rounded-lg shadow-lg transition duration-300 hidden z-20
+    `.replace(/\s+/g, ' ').trim();
+
+    btnReturn.addEventListener("click", () => {
+      navigate("/mode");
+    });
+
     gameFrame.appendChild(scoreBoard);
     gameFrame.appendChild(announce);
+    gameFrame.appendChild(btnReturn);
 
-    createPongScene(canvas, { mode });
+    const settings = loadPongSettings();
+
+    createPongScene(canvas, {
+      mode,
+      speed: settings.speed,
+      scoreToWin: settings.scoreToWin,
+      paddleSize: settings.paddleSize,
+      theme: settings.theme
+    }, btnReturn);
   }
+
   gameFrame.appendChild(canvas);
   gameFrame.appendChild(modeMenu);
   gameArea.appendChild(gameFrame);

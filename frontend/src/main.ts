@@ -13,7 +13,7 @@ import { createMemoryGamePage } from './pages/MemoryGamePage';
 import { createFriendsPage } from './pages/FriendsPage';
 import { createLeaderboardPage } from './pages/LeaderboardPage';
 import { createAboutPage } from './pages/AboutUsPage';
-import { createLocalPage } from './pages/LocalPage';
+//import { createLocalPage } from './pages/LocalPage';
 import { createAIPage } from './pages/AIPage';
 import { createTournamentPage } from './pages/TournamentPage';
 import { createVersusPage } from './pages/VersusPage';
@@ -21,7 +21,9 @@ import { createModePage } from './pages/ModePage';
 import { createDeleteAccountPage } from './pages/DeleteAccountPage';
 import { createPrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { createExportDataPage } from './pages/ExportDataPage';
-
+import { createModeMemoryPage } from './pages/ModeMemoryPage';
+import { createMemoryVersusPage } from './pages/MemoryVersusPage';
+import { createGameCustomizationPage } from './pages/GameCustomizationPage';
 
 // Fonction utilitaire pour injecter `navigate` dans chaque page
 function withNavigate(navigate: (path: string) => void) {
@@ -42,6 +44,7 @@ const routes = {
   '/profile-creation': useWithNavigate(protectedRoute(createProfileCreationPage)),
   '/game': useWithNavigate(protectedRoute(createGamePage)),
   '/customization': useWithNavigate(protectedRoute(createCustomizationPage)),
+  '/customization-game' : useWithNavigate(protectedRoute(createGameCustomizationPage)),
   '/user-profile': useWithNavigate(protectedRoute(createUserProfilePage)),
   '/signup': useWithNavigate(createSignUpPage),
   '/auth/google': useWithNavigate(createGoogleOauthPage),
@@ -56,11 +59,13 @@ const routes = {
   '/friends': useWithNavigate(protectedRoute(createFriendsPage)),
   '/leaderboard': useWithNavigate(protectedRoute(createLeaderboardPage)),
   '/about': useWithNavigate(protectedRoute(createAboutPage)), // 여기 변경해야함: maybe this shouldn't be a protected route
-  '/local': useWithNavigate(protectedRoute(createLocalPage)),
+  //'/local': useWithNavigate(protectedRoute(createLocalPage)), // ATTENTION vérifier l'utilité de cette page
   '/ai': useWithNavigate(protectedRoute(createAIPage)),
   '/tournament': useWithNavigate(protectedRoute(createTournamentPage)),
   '/versus': useWithNavigate(protectedRoute(createVersusPage)),
   '/mode': useWithNavigate(protectedRoute(createModePage)),
+  '/memory-mode': useWithNavigate(protectedRoute(createModeMemoryPage)),
+  '/memory-versus': useWithNavigate(protectedRoute(createMemoryVersusPage)),
   '/delete-account': useWithNavigate(protectedRoute(createDeleteAccountPage)),
   '/privacy-policy': useWithNavigate(createPrivacyPolicyPage),
   '/export-data': useWithNavigate(protectedRoute(createExportDataPage)), //0805 추가
