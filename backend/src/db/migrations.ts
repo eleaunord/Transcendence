@@ -21,12 +21,13 @@ function safeAlter(column: string, type: string) {
 function relaxEmailConstraint() {
   const columns = db.prepare(`PRAGMA table_info(users)`).all() as { name: string; notnull: number }[];
   const emailCol = columns.find(col => col.name === 'email');
+
   if (emailCol && emailCol.notnull === 1) {
     console.log('이메일 NOT NULL 제약 해제 중...');
 
-    db.exec(`PRAGMA foreign_keys = OFF;`); // 1705 추가
-
     db.exec(`
+      PRAGMA foreign_keys = OFF;
+
       CREATE TABLE users_tmp (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL UNIQUE,
@@ -43,21 +44,23 @@ function relaxEmailConstraint() {
         is_anonymized INTEGER DEFAULT 0
       );
 
-      INSERT INTO users_tmp SELECT * FROM users;
+      INSERT INTO users_tmp (
+        id, username, email, password_hash, image
+      )
+      SELECT id, username, email, password_hash, image FROM users;
 
       DROP TABLE users;
 
       ALTER TABLE users_tmp RENAME TO users;
+
+      PRAGMA foreign_keys = ON;
     `);
-    
-    db.exec(`PRAGMA foreign_keys = ON;`); //1705 추가
 
     console.log('[DEBUG MIGRATION] 이메일 NOT NULL 제약 제거 완료');
   } else {
     console.log('[DEBUG MIGRATION] 이메일 컬럼은 이미 nullable 상태.');
   }
 }
-
 // NEW
 // Insert required users BEFORE any foreign key dependencies
 db.prepare(`
