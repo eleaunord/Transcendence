@@ -24,6 +24,8 @@ function relaxEmailConstraint() {
   if (emailCol && emailCol.notnull === 1) {
     console.log('이메일 NOT NULL 제약 해제 중...');
 
+    db.exec(`PRAGMA foreign_keys = OFF;`); // 1705 추가
+
     db.exec(`
       CREATE TABLE users_tmp (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,6 +49,8 @@ function relaxEmailConstraint() {
 
       ALTER TABLE users_tmp RENAME TO users;
     `);
+    
+    db.exec(`PRAGMA foreign_keys = ON;`); //1705 추가
 
     console.log('[DEBUG MIGRATION] 이메일 NOT NULL 제약 제거 완료');
   } else {
