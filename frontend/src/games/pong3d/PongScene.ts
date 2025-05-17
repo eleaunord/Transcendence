@@ -36,6 +36,8 @@ export async function createPongScene(
   let paddleColor2 = new Color3(0.2, 0.4, 1);
   let ballColor = new Color3(1, 0.84, 0);
   let groundTexturePath = "/assets/background/mat_wallpaper.jpg";
+  let wallColorDiffuse = new Color3(0.05, 0.05, 0.3); // Couleur par défaut
+  let wallColorEmissive = new Color3(0.1, 0.1, 0.4);
 
   switch (options.theme) {
     case 1: // Énergie
@@ -43,12 +45,16 @@ export async function createPongScene(
       paddleColor2 = new Color3(1, 1, 0.3);
       ballColor = new Color3(0.3, 1, 0.3);
       groundTexturePath = "/assets/background/sun_energy.jpg";
+      wallColorDiffuse = new Color3(0.4, 0.1, 0.1);     // Rouge foncé
+      wallColorEmissive = new Color3(0.8, 0.2, 0.2);    // Rouge lumineux
       break;
     case 2: // Nébuleuse
       paddleColor1 = new Color3(0.2, 0.6, 1);
       paddleColor2 = new Color3(0.8, 0.3, 1);
       ballColor = new Color3(0.7, 0.9, 1);
       groundTexturePath = "/assets/background/new_moon.jpg";
+      wallColorDiffuse = new Color3(0.2, 0.3, 0.5);     // Bleu profond
+      wallColorEmissive = new Color3(0.3, 0.4, 0.7);    // Bleu lumineux
       break;
     default: // Classique
       // Garde les couleurs définies par défaut
@@ -185,8 +191,8 @@ export async function createPongScene(
   halo.parent = ball;
 
   const wallMaterial = new StandardMaterial("wallMaterial", scene);
-  wallMaterial.diffuseColor = new Color3(0.05, 0.05, 0.3);
-  wallMaterial.emissiveColor = new Color3(0.1, 0.1, 0.4); // pour un effet lumineux
+  wallMaterial.diffuseColor = wallColorDiffuse;
+  wallMaterial.emissiveColor = wallColorEmissive;
 
   const topWall = MeshBuilder.CreateBox("topWall", { width: 9.6, height: 0.2, depth: 0.2 }, scene);
   topWall.position.set(0, 0.1, -3.1);
@@ -204,39 +210,66 @@ export async function createPongScene(
   rightWall.position.set(4.8, 0.1, 0);
   rightWall.material = wallMaterial;
 
-  // MeshBuilder.CreateBox("topWall", { width: 9.6, height: 0.2, depth: 0.2 }, scene).position.set(0, 0.1, -3.1);
-  // MeshBuilder.CreateBox("bottomWall", { width: 9.6, height: 0.2, depth: 0.2 }, scene).position.set(0, 0.1, 3.1);
-  // MeshBuilder.CreateBox("leftWall", { width: 0.2, height: 0.2, depth: 6.4 }, scene).position.set(-4.8, 0.1, 0);
-  // MeshBuilder.CreateBox("rightWall", { width: 0.2, height: 0.2, depth: 6.4 }, scene).position.set(4.8, 0.1, 0);
-
   let ballDir = new Vector3(0, 0, 0);
-  let targetZ = 0;
-  let iaVelocityZ = 0;
 
-  const paddleSpeed = options.speed * 0.04;
+  type IAProfile = {
+  errorRange: number;
+  reactionDelayMin: number;
+  reactionDelayMax: number;
+  adaptation: number;
+  };
+
+  const iaProfiles: { [key: string]: IAProfile } = {
+    cautious: { errorRange: 0.15, reactionDelayMin: 4, reactionDelayMax: 7, adaptation: 0.9 },
+    balanced: { errorRange: 0.07, reactionDelayMin: 3, reactionDelayMax: 5, adaptation: 1.05 },
+    aggressive: { errorRange: 0.03, reactionDelayMin: 2, reactionDelayMax: 3, adaptation: 1.3 },
+  };
+
+  function interpolateProfiles(p1: IAProfile, p2: IAProfile, t: number): IAProfile {
+    return {
+      errorRange: p1.errorRange * (1 - t) + p2.errorRange * t,
+      reactionDelayMin: Math.round(p1.reactionDelayMin * (1 - t) + p2.reactionDelayMin * t),
+      reactionDelayMax: Math.round(p1.reactionDelayMax * (1 - t) + p2.reactionDelayMax * t),
+      adaptation: p1.adaptation * (1 - t) + p2.adaptation * t,
+    };
+  }
+
+  let currentProfile = iaProfiles.balanced; // Par défaut
+
+  let iaOffset = 0;
+  let iaNextReactionIn = 0;
+  let iaVelocity = 0;
+
+  const paddleSpeed = options.speed * 0.045;
 
   function clamp(value: number, min: number, max: number): number {
     return Math.max(min, Math.min(max, value));
   }
 
   function resetBall() {
+    if (gameOver) return;
+
     ballDir.set(0, 0, 0); // Stoppe la balle pendant le rebours
     ball.position.set(0, 0.2, 0);
 
     countdownBeforeServe(() => {
       const directionX = Math.random() > 0.5 ? 1 : -1;
-      const directionZ = Math.random() > 0.5 ? 1 : -1;
+      const angleDeg = (Math.random() * 10 + 5) /* ATTENTTION -> endroit pour ajuster l'angle départ de la balle */ 
+          * (Math.random() > 0.5 ? 1 : -1); // entre -15° et +15°
+      const angleRad = (angleDeg * Math.PI) / 180;
       const baseSpeed = options.speed * 0.01;
 
       ballDir = new Vector3(
-        baseSpeed * directionX,
+        baseSpeed * Math.cos(angleRad) * directionX,
         0,
-        baseSpeed * 0.6 * directionZ
+        baseSpeed * Math.sin(angleRad)
       );
     });
   }
 
+
   function countdownBeforeServe(callback: () => void) {
+  if (gameOver) return;
   let count = 5;
   announce!.textContent = `Reprise dans ${count}...`;
   announce!.style.display = "block";
@@ -249,6 +282,8 @@ export async function createPongScene(
       clearInterval(interval);
       announce!.style.display = "none";
       callback();
+      iaOffset = (Math.random() - 0.5) * 0.5; // aléa entre -0.25 et 0.25
+
     }
   }, 1000);
   }
@@ -274,6 +309,17 @@ export async function createPongScene(
       announce!.style.display = "block";
       returnButton.style.display = "block";
   
+      if (isAI) {
+        const scoreDiff = scorePlayer - scoreIA;
+        if (scoreDiff >= 2) {
+          currentProfile = iaProfiles.aggressive;
+        } else if (scoreDiff <= -2) {
+          currentProfile = iaProfiles.cautious;
+        } else {
+          currentProfile = iaProfiles.balanced;
+        }
+      }
+
       if (gameId !== null) {
         const user_id = Number(sessionStorage.getItem("userId"));
         const opponent_id = isAI ? 2 : 3;
@@ -324,6 +370,49 @@ export async function createPongScene(
   scene.onBeforeRenderObservable.add(() => {
     if (gameOver) return;
 
+    if (isAI) {
+      const diff = scoreIA - scorePlayer;
+      const maxDiff = SCORE_LIMIT;
+      const t = clamp((diff + maxDiff) / (2 * maxDiff), 0, 1);
+      currentProfile = interpolateProfiles(iaProfiles.aggressive, iaProfiles.cautious, t);
+    }
+
+    if (isAI && ballDir.length() > 0) {
+      if (iaNextReactionIn <= 0) {
+        const hesitateChance = 0.05; // 5% de chance de ne pas réagir du tout
+        if (Math.random() < hesitateChance && Math.abs(ball.position.x) > 2) {
+          iaNextReactionIn = 6; // fait "perdre du temps" à l’IA
+          return;
+        }
+        // IA réagit maintenant
+        const dx = paddle2.position.x - ball.position.x;
+        const timeToReach = Math.abs(dx / ballDir.x);
+        const predictedZ = ball.position.z + (ballDir.z * timeToReach);
+
+        const dz = predictedZ + iaOffset - paddle2.position.z;
+
+        const error = (Math.random() - 0.5) * currentProfile.errorRange;
+        const speedFactor = clamp(1 - Math.abs(ball.position.x) / 6, 0.4, 1);
+        const maxStep = paddleSpeed * 0.5 * speedFactor * currentProfile.adaptation;
+
+        // Appliquer accélération/inertie
+        const desiredVelocity = clamp(dz + error, -maxStep, maxStep);
+        const acceleration = 0.04;
+        iaVelocity += clamp(desiredVelocity - iaVelocity, -acceleration, acceleration);
+        iaVelocity = clamp(iaVelocity, -maxStep, maxStep);
+
+        paddle2.position.z += iaVelocity;
+        paddle2.position.z = clamp(paddle2.position.z, -2.4, 2.4);
+
+        // Prochaine réaction dans X frames
+        iaNextReactionIn = Math.floor(
+          Math.random() * (currentProfile.reactionDelayMax - currentProfile.reactionDelayMin + 1)
+        ) + currentProfile.reactionDelayMin;
+      } else {
+        iaNextReactionIn--;
+      }
+    }
+
     ball.position.addInPlace(ballDir);
 
     if (ball.position.z >= 2.9 || ball.position.z <= -2.9) ballDir.z *= -1;
@@ -331,26 +420,49 @@ export async function createPongScene(
     const hitP1 = ball.position.x <= paddle1.position.x + 0.15 && Math.abs(ball.position.z - paddle1.position.z) <= 0.6;
     const hitP2 = ball.position.x >= paddle2.position.x - 0.15 && Math.abs(ball.position.z - paddle2.position.z) <= 0.6;
 
+    const adjustBounce = (paddle: Mesh, isLeft: boolean) => {
+      // distance entre le centre de la raquette et la balle
+      const dz = ball.position.z - paddle.position.z;
+
+      // normalisation : si dz est proche de 0.5, max effet ; si proche de 0, peu d'effet
+      const normalizedZ = clamp(dz / (paddle.scaling.y * 0.5), -1, 1);
+
+      const speed = ballDir.length();
+      const angleFactor = 0.6; // plus élevé = plus d'effet
+
+      const newAngle = normalizedZ * angleFactor;
+      const directionX = isLeft ? 1 : -1;
+
+      const angleRad = Math.atan2(newAngle, 1);
+      ballDir = new Vector3(
+        directionX * speed * Math.cos(angleRad),
+        0,
+        speed * Math.sin(angleRad)
+      );
+
+      // repositionner la balle juste à côté de la raquette pour éviter les collisions multiples
+      ball.position.x = isLeft ? paddle.position.x + 0.3 : paddle.position.x - 0.3;
+    };
+
     if (hitP1) {
-      ballDir.x *= -1;
-      ball.position.x = paddle1.position.x + 0.3;
+      adjustBounce(paddle1, true);
     } else if (hitP2) {
-      ballDir.x *= -1;
-      ball.position.x = paddle2.position.x - 0.3;
+      adjustBounce(paddle2, false);
     }
+
 
     if (ball.position.x > 4.8) {
       scorePlayer++;
       console.log(`[GAME DEBUG] Point for Player Score: ${scorePlayer} - ${scoreIA}`);
       scoreBoard!.textContent = `${scorePlayer} - ${scoreIA}`;
-      resetBall();
       checkGameOver();
+      if (!gameOver) resetBall();
     } else if (ball.position.x < -4.8) {
       scoreIA++;
       console.log(`[GAME DEBUG] Point for AI! Score: ${scorePlayer} - ${scoreIA}`);
       scoreBoard!.textContent = `${scorePlayer} - ${scoreIA}`;
-      resetBall();
       checkGameOver();
+      if (!gameOver) resetBall();
     }
   });
 
@@ -361,4 +473,3 @@ export async function createPongScene(
     scene
   };
 }
-
