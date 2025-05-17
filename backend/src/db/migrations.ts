@@ -28,6 +28,8 @@ function relaxEmailConstraint() {
     db.exec(`
       PRAGMA foreign_keys = OFF;
 
+      DROP TABLE IF EXISTS users_tmp;  -- ✅ 여기 추가됨
+
       CREATE TABLE users_tmp (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL UNIQUE,
@@ -61,6 +63,7 @@ function relaxEmailConstraint() {
     console.log('[DEBUG MIGRATION] 이메일 컬럼은 이미 nullable 상태.');
   }
 }
+
 // NEW
 // Insert required users BEFORE any foreign key dependencies
 db.prepare(`
