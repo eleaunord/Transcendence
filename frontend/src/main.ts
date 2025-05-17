@@ -18,6 +18,7 @@ import { createAIPage } from './pages/AIPage';
 import { createTournamentPage } from './pages/TournamentPage';
 import { createVersusPage } from './pages/VersusPage';
 import { createModePage } from './pages/ModePage';
+import { createAnonymizePage } from './pages/AnonymizePage'; // 1705 추가
 import { createDeleteAccountPage } from './pages/DeleteAccountPage';
 import { createPrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { createExportDataPage } from './pages/ExportDataPage';
@@ -68,6 +69,7 @@ const routes = {
   '/mode': useWithNavigate(protectedRoute(createModePage)),
   '/memory-mode': useWithNavigate(protectedRoute(createModeMemoryPage)),
   '/memory-versus': useWithNavigate(protectedRoute(createMemoryVersusPage)),
+  '/anonymize': useWithNavigate(protectedRoute(createAnonymizePage)),
   '/delete-account': useWithNavigate(protectedRoute(createDeleteAccountPage)),
   '/privacy-policy': useWithNavigate(createPrivacyPolicyPage),
   '/export-data': useWithNavigate(protectedRoute(createExportDataPage)), //0805 추가

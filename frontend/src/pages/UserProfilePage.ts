@@ -309,6 +309,21 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
     });
     //------Export My Data 버튼 추가 끝------\\
 
+
+    //------ 1705 추가 Anonymizes My Account 버튼------\\
+    const anonymizeRedirectButton = document.createElement('button');
+    anonymizeRedirectButton.textContent = 'Anonymize My Account';
+    anonymizeRedirectButton.className = `
+      mt-4 p-2 bg-yellow-500 hover:bg-yellow-600 rounded-lg text-white font-semibold
+      transition-colors duration-300
+    `.replace(/\s+/g, ' ').trim();
+    
+    anonymizeRedirectButton.addEventListener('click', () => {
+      navigate('/anonymize'); // SPA 방식 리디렉션
+    });
+    //------Anonymizes My Account 버튼 추가------\\
+
+
     //------Delete Account 버튼 추가------\\
     const deleteRedirectButton = document.createElement('button');
     deleteRedirectButton.textContent = 'Delete Account';
@@ -332,6 +347,8 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   formContainer.appendChild(toggle2FAButton);
 
   formContainer.appendChild(exportDataButton); // export data 버튼 추가
+
+  formContainer.appendChild(anonymizeRedirectButton);  // 1705 anonymize 버튼
 
   formContainer.appendChild(deleteRedirectButton); // Delete Account 버튼 추가
 
