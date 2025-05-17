@@ -138,8 +138,8 @@ export async function authRoutes(app: FastifyInstance) {
 
       const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
       // 0805 수정
-      // const redirectUrl = `${FRONTEND_URL}/auth/google?token=${token}&email=${encodeURIComponent(email)}`;
-      const redirectUrl = `${FRONTEND_URL}/auth/google?token=${token}&email=${encodeURIComponent(email)}&is_2fa_enabled=${user.is_2fa_enabled}&seen_2fa_prompt=${user.seen_2fa_prompt}`;
+      // const redirectUrl = `${FRONTEND_URL}/auth/google?token=${token}&email=${encodeURIComponent(email)}&is_2fa_enabled=${user.is_2fa_enabled}&seen_2fa_prompt=${user.seen_2fa_prompt}`;
+      const redirectUrl = `${FRONTEND_URL}/auth/google?token=${token}&email=${encodeURIComponent(email)}&id=${user.id}&is_2fa_enabled=${user.is_2fa_enabled}&seen_2fa_prompt=${user.seen_2fa_prompt}`;
       console.log('[GOOGLE OAUTH] Redirecting to:', redirectUrl);
       reply.redirect(redirectUrl);
 

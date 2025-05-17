@@ -27,7 +27,7 @@ export type PongOptions = {
 export async function createPongScene(
   canvas: HTMLCanvasElement,
   options: PongOptions,
-  returnButton: HTMLButtonElement // bouton reçu depuis l'extérieur
+  returnButton: HTMLButtonElement, // bouton reçu depuis l'extérieur
 ): Promise<any> {
   const isAI = options.mode === 'ai';
 
@@ -61,6 +61,38 @@ export async function createPongScene(
   const engine = new Engine(canvas, true);
   const scene = new Scene(engine);
   scene.clearColor = new Color4(0, 0, 0, 1.0);
+
+  //1705 추가
+  let gameId: number | null = null;
+
+  async function startMatch() {
+    const user_id = Number(sessionStorage.getItem("userId"));
+    const opponent_id = isAI ? 2 : 3;
+  
+    // ✅ user_id 유효성 검사
+    if (!user_id || isNaN(user_id)) {
+      console.error("❗ user_id is missing or invalid in sessionStorage");
+      return;
+    }
+  
+    try {
+      const response = await fetch("/api/match/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id, opponent_id })
+      });
+  
+      const data = await response.json();
+      gameId = data.gameId;
+      console.log("[MATCH STARTED]", { gameId, user_id, opponent_id });
+    } catch (err) {
+      console.error("❌ Error starting match:", err);
+    }
+  }
+  
+  await startMatch();  
+// 1705 일단 여기 위에까지 추가임 \\
+
 
   const SCORE_LIMIT = options.scoreToWin;
   let scorePlayer = 0;
@@ -232,19 +264,43 @@ export async function createPongScene(
     resetBall();
   }
 
-  function checkGameOver() {
-    if (scorePlayer >= SCORE_LIMIT) {
+  //1705 추가
+  async function checkGameOver() {
+    if (scorePlayer >= SCORE_LIMIT || scoreIA >= SCORE_LIMIT) {
       gameOver = true;
-      announce!.textContent = "Victoire !";
+  
+      const isWin = scorePlayer > scoreIA;
+      announce!.textContent = isWin ? "Victoire !" : "Défaite...";
       announce!.style.display = "block";
-      returnButton.style.display = "block"; // 👈 Affiche le bouton
-    } else if (scoreIA >= SCORE_LIMIT) {
-      gameOver = true;
-      announce!.textContent = "Défaite...";
-      announce!.style.display = "block";
-      returnButton.style.display = "block"; // 👈 Affiche le bouton
+      returnButton.style.display = "block";
+  
+      if (gameId !== null) {
+        const user_id = Number(sessionStorage.getItem("userId"));
+        const opponent_id = isAI ? 2 : 3;
+  
+        try {
+          const res = await fetch("/api/match/end", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              gameId,
+              user_id,
+              opponent_id,
+              score1: scorePlayer,
+              score2: scoreIA
+            })
+          });
+  
+          const result = await res.json();
+          console.log("[MATCH ENDED]", result);
+        } catch (err) {
+          console.error("[DEBUG GAME/PONG SCENE] Error ending match:", err);
+        }
+      }
     }
-  }
+  }  
+  // 여기까지 \\
+
 
   resetBall();
 
@@ -285,11 +341,13 @@ export async function createPongScene(
 
     if (ball.position.x > 4.8) {
       scorePlayer++;
+      console.log(`[GAME DEBUG] Point for Player Score: ${scorePlayer} - ${scoreIA}`);
       scoreBoard!.textContent = `${scorePlayer} - ${scoreIA}`;
       resetBall();
       checkGameOver();
     } else if (ball.position.x < -4.8) {
       scoreIA++;
+      console.log(`[GAME DEBUG] Point for AI! Score: ${scorePlayer} - ${scoreIA}`);
       scoreBoard!.textContent = `${scorePlayer} - ${scoreIA}`;
       resetBall();
       checkGameOver();

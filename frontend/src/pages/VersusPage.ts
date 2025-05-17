@@ -42,17 +42,17 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
 
   modeMenu.append(btnLocal, btnAI);
 
-  btnLocal.addEventListener("click", () => {
+  btnLocal.addEventListener("click", async () => {
     modeMenu.remove();
-    launchGame("local");
+    await launchGame("local");
   });
 
-  btnAI.addEventListener("click", () => {
+  btnAI.addEventListener("click", async () => {
     modeMenu.remove();
-    launchGame("ai");
+    await launchGame("ai");
   });
 
-  function launchGame(mode: 'local' | 'ai') {
+  async function launchGame(mode: 'local' | 'ai') {
     const scoreBoard = document.createElement("div");
     scoreBoard.id = "scoreBoard";
     scoreBoard.className = `
@@ -92,13 +92,17 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
 
     const settings = loadPongSettings();
 
-    createPongScene(canvas, {
-      mode,
-      speed: settings.speed,
-      scoreToWin: settings.scoreToWin,
-      paddleSize: settings.paddleSize,
-      theme: settings.theme
-    }, btnReturn);
+    await createPongScene(
+      canvas,
+      {
+        mode,
+        speed: settings.speed,
+        scoreToWin: settings.scoreToWin,
+        paddleSize: settings.paddleSize,
+        theme: settings.theme
+      },
+      btnReturn
+    );
   }
 
   gameFrame.appendChild(canvas);

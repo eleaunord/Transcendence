@@ -55,6 +55,9 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
           sessionStorage.setItem('userEmail', user.email); // 추가 한 부분!
           sessionStorage.setItem('profilePicture', user.image);
           console.log('Utilisateur chargé :', user);
+          sessionStorage.setItem('userId', user.id.toString()); // 1505 추가
+
+          console.log('[DEBUG userId in AUTHPAGE] 저장된 userId:', sessionStorage.getItem('userId')); // 1505 추가
 
           //0805 추가
           const is2FA = !!user.is_2fa_enabled;
