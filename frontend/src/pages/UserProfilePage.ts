@@ -412,6 +412,57 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   settingsSection.appendChild(settingsContainer);
   container.appendChild(settingsSection);
 
+  // HISTORY
+
+const recentGamesSection = document.createElement('div');
+recentGamesSection.className = `
+  relative mt-6 ml-24
+  flex flex-col items-center
+  z-20 w-full
+`.replace(/\s+/g, ' ').trim();
+
+const recentGamesContainer = document.createElement('div');
+recentGamesContainer.className = `
+  bg-white/10 backdrop-blur-md
+  rounded-2xl shadow-2xl
+  transform transition-all duration-300
+  hover:scale-105 hover:shadow-3xl
+  px-6 pt-6 pb-8 min-h-[120px] w-full max-w-5xl
+`.replace(/\s+/g, ' ').trim();
+
+const recentGamesTitle = document.createElement('h3');
+recentGamesTitle.textContent = 'Recent games';
+recentGamesTitle.className = 'text-xl font-semibold mb-4';
+
+const recentGamesList = document.createElement('div');
+recentGamesList.id = 'recentGamesList';
+recentGamesList.className = 'text-gray-300 space-y-2 italic';
+
+// Fetch recent games
+const tokenForGames = localStorage.getItem('token');
+if (tokenForGames) {
+  fetch('/api/me/recent-games', {
+    headers: { 'Authorization': `Bearer ${tokenForGames}` }
+  })
+    .then(res => res.json())
+    .then(games => {
+      games.forEach((entry: string) => {
+        const p = document.createElement('p');
+        p.textContent = entry;
+        recentGamesList.appendChild(p);
+      });
+    })
+    .catch(err => {
+      console.error('Error loading recent games:', err);
+    });
+}
+
+recentGamesContainer.appendChild(recentGamesTitle);
+recentGamesContainer.appendChild(recentGamesList);
+recentGamesSection.appendChild(recentGamesContainer);
+container.appendChild(recentGamesSection);
+
+
   // Sidebar hover events (mouvement sidebar)
   sidebar.addEventListener('mouseenter', () => {
     document.querySelectorAll('.sidebar-label').forEach(label => {

@@ -4,6 +4,7 @@ import db from '../db/db';
 import dotenv from 'dotenv';
 import { authenticateToken } from './authMiddleware';
 import { generateAnonymousUsername } from '../utils/anonymize';
+import { RecentGame } from '../types';
 
 dotenv.config();
 
@@ -44,7 +45,38 @@ export async function meRoutes(app: FastifyInstance) {
         friends,
         potentialFriends
       });
-    });
+  });
+  
+  app.get('/me/recent-games', async (req, reply) => {
+    const userId = req.user?.id;
+    if (!userId) return reply.code(401).send({ error: 'Unauthorized' });
+
+    try {
+      const games = db.prepare(`
+        SELECT created_at
+        FROM games
+        WHERE user_id = ?
+        ORDER BY datetime(created_at) DESC
+        LIMIT 3
+      `).all(userId) as Pick<RecentGame, 'created_at'>[];
+
+      const formatted = games.map((game) => {
+        const date = new Date(game.created_at);
+        const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const year = date.getFullYear();
+        const formattedDate = `${month}/${day}/${year}`;
+        return `You played a game at ${time} on ${formattedDate}.`;
+      });
+
+
+      reply.send(formatted);
+    } catch (err) {
+      console.error('Error fetching recent games:', err);
+      reply.code(500).send({ error: 'Internal server error' });
+    }
+  });
   
    // Mise à jour du username
   app.patch('/me', async (req, reply) => {
