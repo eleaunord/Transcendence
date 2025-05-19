@@ -7,6 +7,7 @@ import { leaderboardRoutes } from './routes/leaderboard';  // NEW
 import { friendsRoutes } from './routes/friends'; // NEW
 
 import './db/migrations';
+import tournaments from './routes/tournaments';
 
 async function main() {
   const app = Fastify({
@@ -46,7 +47,7 @@ async function main() {
   await app.register(friendsRoutes, { prefix: '/api' });
   await app.register(leaderboardRoutes, { prefix: '/api' });
   await app.register(matchRoutes, { prefix: '/api' });
-
+  await app.register(tournaments, { prefix: '/api' }); // NEW
   app.get('/', async () => {
     return { message: 'Backend is running' };
   });

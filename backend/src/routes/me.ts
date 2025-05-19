@@ -43,6 +43,11 @@ export async function meRoutes(app: FastifyInstance) {
         friends,
         potentialFriends
       });
+      if (!req.user) {
+        console.error('[me] req.user est undefined malgré token valide');
+        return reply.code(500).send({ error: 'Internal error: missing user' });
+      }
+      
     });
   
    // Mise à jour du username
