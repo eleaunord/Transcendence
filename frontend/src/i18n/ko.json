@@ -1,0 +1,40 @@
+{
+  "home.title": "하늘퐁에 오신 것을 환영합니다!",
+  "home.subtitle": "친구들과 클래식 게임을 즐길 준비를 하세요.",
+  "home.login": "로그인",
+  "home.signup": "회원가입",
+  "home.google": "Google로 로그인/회원가입",
+  "warning.2fa": "2단계 인증을 진행하려면 로그인하세요.",
+  "privacy.consent": "개인정보의 <a href=\"#\" id=\"privacy-link\" class=\"underline text-blue-400\">수집 및 이용에 동의합니다</a> (필수)",
+
+  "privacy.title": "개인정보 처리방침",
+  "privacy.intro": "이 개인정보 처리방침은 GDPR 준수를 위한 우리의 노력의 일환으로 작성되었습니다.",
+  "privacy.1.title": "1. 데이터 처리 책임자",
+  "privacy.1.content": "Transcendance는 귀하의 개인정보 처리에 대한 책임이 있습니다. 문의: haneulpong42@gmail.com",
+  "privacy.2.title": "2. 수집하는 개인정보",
+  "privacy.2.items": [
+    "사용자 이름",
+    "이메일 주소",
+    "Google ID (Google OAuth 사용 시)",
+    "프로필 사진 (선택 사항)",
+    "암호화된 비밀번호",
+    "2단계 인증 활성화 및 임시 코드"
+  ],
+  "privacy.2.note": "IP 주소, 쿠키 또는 기술 관련 정보는 수집하지 않습니다.",
+  "privacy.3.title": "3. 처리 목적",
+  "privacy.3.content": "계정 관리, 안전한 인증, 서비스 개선, 사용자와의 소통, 익명 통계.",
+  "privacy.4.title": "4. 데이터 보관 기간",
+  "privacy.4.content": "계정이 활성화된 동안 보관되며, 계정 삭제 시 30일 이내 삭제됩니다.",
+  "privacy.5.title": "5. 이용자의 권리",
+  "privacy.5.content": "열람, 정정, 삭제, 처리 제한, 이의 제기, 데이터 이동, 동의 철회. 문의: haneulpong42@gmail.com",
+  "privacy.6.title": "6. 보안",
+  "privacy.6.content": "엄격한 기술 및 조직적 조치, 비밀번호 암호화.",
+  "privacy.8.title": "8. 불만 처리",
+  "privacy.8.content": "프랑스 정보 보호 위원회(CNIL):",
+  
+  "error.invalidEmail": "잘못된 이메일 주소입니다.",
+  "error.shortPassword": "비밀번호가 너무 짧습니다.",
+  "error.requiredField": "이 항목은 필수입니다.",
+  "error.userNotFound": "사용자를 찾을 수 없습니다.",
+  "error.wrongPassword": "비밀번호가 올바르지 않습니다."
+}

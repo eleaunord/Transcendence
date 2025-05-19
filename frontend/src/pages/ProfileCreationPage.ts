@@ -1,3 +1,4 @@
+
 export function createProfileCreationPage(navigate: (path: string) => void): HTMLElement {
   let username = '';
   let selectedImage = '/assets/profile-pictures/default.jpg'; // image par défaut
