@@ -53,12 +53,12 @@ export async function meRoutes(app: FastifyInstance) {
 
     try {
       const games = db.prepare(`
-        SELECT created_at
+        SELECT created_at, opponent_id
         FROM games
         WHERE user_id = ?
         ORDER BY datetime(created_at) DESC
         LIMIT 3
-      `).all(userId) as Pick<RecentGame, 'created_at'>[];
+      `).all(userId) as { created_at: string; opponent_id: number }[];
 
       const formatted = games.map((game) => {
         const date = new Date(game.created_at);
@@ -67,9 +67,14 @@ export async function meRoutes(app: FastifyInstance) {
         const day = String(date.getDate()).padStart(2, '0');
         const year = date.getFullYear();
         const formattedDate = `${month}/${day}/${year}`;
-        return `You played a game at ${time} on ${formattedDate}.`;
-      });
 
+        // Map opponent_id to name
+        let opponentName = 'Unknown';
+        if (game.opponent_id === 2) opponentName = 'AI';
+        else if (game.opponent_id === 3) opponentName = 'Guest';
+
+        return `You played a game against ${opponentName} at ${time} on ${formattedDate}.`;
+      });
 
       reply.send(formatted);
     } catch (err) {
@@ -77,6 +82,7 @@ export async function meRoutes(app: FastifyInstance) {
       reply.code(500).send({ error: 'Internal server error' });
     }
   });
+
   
    // Mise à jour du username
   app.patch('/me', async (req, reply) => {
