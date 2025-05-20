@@ -32,11 +32,51 @@
   "privacy.8.title": "8. Réclamations",
   "privacy.8.content": "Commission Nationale de l’Informatique et des Libertés (CNIL) :",
 
-  "error.invalidEmail": "Adresse e-mail invalide.",
-  "error.shortPassword": "Mot de passe trop court.",
-  "error.requiredField": "Ce champ est obligatoire.",
-  "error.userNotFound": "Utilisateur introuvable.",
-  "error.wrongPassword": "Mot de passe incorrect."
+  "auth.title": "Connexion",
+  "auth.username": "Nom d'utilisateur",
+  "auth.password": "Mot de passe",
+  "auth.button": "Se connecter",
+  "auth.error.connection": "Erreur de connexion",
+  "auth.error.loadProfile": "Impossible de charger le profil utilisateur",
+  "auth.error.profileFetch": "Erreur lors du chargement du profil",
+  "auth.error.network": "Erreur réseau",
+  "auth.devMode": "⚠️ MODE DÉVELOPPEMENT ACTIVÉ ⚠️",
+  "auth.devLogin": "Connexion Dev",
+
+  "signup.title": "Inscription",
+  "signup.username": "Nom d'utilisateur",
+  "signup.email": "Email",
+  "signup.password": "Mot de passe",
+  "signup.button": "S'inscrire",
+  "signup.error.failed": "Échec de l'inscription",
+  "signup.error.network": "Erreur réseau",
+
+  "google.connecting": "Connexion Google en cours...",
+  "google.error.noToken": "Erreur : aucun token trouvé",
+
+  "profile.welcome": "Bienvenue",
+  "profile.game": "Aller au jeu",
+  "profile.customize": "Personnaliser",
+  "profile.logout": "Se déconnecter",
+
+  "user.username": "Nom d'utilisateur",
+  "user.email": "Email :",
+  "user.loading": "Chargement...",
+  "user.password": "Mot de passe :",
+  "user.newUsername": "Nouveau nom d'utilisateur",
+  "user.updateUsername": "Mettre à jour le nom",
+  "user.success": "✅ Profil mis à jour avec succès !",
+  "user.2fa.loading": "Statut 2FA : chargement...",
+  "user.2fa.on": "Statut 2FA : ACTIVÉ",
+  "user.2fa.off": "Statut 2FA : DÉSACTIVÉ",
+  "user.2fa.turnOn": "Activer 2FA",
+  "user.2fa.turnOff": "Désactiver 2FA",
+  "user.exportData": "Exporter mes données",
+  "user.anonymize": "Anonymiser mon compte",
+  "user.deleteAccount": "Supprimer le compte"
+
+
+
 }
 
 

@@ -1,4 +1,5 @@
 import { IS_DEV_MODE } from '../config';
+import { t } from '../utils/translator'; // Ajout pour i18n
 
 export function createAuthPage(navigate: (path: string) => void): HTMLElement {
   let error = '';
@@ -25,76 +26,75 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
       console.log(data);
 
       if (!res.ok) {
-        error = data.error || 'Erreur de connexion';
+        error = data.error || t('auth.error.connection');
         updateError();
         return;
       }
 
       try {
         console.log('Token reçu:', data.token);
-      
+
         // 추가: remove original token
         localStorage.removeItem('token');
         sessionStorage.removeItem('token');
         // 추가: set new token
         localStorage.setItem('token', data.token);
-      
+
         console.log('Token stocké:', localStorage.getItem('token'));
 
-      // Récupération des infos utilisateur après login
-      try {
-        const res = await fetch('/api/me', {
-          headers: {
-            Authorization: `Bearer ${data.token}`
-          }
-        });
+        // Récupération des infos utilisateur après login
+        try {
+          const res = await fetch('/api/me', {
+            headers: {
+              Authorization: `Bearer ${data.token}`
+            }
+          });
 
-        if (res.ok) {
-          const user = await res.json();
-          sessionStorage.setItem('username', user.username);
-          sessionStorage.setItem('userEmail', user.email); // 추가 한 부분!
-          sessionStorage.setItem('profilePicture', user.image);
-          console.log('Utilisateur chargé :', user);
-          sessionStorage.setItem('userId', user.id.toString()); // 1505 추가
+          if (res.ok) {
+            const user = await res.json();
+            sessionStorage.setItem('username', user.username);
+            sessionStorage.setItem('userEmail', user.email); // 추가 한 부분!
+            sessionStorage.setItem('profilePicture', user.image);
+            console.log('Utilisateur chargé :', user);
+            sessionStorage.setItem('userId', user.id.toString()); // 1505 추가
 
-          console.log('[DEBUG userId in AUTHPAGE] 저장된 userId:', sessionStorage.getItem('userId')); // 1505 추가
+            console.log('[DEBUG userId in AUTHPAGE] 저장된 userId:', sessionStorage.getItem('userId')); // 1505 추가
 
-          //0805 추가
-          const is2FA = !!user.is_2fa_enabled;
-          const seen2FA = !!user.seen_2fa_prompt;
-          if (!seen2FA) {
-            navigate('/2fa'); // 첫 로그인 → 2FA 활성화 여부 물어보는 페이지
-          } else if (is2FA) {
-            navigate('/2fa?mode=input'); // 이미 활성화됨 → 코드 입력
+            //0805 추가
+            const is2FA = !!user.is_2fa_enabled;
+            const seen2FA = !!user.seen_2fa_prompt;
+            if (!seen2FA) {
+              navigate('/2fa'); // 첫 로그인 → 2FA 활성화 여부 물어보는 페이지
+            } else if (is2FA) {
+              navigate('/2fa?mode=input'); // 이미 활성화됨 → 코드 입력
+            } else {
+              navigate('/profile-creation'); // 2FA 미사용 → 프로필 설정
+            }
           } else {
-            navigate('/profile-creation'); // 2FA 미사용 → 프로필 설정
+            console.warn('Impossible de charger le profil utilisateur');
+            error = t('auth.error.loadProfile');
+            updateError();
           }
-        } else {
-          console.warn('Impossible de charger le profil utilisateur');
-          error = 'Impossible de charger le profil';
+        } catch (e) {
+          console.error('Erreur lors du chargement de /api/me :', e);
+          error = t('auth.error.profileFetch');
           updateError();
         }
       } catch (e) {
-        console.error('Erreur lors du chargement de /api/me :', e);
-        error = 'Erreur de chargement du profil';
-        updateError();
+        console.error('Erreur lors du stockage du token:', e);
       }
-    } catch (e) {
-      console.error('Erreur lors du stockage du token:', e);
-    }
     } catch (err) {
-      error = 'Erreur réseau';
+      error = t('auth.error.network');
       updateError();
     }
   };
-
 
   const container = document.createElement('div');
   container.className = 'flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
 
   const title = document.createElement('h1');
   title.className = 'text-4xl font-bold mb-8';
-  title.textContent = 'Sign in';
+  title.textContent = t('auth.title');
 
   const form = document.createElement('form');
   form.id = 'authForm';
@@ -106,11 +106,11 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
   const usernameLabel = document.createElement('label');
   usernameLabel.htmlFor = 'username';
   usernameLabel.className = 'block text-lg mb-2';
-  usernameLabel.textContent = 'Username';
+  usernameLabel.textContent = t('auth.username');
   const usernameInput = document.createElement('input');
   usernameInput.type = 'text';
   usernameInput.id = 'username';
-  usernameInput.placeholder = 'Username';
+  usernameInput.placeholder = t('auth.username');
   usernameInput.className = 'w-full p-2 bg-gray-700 text-white rounded-lg';
   usernameInput.required = true;
   usernameDiv.appendChild(usernameLabel);
@@ -122,11 +122,11 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
   const passwordLabel = document.createElement('label');
   passwordLabel.htmlFor = 'password';
   passwordLabel.className = 'block text-lg mb-2';
-  passwordLabel.textContent = 'Password';
+  passwordLabel.textContent = t('auth.password');
   const passwordInput = document.createElement('input');
   passwordInput.type = 'password';
   passwordInput.id = 'password';
-  passwordInput.placeholder = 'Password';
+  passwordInput.placeholder = t('auth.password');
   passwordInput.className = 'w-full p-2 bg-gray-700 text-white rounded-lg';
   passwordInput.required = true;
   passwordDiv.appendChild(passwordLabel);
@@ -136,7 +136,7 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg';
-  button.textContent = 'Sign in';
+  button.textContent = t('auth.button');
   button.addEventListener('click', handleLogin);
 
   // Error Message
@@ -158,11 +158,12 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
   if (IS_DEV_MODE) {
     const devBanner = document.createElement('div');
     devBanner.className = 'w-full bg-yellow-500 text-black text-center py-2 font-semibold z-50';
-    devBanner.textContent = '⚠️ MODE DÉVELOPPEMENT ACTIVÉ ⚠️';
+    devBanner.textContent = t('auth.devMode');
     container.appendChild(devBanner);
+
     const devLoginBtn = document.createElement('button');
     devLoginBtn.type = 'button';
-    devLoginBtn.textContent = 'Connexion Dev';
+    devLoginBtn.textContent = t('auth.devLogin');
     devLoginBtn.className =
       'w-full mt-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg';
     devLoginBtn.addEventListener('click', () => {

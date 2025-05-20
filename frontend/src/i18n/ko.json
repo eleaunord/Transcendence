@@ -32,9 +32,47 @@
   "privacy.8.title": "8. 불만 처리",
   "privacy.8.content": "프랑스 정보 보호 위원회(CNIL):",
   
-  "error.invalidEmail": "잘못된 이메일 주소입니다.",
-  "error.shortPassword": "비밀번호가 너무 짧습니다.",
-  "error.requiredField": "이 항목은 필수입니다.",
-  "error.userNotFound": "사용자를 찾을 수 없습니다.",
-  "error.wrongPassword": "비밀번호가 올바르지 않습니다."
+  "auth.title": "로그인",
+  "auth.username": "사용자 이름",
+  "auth.password": "비밀번호",
+  "auth.button": "로그인",
+  "auth.error.connection": "연결 오류",
+  "auth.error.loadProfile": "사용자 프로필을 불러올 수 없습니다",
+  "auth.error.profileFetch": "프로필을 가져오는 중 오류 발생",
+  "auth.error.network": "네트워크 오류",
+  "auth.devMode": "⚠️ 개발 모드 활성화됨 ⚠️",
+  "auth.devLogin": "개발자 로그인",
+
+  "signup.title": "회원가입",
+  "signup.username": "사용자 이름",
+  "signup.email": "이메일",
+  "signup.password": "비밀번호",
+  "signup.button": "회원가입",
+  "signup.error.failed": "회원가입 실패",
+  "signup.error.network": "네트워크 오류",
+
+  "google.connecting": "Google 로그인 중...",
+  "google.error.noToken": "오류: 토큰을 찾을 수 없습니다",
+
+  "profile.welcome": "환영합니다",
+  "profile.game": "게임으로 이동",
+  "profile.customize": "사용자 정의",
+  "profile.logout": "로그아웃",
+
+  "user.username": "사용자 이름",
+  "user.email": "이메일:",
+  "user.loading": "로딩 중...",
+  "user.password": "비밀번호:",
+  "user.newUsername": "새 사용자 이름",
+  "user.updateUsername": "사용자 이름 업데이트",
+  "user.success": "✅ 프로필이 성공적으로 업데이트되었습니다!",
+  "user.2fa.loading": "2FA 상태: 로딩 중...",
+  "user.2fa.on": "2FA 상태: 활성화됨",
+  "user.2fa.off": "2FA 상태: 비활성화됨",
+  "user.2fa.turnOn": "2FA 켜기",
+  "user.2fa.turnOff": "2FA 끄기",
+  "user.exportData": "내 데이터 내보내기",
+  "user.anonymize": "계정 익명화",
+  "user.deleteAccount": "계정 삭제"
+
 }

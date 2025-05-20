@@ -1,3 +1,4 @@
+import { t } from '../utils/translator';
 
 export function createGoogleOauthPage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
@@ -5,7 +6,7 @@ export function createGoogleOauthPage(navigate: (path: string) => void): HTMLEle
 
   const title = document.createElement('h1');
   title.className = 'text-3xl font-bold';
-  title.textContent = 'Connexion Google...';
+  title.textContent = t('google.connecting');
 
   const spinner = document.createElement('div');
   spinner.className = 'mt-4 animate-spin rounded-full h-10 w-10 border-b-2 border-white';
@@ -19,7 +20,6 @@ export function createGoogleOauthPage(navigate: (path: string) => void): HTMLEle
   const email = urlParams.get('email');
   const is2FA = urlParams.get('is_2fa_enabled') === '1' || urlParams.get('is_2fa_enabled') === 'true';
   const seen2FA = urlParams.get('seen_2fa_prompt') === '1' || urlParams.get('seen_2fa_prompt') === 'true';
-  
 
   if (token) {
     //1505 추가
@@ -29,13 +29,13 @@ export function createGoogleOauthPage(navigate: (path: string) => void): HTMLEle
     // store token and redirect
     localStorage.setItem('token', token);
     sessionStorage.setItem('token', token);
-    if (email)
-        sessionStorage.setItem('userEmail', email);  // email 저장
+    if (email) sessionStorage.setItem('userEmail', email);  // email 저장
 
     sessionStorage.setItem('is_2fa_enabled', String(is2FA));
     sessionStorage.setItem('seen_2fa_prompt', String(seen2FA));
     
     console.log('[GoogleOAuth] token/email saved to sessionStorage'); // debug
+
     setTimeout(() => {
       if (!seen2FA) {
         navigate('/2fa'); // 처음이면 2FA 활성화 여부 질문
@@ -45,9 +45,8 @@ export function createGoogleOauthPage(navigate: (path: string) => void): HTMLEle
         navigate('/profile-creation'); // 사용 안 한다면 프로필 설정
       }
     }, 1000);
-
   } else {
-    title.textContent = 'Erreur : aucun token trouvé';
+    title.textContent = t('google.error.noToken');
     spinner.style.display = 'none';
   }
 

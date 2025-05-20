@@ -1,3 +1,5 @@
+import { t } from '../utils/translator';
+
 export function createSignUpPage(navigate: (path: string) => void): HTMLElement {
   let error = '';
 
@@ -18,14 +20,14 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
       const res = await fetch('/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username,email, password }),
+        body: JSON.stringify({ username, email, password }),
       });
 
       const data = await res.json();
       console.log(data);
 
       if (!res.ok) {
-        error = data.error || 'Signup failed';
+        error = data.error || t('signup.error.failed');
         updateError();
         return;
       }
@@ -61,10 +63,11 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
         },
         body: JSON.stringify({ image: '/assets/profile-pictures/default.jpg' })
       });
+
       // 0505 changed 'profile-creation' to '/2fa'
       navigate('/2fa'); // Utilisation du routeur SPA
     } catch (err) {
-      error = 'Network error';
+      error = t('signup.error.network');
       updateError();
     }
   };
@@ -75,7 +78,7 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
 
   const title = document.createElement('h1');
   title.className = 'text-4xl font-bold mb-8';
-  title.textContent = 'Sign up';
+  title.textContent = t('signup.title');
 
   const form = document.createElement('form');
   form.id = 'authForm';
@@ -87,11 +90,11 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
   const usernameLabel = document.createElement('label');
   usernameLabel.htmlFor = 'username';
   usernameLabel.className = 'block text-lg mb-2';
-  usernameLabel.textContent = 'Username';
+  usernameLabel.textContent = t('signup.username');
   const usernameInput = document.createElement('input');
   usernameInput.type = 'text';
   usernameInput.id = 'username';
-  usernameInput.placeholder = 'Username';
+  usernameInput.placeholder = t('signup.username');
   usernameInput.className = 'w-full p-2 bg-gray-700 text-white rounded-lg';
   usernameInput.required = true;
   usernameDiv.appendChild(usernameLabel);
@@ -99,15 +102,14 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
 
   // Email
   const emailDiv = document.createElement('div');
-  //usernameDiv.className = 'mb_';
   const emailLabel = document.createElement('label');
   emailLabel.htmlFor = 'email';
   emailLabel.className = 'block text-lg mb-2';
-  emailLabel.textContent = 'Email';
+  emailLabel.textContent = t('signup.email');
   const emailInput = document.createElement('input');
   emailInput.type = 'email';
   emailInput.id = 'email';
-  emailInput.placeholder = 'Email';
+  emailInput.placeholder = t('signup.email');
   emailInput.className = 'w-full p-2 bg-gray-700 text-white rounded-lg mb-4';
   emailInput.required = true;
   emailDiv.appendChild(emailLabel);
@@ -119,11 +121,11 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
   const passwordLabel = document.createElement('label');
   passwordLabel.htmlFor = 'password';
   passwordLabel.className = 'block text-lg mb-2';
-  passwordLabel.textContent = 'Password';
+  passwordLabel.textContent = t('signup.password');
   const passwordInput = document.createElement('input');
   passwordInput.type = 'password';
   passwordInput.id = 'password';
-  passwordInput.placeholder = 'Password';
+  passwordInput.placeholder = t('signup.password');
   passwordInput.className = 'w-full p-2 bg-gray-700 text-white rounded-lg';
   passwordInput.required = true;
   passwordDiv.appendChild(passwordLabel);
@@ -133,7 +135,7 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg';
-  button.textContent = 'Sign up';
+  button.textContent = t('signup.button');
   button.addEventListener('click', handleSignUp);
 
   // Error Message

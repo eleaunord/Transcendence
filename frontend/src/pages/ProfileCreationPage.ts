@@ -1,3 +1,4 @@
+import { t } from '../utils/translator';
 
 export function createProfileCreationPage(navigate: (path: string) => void): HTMLElement {
   let username = '';
@@ -18,7 +19,7 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
 
   const welcomeMsg = document.createElement('h1');
   welcomeMsg.className = 'text-5xl font-bold mb-16 text-center';
-  welcomeMsg.textContent = 'Bienvenue !';
+  welcomeMsg.textContent = t('profile.welcome');
   form.appendChild(welcomeMsg);
 
   // --- Photo de profil ---
@@ -48,17 +49,14 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
   const buttonsContainer = document.createElement('div');
   buttonsContainer.className = 'flex justify-center gap-12 mb-2';
  
-
-
   // const baseBtnClass = 'px-6 py-4 hover:bg-blue-700 text-white font-semibold rounded-lg';
   // const baseBtnClass = 'px-6 py-4 w-48 hover:bg-blue-700 text-white font-semibold rounded-lg text-center';
   // const baseBtnClass = 'px-6 py-4 w-48 text-base whitespace-normal text-center hover:bg-blue-700 text-white font-semibold rounded-lg';
   const baseBtnClass = 'px-6 py-4 w-48 text-xl text-center hover:bg-blue-700 text-white font-semibold rounded-lg leading-tight';
 
-
   const gameBtn = document.createElement('button');
   gameBtn.type = 'button';
-  gameBtn.textContent = 'Go to the game';
+  gameBtn.textContent = t('profile.game');
   gameBtn.addEventListener('click', async () => {
     selectedOption = 'game';
     updateSelectionUI();
@@ -83,7 +81,7 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
 
   const customBtn = document.createElement('button');
   customBtn.type = 'button';
-  customBtn.textContent = 'Customize';
+  customBtn.textContent = t('profile.customize');
   customBtn.addEventListener('click', async () => {
     selectedOption = 'profile';
     updateSelectionUI();
@@ -112,20 +110,20 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
 
   // --- Déconnexion ---
   const logoutBtn = document.createElement('button');
-  logoutBtn.textContent = 'Se déconnecter';
+  logoutBtn.textContent = t('profile.logout');
   logoutBtn.className = 'mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold';
   logoutBtn.addEventListener('click', () => {
-  localStorage.removeItem('token');
-  sessionStorage.removeItem('token');
-  sessionStorage.removeItem('username');
-  sessionStorage.removeItem('userEmail');
-  sessionStorage.removeItem('profilePicture');
-  sessionStorage.removeItem('2fa_verified');
-  sessionStorage.clear();
-  localStorage.clear();
-  navigate('/'); // ou /login ou /signup, selon ton point d’entrée
+    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('username');
+    sessionStorage.removeItem('userEmail');
+    sessionStorage.removeItem('profilePicture');
+    sessionStorage.removeItem('2fa_verified');
+    sessionStorage.clear();
+    localStorage.clear();
+    navigate('/'); // ou /login ou /signup, selon ton point d’entrée
   });
-  
+
   // --- Assemblage du formulaire ---
   // form.appendChild(usernameDiv);
   form.appendChild(pictureDiv);
@@ -155,7 +153,7 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
         // picturePreview.src = `/assets/profile-pictures/${selectedImage}`;
         picturePreview.src = user.image;
 
-        welcomeMsg.textContent = `Bienvenue ${user.username} !`;
+        welcomeMsg.textContent = `${t('profile.welcome')} ${user.username} !`;
         //affiche l'image de profil stocke en base de donnees
         if (user.image) {
           selectedImage = user.image;
@@ -169,8 +167,6 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
       }
     })();
   }
-
- 
 
   // // --- Sélecteur d’images désactivé pour le moment ---
   // const imageSelector = document.createElement('div');

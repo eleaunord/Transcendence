@@ -31,9 +31,48 @@
   "privacy.6.content": "Strict technical and organizational measures, encrypted passwords.",
   "privacy.8.title": "8. Complaints",
   "privacy.8.content": "Commission Nationale de l’Informatique et des Libertés (CNIL):",
-  "error.invalidEmail": "Invalid email address.",
-  "error.shortPassword": "Password too short.",
-  "error.requiredField": "This field is required.",
-  "error.userNotFound": "User not found.",
-  "error.wrongPassword": "Incorrect password."
+
+  "auth.title": "Sign in",
+  "auth.username": "Username",
+  "auth.password": "Password",
+  "auth.button": "Sign in",
+  "auth.error.connection": "Connection error",
+  "auth.error.loadProfile": "Failed to load user profile",
+  "auth.error.profileFetch": "Error fetching profile",
+  "auth.error.network": "Network error",
+  "auth.devMode": "⚠️ DEVELOPMENT MODE ENABLED ⚠️",
+  "auth.devLogin": "Dev Login",
+
+  "signup.title": "Sign up",
+  "signup.username": "Username",
+  "signup.email": "Email",
+  "signup.password": "Password",
+  "signup.button": "Sign up",
+  "signup.error.failed": "Signup failed",
+  "signup.error.network": "Network error",
+
+  "google.connecting": "Google sign-in in progress...",
+  "google.error.noToken": "Error: no token found",
+
+  "profile.welcome": "Welcome",
+  "profile.game": "Go to the game",
+  "profile.customize": "Customize",
+  "profile.logout": "Log out",
+
+  "user.username": "Username",
+  "user.email": "Email:",
+  "user.loading": "Loading...",
+  "user.password": "Password:",
+  "user.newUsername": "New username",
+  "user.updateUsername": "Update Username",
+  "user.success": "✅ Profile updated successfully!",
+  "user.2fa.loading": "2FA Status: Loading...",
+  "user.2fa.on": "2FA Status: ON",
+  "user.2fa.off": "2FA Status: OFF",
+  "user.2fa.turnOn": "2FA On",
+  "user.2fa.turnOff": "2FA Off",
+  "user.exportData": "Export My Data",
+  "user.anonymize": "Anonymize My Account",
+  "user.deleteAccount": "Delete Account"
+
 }
