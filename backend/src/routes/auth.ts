@@ -93,7 +93,14 @@ export async function authRoutes(app: FastifyInstance) {
   });
 
   app.get('/auth/google/callback', async (req, reply) => {
-    const { code } = req.query as { code: string };
+    const { code, error } = req.query as { code?: string; error?: string };
+
+    if (error === 'access_denied') {
+      //사용자가 Google 로그인 취소 → 프론트엔드에 리디렉트하면서 query 넘김
+      const redirectUrl = `${FRONTEND_URL}/auth/google?error=access_denied`;
+      return reply.redirect(redirectUrl);
+    }
+    
     if (!code) return reply.code(400).send({ error: 'Missing code' });
 
     try {

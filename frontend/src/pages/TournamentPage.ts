@@ -187,7 +187,7 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
     const selectedId = friendSelect.value;
     const selectedFriend = friends.find(f => f.id === selectedId);
     if (!selectedFriend) return;
-
+    
     const emptyIndex = playerSlots.findIndex((p, idx) => p === null && idx !== 0);
     if (emptyIndex !== -1) {
       playerSlots[emptyIndex] = selectedFriend;
@@ -213,10 +213,41 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
     }
   });
 
-  startBtn.addEventListener('click', () => {
-    console.log('Tournoi démarré avec les joueurs :', playerSlots);
-    navigate('/local');
+  startBtn.addEventListener('click', async () => {
+    const selectedPlayers = playerSlots.filter(p => p !== null && p !== 'loading') as Player[];
+    console.log('Joueurs sélectionnés :', selectedPlayers);
+    try {
+      const response = await fetch('http://localhost:3001/api/tournaments/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: 'Tournoi Local', players: selectedPlayers })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erreur lors de la création du tournoi');
+      }
+      
+      const data = await response.json();
+      console.log(' Tournoi créé avec ID:', data.tournamentId);
+      
+        // console.log('Status code:', response.status);
+        // console.log('Response ok:', response.ok);
+        // const data = await response.json();
+        // console.log('Response body:', data);
+      // On redirige vers la page du bracket avec l'ID
+      navigate(`/bracket?id=${data.tournamentId}`);
+      // console.log('Je vais naviguer vers', `/bracket?id=${data.tournamentId}`);
+    } 
+    catch (error)
+    {
+      console.error(' Impossible de créer le tournoi :', error);
+    }
   });
+  
+  // startBtn.addEventListener('click', () => {
+  //   console.log('Tournoi démarré avec les joueurs :', playerSlots);
+  //   navigate('/local');
+  // });
 
   const observer = new MutationObserver(() => {
     startBtn.disabled = !playerSlots.every(p => p !== null);

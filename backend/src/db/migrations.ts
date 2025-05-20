@@ -16,6 +16,15 @@ function safeAlter(column: string, type: string) {
     console.log(` ==== Added column '${column}' to users table ==== `);
   }
 }
+// Ajoute la colonne 'name' à tournament_players si elle n'existe pas
+function safeAlterTournamentPlayers(column: string, type: string) {
+  const columns = db.prepare(`PRAGMA table_info(tournament_players)`).all() as { name: string }[];
+  const exists = columns.some(c => c.name === column);
+  if (!exists) {
+    db.prepare(`ALTER TABLE tournament_players ADD COLUMN ${column} ${type}`).run();
+    console.log(` ==== Added column '${column}' to tournament_players table ==== `);
+  }
+}
 
 // 1705 추가 email NOT NULL 제거용 함수 (remove email not null condition)
 function relaxEmailConstraint() {
@@ -164,11 +173,11 @@ async function migrate() {
      INSÉRER LES AMIS FICTIFS (5 au total)
   ========================== */
     const potentialFriends = [
-      { id: 1, username: 'Lilix', status: 'online', profile_picture: '/assets/profile-pictures/Avatar1.png' },
-      { id: 2, username: 'Gnouma', status: 'online', profile_picture: '/assets/profile-pictures/avatar5.png' },
-      { id: 3, username: 'Rime', status: 'online', profile_picture: '/assets/profile-pictures/avatar3.png' },
-      { id: 4, username: 'Shinhye', status: 'online', profile_picture: '/assets/profile-pictures/avatar2.png' },
-      { id: 5, username: 'Eleonore', status: 'online', profile_picture: '/assets/profile-pictures/Avatar4.png' }
+      { id: 6, username: 'Lilix', status: 'online', profile_picture: '/assets/profile-pictures/Avatar1.png' },
+      { id: 7, username: 'Gnouma', status: 'online', profile_picture: '/assets/profile-pictures/avatar5.png' },
+      { id: 8, username: 'Rime', status: 'online', profile_picture: '/assets/profile-pictures/avatar3.png' },
+      { id: 9, username: 'Shinhye', status: 'online', profile_picture: '/assets/profile-pictures/avatar2.png' },
+      { id: 10, username: 'Eleonore', status: 'online', profile_picture: '/assets/profile-pictures/Avatar4.png' }
     ];
 
     const insertFriend = db.prepare(`
@@ -180,8 +189,32 @@ async function migrate() {
       insertFriend.run(friend.id, friend.username, friend.status, friend.profile_picture);
       console.log(`✅ Ami fictif ajouté : ${friend.username}`);
     });
+    
+    await db.exec(`
+      CREATE TABLE IF NOT EXISTS tournaments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log('✅ Table `tournaments` créée');
+    
+    await db.exec(`
+      CREATE TABLE IF NOT EXISTS tournament_players (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tournament_id INTEGER NOT NULL,
+        player_id INTEGER NOT NULL,
+        source TEXT NOT NULL, -- 'friend' ou 'guest'
+        avatar TEXT,
+        FOREIGN KEY (tournament_id) REFERENCES tournaments(id)
+      );
+    `);
+
+    console.log('✅ Table `tournament_players` créée');
 
   console.log('✅ Amis fictifs insérés dans la base de données');
+  safeAlterTournamentPlayers('name', 'TEXT');
+
 }
 
 // Exécuter la migration

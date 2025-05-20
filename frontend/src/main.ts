@@ -27,6 +27,7 @@ import { createMemoryVersusPage } from './pages/MemoryVersusPage';
 import { createGameCustomizationPage } from './pages/GameCustomizationPage';
 import { createMemoryCustomizationPage } from './pages/MemoryCustomizationPage';
 import { setLanguage, applyTranslations } from './utils/translator'
+import { createBracketPage } from './pages/BracketPage';
 
 // Fonction utilitaire pour injecter `navigate` dans chaque page
 function withNavigate(navigate: (path: string) => void) {
@@ -74,8 +75,10 @@ const routes = {
   '/delete-account': useWithNavigate(protectedRoute(createDeleteAccountPage)),
   '/privacy-policy': useWithNavigate(createPrivacyPolicyPage),
   '/export-data': useWithNavigate(protectedRoute(createExportDataPage)), //0805 추가
+  '/bracket': useWithNavigate(protectedRoute(createBracketPage)),
+
 }
-// Maintenant qu'on a les routes, on peut initialiser proprement
+
 navigate = initRouter(routes)!;
 console.log('🏁 Router chargé');
 

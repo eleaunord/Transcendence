@@ -45,7 +45,12 @@ export async function meRoutes(app: FastifyInstance) {
         friends,
         potentialFriends
       });
-  });
+      if (!req.user) {
+        console.error('[me] req.user est undefined malgré token valide');
+        return reply.code(500).send({ error: 'Internal error: missing user' });
+      }
+      
+    });
   
   app.get('/me/recent-games', async (req, reply) => {
     const userId = req.user?.id;

@@ -26,6 +26,7 @@ export async function authenticateToken(request: FastifyRequest, reply: FastifyR
     
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(decoded.userId) as User | undefined;
     if (!user) {
+      console.warn('[auth] Utilisateur non trouvé avec ID:', decoded.userId);
       return reply.code(401).send({ error: 'User not found' });
     }
     
@@ -34,4 +35,5 @@ export async function authenticateToken(request: FastifyRequest, reply: FastifyR
   } catch (err) {
     return reply.code(401).send({ error: 'Invalid token' });
   }
+  return
 }

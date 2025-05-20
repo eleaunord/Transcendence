@@ -157,5 +157,80 @@ canvas#pong-canvas {
       0 0 12px rgba(173, 216, 230, 0.3),
       0 0 18px rgba(255, 255, 200, 0.2);
   }
+  
+}
+/* 🏆 Bracket Winner Path animations */
+@keyframes glow {
+  0% { box-shadow: 0 0 5px lime; }
+  50% { box-shadow: 0 0 20px limegreen; }
+  100% { box-shadow: 0 0 5px lime; }
+}
+
+.animate-glow {
+  animation: glow 1.5s infinite alternate;
+}
+
+/* 🕸️ Bracket Lines & Layout */
+.bracket-container {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(100px, 1fr));
+  gap: 6rem;
+  position: relative;
+}
+
+.bracket-round {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  gap: 4rem;
+}
+
+.bracket-player {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #1e293b; /* bg-gray-800 */
+  border: 1px solid #334155; /* border-gray-700 */
+  border-radius: 0.5rem;
+  width: 12rem;
+  position: relative;
+}
+
+.bracket-player.winner {
+  border: 2px solid limegreen;
+  font-weight: bold;
+}
+
+.bracket-connector {
+  position: absolute;
+  width: 4px;
+  background-color: limegreen;
+  left: 33.3333%;
+  top: 0;
+  height: 100%;
+}
+
+.bracket-connector.semi {
+  left: 66.6666%;
+}
+
+.bracket-line {
+  stroke: url(#gradientStroke);
+  stroke-width: 4;
+  filter: drop-shadow(0 0 6px rgba(0, 255, 0, 0.7));
+  animation: pulse-glow 2s infinite alternate ease-in-out;
+}
+
+@keyframes pulse-glow {
+  0% {
+    stroke-width: 3;
+    filter: drop-shadow(0 0 4px rgba(0, 255, 0, 0.5));
+  }
+  100% {
+    stroke-width: 6;
+    filter: drop-shadow(0 0 12px rgba(0, 255, 0, 0.9));
+  }
 }
 

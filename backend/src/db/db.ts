@@ -70,7 +70,7 @@ db.prepare(`
  user_id INTEGER NOT NULL,
  opponent_id INTEGER NOT NULL,
  winner_id INTEGER,
- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ created_at TIMESTAMP DEFAULT (datetime('now', '+2 hours')),
  FOREIGN KEY (user_id) REFERENCES users(id),
  FOREIGN KEY (opponent_id) REFERENCES users(id)
  )

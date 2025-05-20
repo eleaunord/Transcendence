@@ -18,8 +18,24 @@ export function createGoogleOauthPage(navigate: (path: string) => void): HTMLEle
   const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get('token');
   const email = urlParams.get('email');
+  const error = urlParams.get('error'); // 1905 추가
   const is2FA = urlParams.get('is_2fa_enabled') === '1' || urlParams.get('is_2fa_enabled') === 'true';
   const seen2FA = urlParams.get('seen_2fa_prompt') === '1' || urlParams.get('seen_2fa_prompt') === 'true';
+
+  //0519 추가!!
+  if (error === 'access_denied') {
+    // 사용자가 Google 로그인 취소했을 경우
+    title.textContent = 'Google login was cancelled by the user.';
+    spinner.style.display = 'none';
+
+    setTimeout(() => {
+      navigate('/'); // 첫 페이지로 되돌림
+    }, 2000);
+    return container;
+  }
+// 0519 추가 끝!!
+
+
 
   if (token) {
     //1505 추가
