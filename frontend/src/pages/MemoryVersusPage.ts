@@ -4,6 +4,7 @@ import { loadMemorySettings } from '../utils/memorySettings';
 
 export function createMemoryVersusPage(navigate: (path: string) => void): HTMLElement {
   let moves = 0;
+  let userId: number | null = null;
   let currentPlayer = 1;
   const scores: Record<number, number> = { 1: 0, 2: 0 };
   const { pairCount, theme, turnTime } = loadMemorySettings();
@@ -53,7 +54,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   const turnIndicator = document.createElement('div');
   const timerDisplay = document.createElement('div');
 
-  player1Status.textContent = '👤 Joueur 1 : 0';
+  player1Status.textContent = `👤 ${userId !== null ? 'Vous' : 'Joueur 1'} : 0`;
   player2Status.textContent = '🎮 Invité : 0';
   turnIndicator.textContent = '👉 Tour de Joueur 1';
   timerDisplay.textContent = '';
@@ -139,7 +140,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   }
 
   function updateScoreDisplay() {
-    player1Status.textContent = `👤 Joueur 1 : ${scores[1]}`;
+    player1Status.textContent = `👤 ${userId !== null ? 'Vous' : 'Joueur 1'} : ${scores[1]}`;
     player2Status.textContent = `🎮 Invité : ${scores[2]}`;
   }
 
@@ -197,6 +198,30 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
     }
   }
 
+  async function saveMemoryGameResult() {
+    const user_id = Number(sessionStorage.getItem("userId"));
+
+    if (!user_id || isNaN(user_id)) {
+      console.warn("❗ user_id invalide ou manquant dans sessionStorage");
+      return;
+    }
+
+    const result = {
+      user_id,
+      opponent: 'Invité',
+      score1: scores[1],
+      score2: scores[2],
+      winner: scores[1] > scores[2] ? 'Joueur' : scores[2] > scores[1] ? 'Invité' : 'Égalité',
+      pairCount,
+      turnTime,
+      timestamp: new Date().toISOString(),
+    };
+
+    console.log('[DEBUG MEMORY RESULT] Résultat envoyé au backend :', result);
+
+  }
+
+
   function showVictoryAnimation() {
     const overlay = document.createElement('div');
     overlay.className = 'fixed inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
@@ -218,6 +243,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
     };
 
     overlay.append(victoryText, scoreText, replayBtn);
+    saveMemoryGameResult();
     container.appendChild(overlay);
   }
 
@@ -269,3 +295,4 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
 
   return container;
 }
+

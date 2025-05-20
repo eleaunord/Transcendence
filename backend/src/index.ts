@@ -5,9 +5,9 @@ import { meRoutes } from './routes/me';
 import { matchRoutes } from './routes/match';
 import { leaderboardRoutes } from './routes/leaderboard';  // NEW
 import { friendsRoutes } from './routes/friends'; // NEW
+import { memoryRoutes } from './routes/memory'; // NEW
 
 import './db/migrations';
-import tournaments from './routes/tournaments';
 
 async function main() {
   const app = Fastify({
@@ -34,7 +34,7 @@ async function main() {
 
   // register CORS
   await app.register(cors, {
-    origin: 'https://localhost:8443',
+    origin: 'https://localhost',
     credentials: true,
     // added
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -47,7 +47,8 @@ async function main() {
   await app.register(friendsRoutes, { prefix: '/api' });
   await app.register(leaderboardRoutes, { prefix: '/api' });
   await app.register(matchRoutes, { prefix: '/api' });
-  await app.register(tournaments, { prefix: '/api' }); // NEW
+  await app.register(memoryRoutes, { prefix: '/api' });
+
   app.get('/', async () => {
     return { message: 'Backend is running' };
   });

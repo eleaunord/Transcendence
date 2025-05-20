@@ -215,6 +215,26 @@ async function migrate() {
   console.log('✅ Amis fictifs insérés dans la base de données');
   safeAlterTournamentPlayers('name', 'TEXT');
 
+  /* ==========================
+     AJOUT DDE LA TABLE POUR LE MEMORY
+  ========================== */
+
+    await db.exec(`
+    CREATE TABLE IF NOT EXISTS memory_games (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      opponent TEXT NOT NULL,
+      score1 INTEGER NOT NULL,
+      score2 INTEGER NOT NULL,
+      winner TEXT NOT NULL,
+      pair_count INTEGER NOT NULL,
+      turn_time INTEGER NOT NULL,
+      timestamp TEXT NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+  `);
+  console.log('✅ Table `memory_games` créée');
+
 }
 
 // Exécuter la migration
