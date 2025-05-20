@@ -66,13 +66,94 @@
   "user.newUsername": "New username",
   "user.updateUsername": "Update Username",
   "user.success": "✅ Profile updated successfully!",
-  "user.2fa.loading": "2FA Status: Loading...",
-  "user.2fa.on": "2FA Status: ON",
-  "user.2fa.off": "2FA Status: OFF",
-  "user.2fa.turnOn": "2FA On",
-  "user.2fa.turnOff": "2FA Off",
-  "user.exportData": "Export My Data",
-  "user.anonymize": "Anonymize My Account",
-  "user.deleteAccount": "Delete Account"
+  "user.settings": "Settings",
+  "user.2fa.description": "Clicking 2FA ON/OFF will enable or disable two-factor authentication.",
+  "user.exportData": "Export my data",
+  "user.exportDescription": "Clicking Export my data will download a copy of your account information.",
+  "user.anonymize": "Anonymize my account",
+  "user.anonymizeDescription": "Click here to anonymize your account — you'll appear as anonymous_something on the leaderboard instead of your username.",
+  "user.deleteAccount": "Delete account",
+  "user.deleteDescription": "Clicking Delete my account will permanently remove your account.",
+  "user.recentGames": "Recent games",
+
+  "sidebar.username": "Username",
+  "sidebar.profile": "Profile",
+  "sidebar.customization": "Customization",
+  "sidebar.leaderboard": "Leaderboard",
+  "sidebar.friends": "Friends",
+  "sidebar.games": "Games",
+  "sidebar.about": "About us",
+  "sidebar.logout": "Log out",
+
+  "friends.title": "Friends List",
+  "friends.table.friend": "Friend",
+  "friends.table.status": "Status",
+  "friends.table.action": "Action",
+  "friends.add": "Add Selected Friend",
+  "friends.remove": "Remove",
+  "friends.empty": "No friends yet",
+  "friends.noPotential": "No potential friends available",
+  "friends.added": "Friend added",
+  "friends.removed": "Friend removed",
+  "friends.error.fetch": "Failed to load user data",
+  "friends.error.add": "Failed to add friend",
+  "friends.error.remove": "Failed to remove friend",
+
+  "anonymize": {
+  "title": "Anonymize Your Account",
+  "warning": "This action is irreversible. Your email, password, and Google ID will be deleted, but your game history will remain anonymously.",
+  "confirm_instruction": "To proceed, type \"anonymous\".",
+  "placeholder": "Type anonymous to confirm",
+  "button": "Anonymize My Account",
+  "not_logged_in": "You are not logged in.",
+  "success": "Your account has been anonymized. You will now be logged out.",
+  "failed": "Anonymization failed."
+  },
+  "cancel": "Cancel",
+  "server_error": "Server error",
+
+    "delete": {
+    "title": "Delete Your Account",
+    "warning": "This action is irreversible. All your data will be permanently deleted.",
+    "prompt": "To confirm, type \"42\" below:",
+    "placeholder": "Type 42 to confirm",
+    "button": "Delete My Account",
+    "not_logged_in": "You are not logged in.",
+    "success": "Your account and all associated data have been permanently deleted. This action cannot be undone.",
+    "failed": "Failed to delete."
+  },
+
+    "leaderboard": {
+    "title": "Leaderboard",
+    "loading": "Loading leaderboard...",
+    "error": "Error fetching leaderboard data. Please check your internet connection or try again later.",
+    "rank": "Rank",
+    "player": "Player",
+    "points": "Points"
+  },
+
+    "protected": {
+    "login_required": "Please log in to proceed.",
+    "redirecting": "Redirecting to home..."
+  },
+
+    "2fa": {
+    "title_activation": "Two-Factor Verification",
+    "title_input": "Enter 2FA Code",
+    "description": "Protect your account with an extra layer of security.",
+    "enable_button": "🔒 Enable Two-Factor Authentication",
+    "skip_button": "Later",
+    "token_missing": "Token not found",
+    "send_failed": "Failed to send 2FA code",
+    "unknown_error": "unknown error",
+    "code_sent": "A 2FA code has been sent to your email.",
+    "input_message": "A verification code has been sent to your email address. Please enter it below.",
+    "input_placeholder": "6-digit code",
+    "verify_button": "Verify",
+    "missing_info": "Missing info",
+    "verified": "2FA Verified!",
+    "verification_failed": "Verification failed"
+  }
+
 
 }

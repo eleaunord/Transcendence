@@ -1,5 +1,6 @@
 import { createSidebar } from '../utils/sidebar';
 import { applyUserTheme } from '../utils/theme';
+import { t } from '../utils/translator';
 
 interface PlayerScore {
   id: number;
@@ -27,7 +28,7 @@ export function createLeaderboardPage(navigate: (path: string) => void): HTMLEle
   leaderboardSection.className = 'relative mt-24 flex flex-col items-center z-30';
 
   const title = document.createElement('h2');
-  title.textContent = 'Leaderboard';
+  title.textContent = t('leaderboard.title');
   title.className = 'text-4xl font-bold mb-8 text-white';
   leaderboardSection.appendChild(title);
 
@@ -37,7 +38,7 @@ export function createLeaderboardPage(navigate: (path: string) => void): HTMLEle
   // Add loading indicator
   const loadingIndicator = document.createElement('div');
   loadingIndicator.className = 'text-center py-8 text-white';
-  loadingIndicator.textContent = 'Loading leaderboard...';
+  loadingIndicator.textContent = t('leaderboard.loading');
   leaderboardCard.appendChild(loadingIndicator);
 
   leaderboardSection.appendChild(leaderboardCard);
@@ -84,7 +85,7 @@ export function createLeaderboardPage(navigate: (path: string) => void): HTMLEle
 
       // If the error is a network error or a failed response
       if (error instanceof Error && error.message.includes('Failed to fetch leaderboard')) {
-        errorMessage.textContent = 'Error fetching leaderboard data. Please check your internet connection or try again later.';
+        errorMessage.textContent = t('leaderboard.error');
       }
 
       leaderboardCard.appendChild(errorMessage);
@@ -154,15 +155,15 @@ function createLeaderboardTable(players: PlayerScore[]): HTMLTableElement {
   headerRow.className = 'bg-gray-600/90';
 
   const rankHeader = document.createElement('th');
-  rankHeader.textContent = 'Rank';
+  rankHeader.textContent = t('leaderboard.rank');
   rankHeader.className = 'py-3 px-4 text-lg font-semibold';
 
   const playerHeader = document.createElement('th');
-  playerHeader.textContent = 'Player';
+  playerHeader.textContent = t('leaderboard.player');
   playerHeader.className = 'py-3 px-6 text-lg font-semibold';
 
   const pointsHeader = document.createElement('th');
-  pointsHeader.textContent = 'Points';
+  pointsHeader.textContent = t('leaderboard.points');
   pointsHeader.className = 'py-3 px-4 text-lg font-semibold';
 
   headerRow.appendChild(rankHeader);

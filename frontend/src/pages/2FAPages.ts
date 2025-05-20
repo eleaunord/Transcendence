@@ -1,3 +1,5 @@
+import { t } from '../utils/translator';
+
 export function create2FAPage(
 	navigate: (path: string) => void,
 	mode: 'activation' | 'input' = 'activation'
@@ -12,7 +14,7 @@ export function create2FAPage(
   
 	const title = document.createElement('h2');
 	title.className = 'text-2xl font-bold mb-4';
-	title.textContent = mode === 'activation' ? 'Two-Factor Verification' : 'Enter 2FA Code';
+	title.textContent = mode === 'activation' ? t('2fa.title_activation') : t('2fa.title_input');
 	form.appendChild(title);
   
 	if (mode === 'activation') {
@@ -42,18 +44,18 @@ export function create2FAPage(
   
 	  const description = document.createElement('p');
 	  description.className = 'text-base mb-8';
-	  description.textContent = 'Protect your account with an extra layer of security.';
+	  description.textContent = t('2fa.description');
 	  form.appendChild(description);
   
 	  const activateBtn = document.createElement('button');
 	  activateBtn.type = 'button';
-	  activateBtn.textContent = '🔒 Enable Two-Factor Authentication';
+	  activateBtn.textContent = t('2fa.enable_button');
 	  activateBtn.className = 'w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg mb-4';
   
 	  activateBtn.onclick = async () => {
 		const token = localStorage.getItem('token');
 		if (!token) {
-		  alert('Token not found');
+		  alert(t('2fa.token_missing'));
 		  return;
 		}
   
@@ -70,13 +72,13 @@ export function create2FAPage(
 		  return;
 		}
   
-		alert('A 2FA code has been sent to your email.');
+		alert(t('2fa.code_sent'));
 		navigate('/2fa?mode=input');
 	  };
   
 	  const skipBtn = document.createElement('button');
 	  skipBtn.type = 'button';
-	  skipBtn.textContent = 'Later';
+	  skipBtn.textContent = t('2fa.skip_button');
 	  skipBtn.className = 'px-6 py-2 bg-gray-700 hover:bg-red-700 text-white font-semibold rounded-lg';
 	  skipBtn.onclick = () => navigate('/profile-creation');
   
@@ -107,23 +109,23 @@ export function create2FAPage(
 	  // msg 출력 부분
 	  const infoMessage = document.createElement('p');
 	  infoMessage.className = 'mb-4 text-sm text-gray-300';
-	  infoMessage.textContent = 'A verification code has been sent to your email address. Please enter it below.';
+	  infoMessage.textContent = t('2fa.input_message');
 	  form.appendChild(infoMessage);
 
 	  const input = document.createElement('input');
-	  input.placeholder = '6-digit code';
+	  input.placeholder = t('2fa.input_placeholder');
 	  input.className = 'w-full mb-4 p-2 text-black rounded';
 	  input.maxLength = 6;
   
 	  const verifyBtn = document.createElement('button');
 	  verifyBtn.type = 'button';
-	  verifyBtn.textContent = 'Verify';
+	  verifyBtn.textContent = t('2fa.verify_button');
 	  verifyBtn.className = 'w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg';
   
 	  verifyBtn.onclick = async () => {
 		const code = input.value;
 		if (!token || !code) {
-		  alert('Missing info');
+		  alert(t('2fa.missing_info'));
 		  return;
 		}
   
@@ -140,7 +142,7 @@ export function create2FAPage(
 		if (res.ok) {
 		  sessionStorage.setItem('token', data.token);
 		  sessionStorage.setItem('2fa_verified', 'true');
-		  alert('2FA Verified!');
+		  alert(t('2fa.verified'));
 		  navigate('/profile-creation');
 		} else {
 		  alert(data.error || 'Verification failed');

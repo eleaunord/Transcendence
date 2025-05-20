@@ -1,5 +1,6 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
+import { t } from "../utils/translator";
 
 interface Friend {
   id: number;
@@ -26,7 +27,7 @@ export function createFriendsPage(navigate: (path: string) => void): HTMLElement
   mainSection.className = "relative mt-24 flex flex-col items-center z-30";
 
   const title = document.createElement("h2");
-  title.textContent = "Friends List";
+  title.textContent = t("friends.title");
   title.className = "text-4xl font-bold mb-10 text-white";
   mainSection.appendChild(title);
 
@@ -51,7 +52,7 @@ export function createFriendsPage(navigate: (path: string) => void): HTMLElement
   const headerRow = document.createElement("tr");
   headerRow.className = "bg-gray-600/90";
 
-  ["Friend", "Status", "Action"].forEach((text) => {
+  [t("friends.table.friend"), t("friends.table.status"), t("friends.table.action")].forEach((text)  => {
     const th = document.createElement("th");
     th.textContent = text;
     th.className = "border border-gray-800 px-4 py-4 text-lg font-semibold";
@@ -75,7 +76,7 @@ export function createFriendsPage(navigate: (path: string) => void): HTMLElement
   potentialContainer.appendChild(select);
 
   const addButton = document.createElement("button");
-  addButton.textContent = "Add Selected Friend";
+  addButton.textContent = t("friends.add");
   addButton.className = "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full";
   potentialContainer.appendChild(addButton);
 
@@ -103,7 +104,7 @@ export function createFriendsPage(navigate: (path: string) => void): HTMLElement
       renderPotentialList();
     } catch (err) {
       console.error("Error:", err);
-      showStatusMessage("Failed to load user data", "error");
+      showStatusMessage(t("friends.error.fetch"), "error");
     }
   }
 
@@ -112,7 +113,7 @@ export function createFriendsPage(navigate: (path: string) => void): HTMLElement
     if (friends.length === 0) {
       const emptyRow = document.createElement("tr");
       const emptyCell = document.createElement("td");
-      emptyCell.textContent = "No friends yet";
+      emptyCell.textContent = emptyCell.textContent = t("friends.empty");
       emptyCell.colSpan = 3;
       emptyCell.className = "border border-gray-800 px-4 py-6 text-center text-gray-400";
       emptyRow.appendChild(emptyCell);
@@ -149,7 +150,7 @@ export function createFriendsPage(navigate: (path: string) => void): HTMLElement
       const actionCell = document.createElement("td");
       actionCell.className = "border border-gray-800 px-4 py-4 text-center";
       const removeBtn = document.createElement("button");
-      removeBtn.textContent = "Remove";
+      removeBtn.textContent = t("friends.remove");
       removeBtn.className = "bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm";
       removeBtn.onclick = () => removeFriend(friend.id);
       actionCell.appendChild(removeBtn);
@@ -163,7 +164,7 @@ export function createFriendsPage(navigate: (path: string) => void): HTMLElement
     select.innerHTML = "";
     if (potentialFriends.length === 0) {
       const opt = document.createElement("option");
-      opt.textContent = "No potential friends available";
+      opt.textContent = t("friends.noPotential");
       select.appendChild(opt);
       select.disabled = true;
       addButton.disabled = true;
@@ -193,10 +194,10 @@ export function createFriendsPage(navigate: (path: string) => void): HTMLElement
       });
       if (!res.ok) throw new Error("Failed to add friend");
       await fetchUserData();
-      showStatusMessage("Friend added", "success");
+      showStatusMessage(t("friends.added"), "success");
     } catch (err) {
       console.error(err);
-      showStatusMessage("Failed to add friend", "error");
+      showStatusMessage(t("friends.error.add"), "error");
     }
   }
 
@@ -212,10 +213,10 @@ export function createFriendsPage(navigate: (path: string) => void): HTMLElement
       });
       if (!res.ok) throw new Error("Failed to remove friend");
       await fetchUserData();
-      showStatusMessage("Friend removed", "success");
+      showStatusMessage(t("friends.removed"), "success");
     } catch (err) {
       console.error(err);
-      showStatusMessage("Failed to remove friend", "error");
+      showStatusMessage(t("friends.error.remove"), "error");
     }
   }
 

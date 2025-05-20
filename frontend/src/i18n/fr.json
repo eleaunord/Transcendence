@@ -66,14 +66,94 @@
   "user.newUsername": "Nouveau nom d'utilisateur",
   "user.updateUsername": "Mettre à jour le nom",
   "user.success": "✅ Profil mis à jour avec succès !",
-  "user.2fa.loading": "Statut 2FA : chargement...",
-  "user.2fa.on": "Statut 2FA : ACTIVÉ",
-  "user.2fa.off": "Statut 2FA : DÉSACTIVÉ",
-  "user.2fa.turnOn": "Activer 2FA",
-  "user.2fa.turnOff": "Désactiver 2FA",
+  "user.settings": "Paramètres",
+  "user.2fa.description": "Cliquer sur 2FA ON/OFF active ou désactive l'authentification à deux facteurs.",
   "user.exportData": "Exporter mes données",
+  "user.exportDescription": "Cliquer sur Exporter mes données téléchargera une copie de vos informations de compte.",
   "user.anonymize": "Anonymiser mon compte",
-  "user.deleteAccount": "Supprimer le compte"
+  "user.anonymizeDescription": "Cliquez ici pour anonymiser votre compte — vous apparaîtrez comme anonymous_something dans le classement.",
+  "user.deleteAccount": "Supprimer le compte",
+  "user.deleteDescription": "Cliquer sur Supprimer le compte supprimera votre compte de façon permanente.",
+  "user.recentGames": "Parties récentes",
+
+  "sidebar.username": "Nom d'utilisateur",
+  "sidebar.profile": "Profil",
+  "sidebar.customization": "Personnalisation",
+  "sidebar.leaderboard": "Classement",
+  "sidebar.friends": "Amis",
+  "sidebar.games": "Jeux",
+  "sidebar.about": "À propos",
+  "sidebar.logout": "Se déconnecter",
+
+  "friends.title": "Liste d'amis",
+  "friends.table.friend": "Ami",
+  "friends.table.status": "Statut",
+  "friends.table.action": "Action",
+  "friends.add": "Ajouter l'ami sélectionné",
+  "friends.remove": "Supprimer",
+  "friends.empty": "Pas encore d'amis",
+  "friends.noPotential": "Aucun ami potentiel disponible",
+  "friends.added": "Ami ajouté",
+  "friends.removed": "Ami supprimé",
+  "friends.error.fetch": "Échec du chargement des données",
+  "friends.error.add": "Échec de l'ajout de l'ami",
+  "friends.error.remove": "Échec de la suppression de l'ami",
+
+  "anonymize": {
+    "title": "Anonymiser votre compte",
+    "warning": "Cette action est irréversible. Votre email, mot de passe et identifiant Google seront supprimés, mais vos historiques de jeu resteront anonymisés.",
+    "confirm_instruction": "Pour continuer, tapez \"anonymous\".",
+    "placeholder": "Tapez anonymous pour confirmer",
+    "button": "Anonymiser mon compte",
+    "not_logged_in": "Vous n'êtes pas connecté(e).",
+    "success": "Votre compte a été anonymisé. Vous allez maintenant être déconnecté(e).",
+    "failed": "L’anonymisation a échoué."
+  }, 
+  "cancel": "Annuler",
+  "server_error": "Erreur serveur",
+
+    "delete": {
+    "title": "Supprimer votre compte",
+    "warning": "Cette action est irréversible. Toutes vos données seront supprimées définitivement.",
+    "prompt": "Pour confirmer, tapez \"42\" ci-dessous :",
+    "placeholder": "Tapez 42 pour confirmer",
+    "button": "Supprimer mon compte",
+    "not_logged_in": "Vous n'êtes pas connecté(e).",
+    "success": "Votre compte et toutes les données associées ont été supprimés définitivement. Cette action est irréversible.",
+    "failed": "Échec de la suppression."
+  },
+
+    "leaderboard": {
+    "title": "Classement",
+    "loading": "Chargement du classement...",
+    "error": "Erreur lors de la récupération des données. Vérifiez votre connexion internet ou réessayez plus tard.",
+    "rank": "Rang",
+    "player": "Joueur",
+    "points": "Points"
+  },
+
+  "protected": {
+    "login_required": "Veuillez vous connecter pour continuer.",
+    "redirecting": "Redirection vers l'accueil..."
+  },
+
+    "2fa": {
+    "title_activation": "Vérification en deux étapes",
+    "title_input": "Saisir le code 2FA",
+    "description": "Protégez votre compte avec une couche de sécurité supplémentaire.",
+    "enable_button": "🔒 Activer l’authentification à deux facteurs",
+    "skip_button": "Plus tard",
+    "token_missing": "Jeton introuvable",
+    "send_failed": "Échec de l’envoi du code 2FA",
+    "unknown_error": "erreur inconnue",
+    "code_sent": "Un code 2FA a été envoyé à votre adresse e-mail.",
+    "input_message": "Un code de vérification a été envoyé à votre e-mail. Veuillez le saisir ci-dessous.",
+    "input_placeholder": "Code à 6 chiffres",
+    "verify_button": "Vérifier",
+    "missing_info": "Informations manquantes",
+    "verified": "2FA vérifié !",
+    "verification_failed": "Échec de la vérification"
+  }
 
 
 

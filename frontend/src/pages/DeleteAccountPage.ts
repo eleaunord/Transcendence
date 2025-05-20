@@ -1,5 +1,6 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
+import { t } from "../utils/translator";
 
 export function createDeleteAccountPage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
@@ -33,20 +34,20 @@ export function createDeleteAccountPage(navigate: (path: string) => void): HTMLE
   `.replace(/\s+/g, ' ').trim();
 
   const title = document.createElement('h1');
-  title.textContent = 'Delete Your Account';
+  title.textContent = t('delete.title');
   title.className = 'text-2xl font-bold text-red-400';
 
   const warning = document.createElement('p');
-  warning.textContent = 'This action is irreversible. All your data will be permanently deleted.';
+  warning.textContent = t('delete.warning');
   warning.className = 'text-yellow-300 text-center';
 
   const prompt = document.createElement('p');
-  prompt.textContent = 'To confirm, type "42" below:';
+  prompt.textContent = t('delete.prompt');
   prompt.className = 'text-white';
 
   const input = document.createElement('input');
   input.type = 'text';
-  input.placeholder = 'Type 42 to confirm';
+  input.placeholder = t('delete.placeholder');
   input.className = `
     p-2 rounded bg-gray-900 border border-gray-600 text-white text-center
     focus:outline-none focus:ring-2 focus:ring-red-500
@@ -56,7 +57,7 @@ export function createDeleteAccountPage(navigate: (path: string) => void): HTMLE
   buttonGroup.className = 'flex gap-4 mt-2';
 
   const deleteButton = document.createElement('button');
-  deleteButton.textContent = 'Delete My Account';
+  deleteButton.textContent = t('delete.button');
   deleteButton.disabled = true;
   deleteButton.className = `
     p-2 px-4 bg-red-700 text-white rounded hover:bg-red-800
@@ -64,7 +65,7 @@ export function createDeleteAccountPage(navigate: (path: string) => void): HTMLE
   `.replace(/\s+/g, ' ').trim();
 
   const cancelButton = document.createElement('button');
-  cancelButton.textContent = 'Cancel';
+ 	cancelButton.textContent = t('cancel');
   cancelButton.className = `
     p-2 px-4 bg-gray-600 text-white rounded hover:bg-gray-700
   `.replace(/\s+/g, ' ').trim();
@@ -78,7 +79,7 @@ export function createDeleteAccountPage(navigate: (path: string) => void): HTMLE
   deleteButton.addEventListener('click', async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('You are not logged in.');
+      alert(t('delete.not_logged_in'));
       return;
     }
 
@@ -89,16 +90,16 @@ export function createDeleteAccountPage(navigate: (path: string) => void): HTMLE
       });
 
       if (res.ok) {
-        alert('Your account and all associated data have been permanently deleted. This action cannot be undone.');
+        alert(t('delete.success'));
         localStorage.removeItem('token');
         navigate('/');
       } else {
         const data = await res.json();
-        alert(data.error || 'Failed to delete.');
+        alert(data.error || t('delete.failed'));
       }
     } catch (err) {
       console.error('Delete error:', err);
-      alert('Server error');
+      alert(t('server_error'));
     }
   });
 

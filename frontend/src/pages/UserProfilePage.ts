@@ -1,5 +1,6 @@
 import { createSidebar } from "../utils/sidebar"; 
 import { applyUserTheme } from "../utils/theme";
+import { t } from "../utils/translator";
 
 export function createUserProfilePage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
@@ -81,7 +82,7 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   const username = document.createElement('h2');
   username.id = 'usernameValue';
   username.className = 'text-xl font-semibold text-white';
-  username.textContent = 'Username';
+  username.textContent = t('user.username');
   profileCard.appendChild(username);
 
 
@@ -152,17 +153,17 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   const emailRow = document.createElement('div');
   emailRow.className = 'flex justify-between items-center';
   const emailLabel = document.createElement('span');
-  emailLabel.textContent = 'Email:';
+  emailLabel.textContent = t('user.email');
   const emailValue = document.createElement('span');
   emailValue.id = 'emailValue';
-  emailValue.textContent = 'Loading...';
+  emailValue.textContent = t('user.loading');
   emailRow.appendChild(emailLabel);
   emailRow.appendChild(emailValue);
 
   const passwordRow = document.createElement('div');
   passwordRow.className = 'flex justify-between items-center';
   const passwordLabel = document.createElement('span');
-  passwordLabel.textContent = 'Password:';
+  passwordLabel.textContent = t('user.password');
   const passwordValue = document.createElement('span');
   passwordValue.textContent = '********';
   passwordRow.appendChild(passwordLabel);
@@ -170,21 +171,21 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
 
   const usernameInput = document.createElement('input');
   usernameInput.type = 'text';
-  usernameInput.placeholder = 'New username';
+  usernameInput.placeholder = t('user.newUsername');
   usernameInput.className = `
     mt-4 p-2 rounded-lg bg-gray-900 text-white placeholder-gray-400
     border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500
   `.replace(/\s+/g, ' ').trim();
 
   const updateButton = document.createElement('button');
-  updateButton.textContent = 'Update Username';
+  updateButton.textContent = t('user.updateUsername');
   updateButton.className = `
     mt-2 p-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-semibold
     transition-colors duration-300
   `.replace(/\s+/g, ' ').trim();
 
   const successMessage = document.createElement('p');
-  successMessage.textContent = '✅ Profile updated successfully!';
+  successMessage.textContent = t('user.success');
   successMessage.className = 'text-green-400 font-semibold mt-4 hidden';
 
   updateButton.addEventListener('click', async () => {
@@ -266,7 +267,7 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
 
 
   const settingsTitle = document.createElement('h3');
-  settingsTitle.textContent = 'Settings';
+  settingsTitle.textContent = t('user.settings');
   settingsTitle.className = 'text-xl font-semibold mb-4';
   settingsContainer.appendChild(settingsTitle);
 
@@ -295,7 +296,7 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
 
   const twoFADescription = document.createElement('p');
   twoFADescription.className = 'mt-2 text-sm text-gray-300 italic';
-  twoFADescription.textContent = 'Clicking 2FA ON/OFF will enable or disable two-factor authentication.';
+  twoFADescription.textContent = t('user.2fa.description');
 
   twoFAButton.addEventListener('click', async () => {
     const token = localStorage.getItem('token');
@@ -343,15 +344,14 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   exportContainer.className = 'flex flex-col items-center text-center w-56';
 
   const exportDataButton = document.createElement('button');
-  exportDataButton.textContent = 'Export my data';
+  exportDataButton.textContent = t('user.exportData');
   exportDataButton.className = `
     ${commonButtonClass} bg-purple-500 hover:bg-purple-600
   `.replace(/\s+/g, ' ').trim();
 
   const exportDescription = document.createElement('p');
   exportDescription.className = 'mt-2 text-sm text-gray-300 italic';
-  exportDescription.textContent = 'Clicking Export my data will download a copy of your account information.';
-
+  exportDescription.textContent = t('user.exportDescription');
   exportDataButton.addEventListener('click', () => {
     navigate('/export-data');
   });
@@ -364,14 +364,14 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   anonymizeContainer.className = 'flex flex-col items-center text-center w-56';
 
   const anonymizeButton = document.createElement('button');
-  anonymizeButton.textContent = 'Anonymize my account';
+  anonymizeButton.textContent = t('user.anonymize');
   anonymizeButton.className = `
     ${commonButtonClass} bg-yellow-500 hover:bg-yellow-600
   `.replace(/\s+/g, ' ').trim();
 
   const anonymizeDescription = document.createElement('p');
   anonymizeDescription.className = 'mt-2 text-sm text-gray-300 italic';
-  anonymizeDescription.textContent = "Click here to anonymize your account — you'll appear as anonymous_something on the leaderboard instead of your username.";
+  anonymizeDescription.textContent = t('user.anonymizeDescription');
 
   anonymizeButton.addEventListener('click', () => {
     navigate('/anonymize');
@@ -385,14 +385,14 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   deleteContainer.className = 'flex flex-col items-center text-center w-56';
 
   const deleteButton = document.createElement('button');
-  deleteButton.textContent = 'Delete account';
+  deleteButton.textContent = t('user.deleteAccount');
   deleteButton.className = `
     ${commonButtonClass} bg-red-600 hover:bg-red-700
   `.replace(/\s+/g, ' ').trim();
 
   const deleteDescription = document.createElement('p');
   deleteDescription.className = 'mt-2 text-sm text-gray-300 italic';
-  deleteDescription.textContent = 'Clicking Delete my account will permanently remove your account.';
+  deleteDescription.textContent = t('user.deleteDescription');
 
   deleteButton.addEventListener('click', () => {
     navigate('/delete-account');
@@ -431,7 +431,7 @@ recentGamesContainer.className = `
 `.replace(/\s+/g, ' ').trim();
 
 const recentGamesTitle = document.createElement('h3');
-recentGamesTitle.textContent = 'Recent games';
+recentGamesTitle.textContent = t('user.recentGames');
 recentGamesTitle.className = 'text-xl font-semibold mb-4';
 
 const recentGamesList = document.createElement('div');
