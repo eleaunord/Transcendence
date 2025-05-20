@@ -81,6 +81,9 @@ export function createMemoryCustomizationPage(navigate: (path: string) => void):
   // Détermination du mode
   const mode = localStorage.getItem('memory-mode') || 'solo';
 
+  // Détermination de l'adversaire
+  const opponentName = localStorage.getItem('opponent-name') || 'Invité';
+
   // Groupe de temps selon le mode
   let timerGroup: HTMLDivElement;
 
@@ -118,6 +121,15 @@ export function createMemoryCustomizationPage(navigate: (path: string) => void):
       navigate('/memory-versus');
     }
   };
+
+  // Affichage de l'adversaire
+  if (mode === 'versus') {
+    const infoText = document.createElement('p');
+    infoText.textContent = `Vous jouez contre : ${opponentName}`;
+    infoText.className = 'text-xl text-white font-semibold';
+    innerPanel.prepend(infoText);
+  }
+
 
   // Assemblage
   innerPanel.append(pairCountGroup, themeGroup, timerGroup, playButton);

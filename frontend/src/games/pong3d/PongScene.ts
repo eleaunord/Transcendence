@@ -22,6 +22,22 @@ export type PongOptions = {
   scoreToWin: number;
   paddleSize: number;
   theme: number;
+  tournamentContext?: {
+    p1: {
+      id: string;
+      username: string;
+      source: 'friend' | 'guest';
+      avatar?: string;
+    };
+    p2: {
+      id: string;
+      username: string;
+      source: 'friend' | 'guest';
+      avatar?: string;
+    };
+    tournamentId: string;
+    nextPhase: 'semiFinal' | 'final';
+  };
 };
 
 export async function createPongScene(
@@ -60,7 +76,20 @@ export async function createPongScene(
       // Garde les couleurs définies par défaut
       break;
   }
+  let tournamentContext = options.tournamentContext;
 
+  // 🔁 Si on ne reçoit pas via options, on vérifie dans sessionStorage (fallback)
+  if (!tournamentContext) {
+    const matchData = sessionStorage.getItem("currentMatch");
+    if (matchData) {
+      try {
+        tournamentContext = JSON.parse(matchData);
+      } catch (e) {
+        console.warn(" Erreur parsing currentMatch:", e);
+      }
+    }
+  }
+  
   const scoreBoard = document.getElementById("scoreBoard");
   const announce = document.getElementById("announce");
 
@@ -379,6 +408,19 @@ export async function createPongScene(
         console.log("[MATCH ENDED]", result);
       } catch (err) {
         console.error("[DEBUG GAME/PONG SCENE] Error ending match:", err);
+      }
+      if (tournamentContext) {
+        const winner = isWin ? tournamentContext.p1 : tournamentContext.p2;
+      
+        sessionStorage.setItem("matchWinner", JSON.stringify({
+          winner,
+          nextPhase: tournamentContext.nextPhase,
+          tournamentId: tournamentContext.tournamentId
+        }));
+      
+        setTimeout(() => {
+          window.location.href = `/bracket?id=${tournamentContext.tournamentId}`;
+        }, 2000);
       }
     }
   }

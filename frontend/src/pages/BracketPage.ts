@@ -42,48 +42,48 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
   bracketWrapper.className = 'relative flex gap-16';
   gameFrame.appendChild(bracketWrapper);
 
-//   const svgLines = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-//   svgLines.classList.add('absolute', 'inset-0', 'pointer-events-none');
-//   svgLines.style.zIndex = '10';
-//   svgLines.style.overflow = 'visible';
-//   gameFrame.appendChild(svgLines);
+  const svgLines = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svgLines.classList.add('absolute', 'inset-0', 'pointer-events-none');
+  svgLines.style.zIndex = '10';
+  svgLines.style.overflow = 'visible';
+  gameFrame.appendChild(svgLines);
 
-//   // Gradient defs
-//   const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-//   const linearGradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
-//   linearGradient.setAttribute('id', 'gradientStroke');
-//   linearGradient.setAttribute('x1', '0%');
-//   linearGradient.setAttribute('y1', '0%');
-//   linearGradient.setAttribute('x2', '100%');
-//   linearGradient.setAttribute('y2', '0%');
+  // Gradient defs
+  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  const linearGradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+  linearGradient.setAttribute('id', 'gradientStroke');
+  linearGradient.setAttribute('x1', '0%');
+  linearGradient.setAttribute('y1', '0%');
+  linearGradient.setAttribute('x2', '100%');
+  linearGradient.setAttribute('y2', '0%');
 
-//   const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-//   stop1.setAttribute('offset', '0%');
-//   stop1.setAttribute('stop-color', '#00ff88');
+  const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+  stop1.setAttribute('offset', '0%');
+  stop1.setAttribute('stop-color', '#00ff88');
 
-//   const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-//   stop2.setAttribute('offset', '100%');
-//   stop2.setAttribute('stop-color', '#00ffff');
+  const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+  stop2.setAttribute('offset', '100%');
+  stop2.setAttribute('stop-color', '#00ffff');
 
-//   linearGradient.append(stop1, stop2);
-//   defs.appendChild(linearGradient);
-//   svgLines.appendChild(defs);
+  linearGradient.append(stop1, stop2);
+  defs.appendChild(linearGradient);
+  svgLines.appendChild(defs);
 
-//   const connect = (from: HTMLElement, to: HTMLElement) => {
-//     const fromRect = from.getBoundingClientRect();
-//     const toRect = to.getBoundingClientRect();
-//     const gridRect = bracketWrapper.getBoundingClientRect();
+  const connect = (from: HTMLElement, to: HTMLElement) => {
+    const fromRect = from.getBoundingClientRect();
+    const toRect = to.getBoundingClientRect();
+    const gridRect = bracketWrapper.getBoundingClientRect();
 
-//     const x1 = fromRect.right - gridRect.left;
-//     const y1 = fromRect.top + fromRect.height / 2 - gridRect.top;
-//     const x2 = toRect.left - gridRect.left;
-//     const y2 = toRect.top + toRect.height / 2 - gridRect.top;
+    const x1 = fromRect.right - gridRect.left;
+    const y1 = fromRect.top + fromRect.height / 2 - gridRect.top;
+    const x2 = toRect.left - gridRect.left;
+    const y2 = toRect.top + toRect.height / 2 - gridRect.top;
 
-//     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-//     path.setAttribute('d', `M${x1},${y1} C${x1 + 50},${y1} ${x2 - 50},${y2} ${x2},${y2}`);
-//     path.setAttribute('class', 'bracket-line');
-//     svgLines.appendChild(path);
-//   };
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', `M${x1},${y1} C${x1 + 50},${y1} ${x2 - 50},${y2} ${x2},${y2}`);
+    path.setAttribute('class', 'bracket-line');
+    svgLines.appendChild(path);
+  };
 
   const round1 = document.createElement('div');
   round1.className = 'flex flex-col justify-between h-96';
@@ -135,22 +135,22 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     return matchDiv;
   };
 
-//   const updateLines = () => {
-//     svgLines.innerHTML = '<defs>' + defs.innerHTML + '</defs>';
-//     const r1 = round1.querySelectorAll('div');
-//     const s1 = semiFinal.querySelectorAll('div');
-//     const f1 = final.querySelector('div');
+  const updateLines = () => {
+    svgLines.innerHTML = '<defs>' + defs.innerHTML + '</defs>';
+    const r1 = round1.querySelectorAll('div');
+    const s1 = semiFinal.querySelectorAll('div');
+    const f1 = final.querySelector('div');
 
-//     if (r1.length >= 2 && s1.length >= 2) {
-//       connect(r1[0], s1[0]);
-//       connect(r1[1], s1[1]);
-//     }
+    if (r1.length >= 2 && s1.length >= 2) {
+      connect(r1[0], s1[0]);
+      connect(r1[1], s1[1]);
+    }
 
-//     if (s1.length >= 2 && f1) {
-//       connect(s1[0], f1);
-//       connect(s1[1], f1);
-//     }
-//   };
+    if (s1.length >= 2 && f1) {
+      connect(s1[0], f1);
+      connect(s1[1], f1);
+    }
+  };
 
   const updateSemiFinal = () => {
     semiFinal.innerHTML = '';
@@ -162,7 +162,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
       semiFinal.appendChild(slot);
     });
 
-    // updateLines();
+    updateLines();
 
     if (semiFinalists[0] && semiFinalists[1]) {
       renderFinal(semiFinalists[0]!, semiFinalists[1]!);
@@ -176,7 +176,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
       renderWinner();
     }));
 
-    // updateLines();
+    updateLines();
   };
 
   const renderWinner = () => {
@@ -185,7 +185,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     winnerDiv.className = 'p-4 border-2 border-yellow-500 bg-gray-700 w-48 text-center font-bold animate-pulse';
     winnerDiv.textContent = '🏆 Winner : ' + finalist?.username;
     final.appendChild(winnerDiv);
-    // updateLines();
+    updateLines();
   };
 
   fetch(`/api/tournaments/${id}`)
