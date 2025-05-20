@@ -1,5 +1,4 @@
-import { setLanguage, applyTranslations } from '../utils/translator';
-import { t } from '../utils/translator';
+import { setLanguage, t,applyTranslations } from '../utils/translator'
 
 export function createHomePage(navigate: (path: string) => void): HTMLElement {
   // Fonction pour démarrer le jeu
@@ -30,44 +29,40 @@ export function createHomePage(navigate: (path: string) => void): HTMLElement {
     }, 1500);
   };
 
-  // Création des éléments principaux
+  //Création des éléments principaux
   const container = document.createElement('div');
   container.className = 'relative flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
 
-  // 🔤 Boutons de langue en haut à droite
-  const langSwitcher = document.createElement('div');
-  langSwitcher.className = 'absolute top-4 right-4 flex gap-2 z-50';
+// Création du conteneur des boutons de langue
+const langSelector = document.createElement('div');
+langSelector.className = 'absolute top-4 right-4 flex gap-2 z-20'; // z-20 pour s'assurer qu'ils sont visibles
 
-  const buttonStyle = 'text-xs px-2 py-1 bg-white text-black rounded hover:bg-gray-200 shadow-sm transition';
+// Création des boutons de langue
+['en', 'fr', 'ko'].forEach((langCode) => {
+  const btn = document.createElement('button');
+  btn.className = 'px-2 py-1 border rounded text-sm bg-white text-black';
+  btn.textContent = langCode.toUpperCase();
 
-  const btnFR = document.createElement('button');
-  btnFR.textContent = '🇫🇷';
-  btnFR.className = buttonStyle;
-  btnFR.onclick = () => {
-    setLanguage('fr');
-    applyTranslations();
-  };
+  btn.addEventListener('click', () => {
+    setLanguage(langCode as 'en' | 'fr' | 'ko');
 
-  const btnEN = document.createElement('button');
-  btnEN.textContent = '🇬🇧';
-  btnEN.className = buttonStyle;
-  btnEN.onclick = () => {
-    setLanguage('en');
-    applyTranslations();
-  };
+    // Pour tester que le bouton fonctionne, on peut recharger
+    // location.reload();
 
-  const btnKO = document.createElement('button');
-  btnKO.textContent = '🇰🇷';
-  btnKO.className = buttonStyle;
-  btnKO.onclick = () => {
-    setLanguage('ko');
-    applyTranslations();
-  };
+    // Version propre : on reconstruit la page dynamiquement
+    const root = document.getElementById('app');
+    if (root) {
+      root.innerHTML = '';
+      root.appendChild(createHomePage(navigate));
+    }
+  });
 
-  langSwitcher.appendChild(btnFR);
-  langSwitcher.appendChild(btnEN);
-  langSwitcher.appendChild(btnKO);
-  container.appendChild(langSwitcher);
+  langSelector.appendChild(btn);
+});
+
+// Ajout du sélecteur de langue dans le conteneur principal
+container.appendChild(langSelector);
+  container.appendChild(langSelector);
 
   const background = document.createElement('div');
   background.className = 'absolute inset-0 bg-cover bg-center opacity-40';
@@ -90,7 +85,7 @@ export function createHomePage(navigate: (path: string) => void): HTMLElement {
   // 13 추가 2FA 리다이렉션 경고 메시지 처리
   if (localStorage.getItem('2fa_redirect_notice')) {
     const warning = document.createElement('div');
-    warning.setAttribute('data-i18n', 'warning.2fa'); //추가
+    warning.textContent = t('warning.2fa'); //추가
     warning.className = 'bg-yellow-300 text-black px-4 py-2 mb-4 text-center rounded shadow';
     content.appendChild(warning);
     localStorage.removeItem('2fa_redirect_notice');
@@ -98,13 +93,11 @@ export function createHomePage(navigate: (path: string) => void): HTMLElement {
 
   const title = document.createElement('h1');
   title.className = 'text-5xl font-extrabold mb-4';
-  title.setAttribute('data-i18n', 'home.title');
-
+  title.textContent = t('home.title');
 
   const paragraph = document.createElement('p');
   paragraph.className = 'text-xl mb-8';
-  paragraph.setAttribute('data-i18n', 'home.subtitle');
-
+  paragraph.textContent = t('home.subtitle');
   // Création de la checkbox GDPR
   const privacyCheckboxContainer = document.createElement('div');
   privacyCheckboxContainer.className = 'mb-4 flex items-center text-xl';
@@ -117,7 +110,6 @@ export function createHomePage(navigate: (path: string) => void): HTMLElement {
   const privacyLabel = document.createElement('label');
   privacyLabel.htmlFor = 'privacy-consent';
   privacyLabel.innerHTML = t('privacy.consent');
-  privacyLabel.setAttribute('data-i18n-html', 'privacy.consent');
 
   setTimeout(() => {
     const privacyLink = document.getElementById('privacy-link');
@@ -136,19 +128,19 @@ export function createHomePage(navigate: (path: string) => void): HTMLElement {
   const signup = document.createElement('button');
   signup.id = 'signup';
   signup.className = 'bg-white hover:bg-gray-100 text-blue-600 border border-gray-300 font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300';
-  signup.setAttribute('data-i18n', 'home.signup');
+  signup.textContent = t('home.signup');
   signup.addEventListener('click', handleSignUp);
 
   const signin = document.createElement('button');
   signin.id = 'SignIn';
   signin.className = 'bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300';
-  signin.setAttribute('data-i18n', 'home.login');
+  signin.textContent = t('home.login');
   signin.addEventListener('click', handleSignIn);
 
   const googleButton = document.createElement('button');
-  googleButton.id = 'google-login';
+  googleButton.textContent = t('home.google');
   googleButton.className = 'bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300 mt-4';
-  googleButton.setAttribute('data-i18n', 'home.google');
+  googleButton.textContent = t('home.google');
   googleButton.addEventListener('click', handleGoogleLogin);
 
   const buttonContainer = document.createElement('div');

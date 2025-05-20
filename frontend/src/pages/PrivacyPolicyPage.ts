@@ -1,10 +1,10 @@
-import { t, getLanguage } from '../utils/translator';
+import { setLanguage, t, tArray,applyTranslations } from '../utils/translator'
 
 export function createPrivacyPolicyPage(): HTMLElement {
   const container = document.createElement('div');
   container.className = 'p-8 bg-gray-900 text-white h-full overflow-auto';
 
-  const listItems = t('privacy.2.items')  as unknown as string[];
+  const listItems = tArray('privacy.2.items');
 
   container.innerHTML = `
     <h1 class="text-3xl font-bold mb-4" data-i18n="privacy.title">${t('privacy.title')}</h1>
@@ -35,5 +35,6 @@ export function createPrivacyPolicyPage(): HTMLElement {
     <p>${t('privacy.8.content')} <a href="https://www.cnil.fr" class="underline">www.cnil.fr</a></p>
   `;
 
+  //applyTranslations();
   return container;
 }
