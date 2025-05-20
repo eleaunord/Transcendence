@@ -15,15 +15,19 @@ export async function matchRoutes(app: FastifyInstance) {
       const stmtGame = db.prepare(`
         INSERT INTO games (user_id, opponent_id) VALUES (?, ?)
       `);
+      console.log(`[DEBUG GAME DATA BAKCEND] Inserting game: user_id=${user_id}, opponent_id=${opponent_id}`);
       const result = stmtGame.run(user_id, opponent_id);
       const gameId = result.lastInsertRowid as number;
 
-      console.log('✅ Match inséré avec gameId =', gameId);
+      console.log('[DEBUG GAME DATA BAKCEND] Match inséré avec gameId =', gameId);
 
       const stmtScore = db.prepare(`
         INSERT INTO scores (game_id, player_id, score) VALUES (?, ?, ?)
       `);
+      console.log(`[DEBUG GAME DATA BAKCEND] Creating score for user ${user_id} -> game_id=${gameId}, score=0`);
       stmtScore.run(gameId, user_id, 0);
+
+      console.log(`[DEBUG GAME DATA BAKCEND] Creating score for opponent ${opponent_id} -> game_id=${gameId}, score=0`);
       stmtScore.run(gameId, opponent_id, 0);
 
       reply.send({ status: 'created', gameId });
@@ -43,7 +47,12 @@ export async function matchRoutes(app: FastifyInstance) {
       score2: number;
     };
 
+    console.log('[DEBUG GAME DATA BAKCEND] Reçu POST /match/end', {
+      gameId, user_id, opponent_id, score1, score2
+    });
+
     const winner_id = score1 > score2 ? user_id : opponent_id;
+    console.log(`[DEBUG GAME DATA BAKCEND] Winner determined: winner_id=${winner_id}`);
 
     db.prepare(`UPDATE scores SET score = ? WHERE game_id = ? AND player_id = ?`)
       .run(score1, gameId, user_id);
@@ -61,6 +70,7 @@ export async function matchRoutes(app: FastifyInstance) {
   // Historique d’un joueur
   app.get('/match/history', async (req, reply) => {
     const playerId = parseInt((req.query as any).player_id);
+    console.log(`[DEBUG GAME DATA MATCH HISTORY] Requesting history for player_id=${playerId}`);
 
     const stmt = db.prepare(`
       SELECT g.id as game_id, g.created_at, g.winner_id,

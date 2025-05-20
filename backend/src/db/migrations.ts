@@ -25,6 +25,54 @@ function safeAlterTournamentPlayers(column: string, type: string) {
     console.log(` ==== Added column '${column}' to tournament_players table ==== `);
   }
 }
+
+// 1705 추가 email NOT NULL 제거용 함수 (remove email not null condition)
+function relaxEmailConstraint() {
+  const columns = db.prepare(`PRAGMA table_info(users)`).all() as { name: string; notnull: number }[];
+  const emailCol = columns.find(col => col.name === 'email');
+
+  if (emailCol && emailCol.notnull === 1) {
+    console.log('이메일 NOT NULL 제약 해제 중...');
+
+    db.exec(`
+      PRAGMA foreign_keys = OFF;
+
+      DROP TABLE IF EXISTS users_tmp;  -- ✅ 여기 추가됨
+
+      CREATE TABLE users_tmp (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        email TEXT UNIQUE,
+        password_hash TEXT DEFAULT NULL,
+        image TEXT DEFAULT 'default.jpg',
+        theme TEXT DEFAULT '/assets/profile-themes/arabesque.png',
+        google_id TEXT,
+        is_2fa_enabled INTEGER DEFAULT 0,
+        two_fa_code TEXT,
+        two_fa_expires_at TEXT,
+        seen_2fa_prompt INTEGER DEFAULT 0,
+        created_at TIMESTAMP,
+        is_anonymized INTEGER DEFAULT 0
+      );
+
+      INSERT INTO users_tmp (
+        id, username, email, password_hash, image
+      )
+      SELECT id, username, email, password_hash, image FROM users;
+
+      DROP TABLE users;
+
+      ALTER TABLE users_tmp RENAME TO users;
+
+      PRAGMA foreign_keys = ON;
+    `);
+
+    console.log('[DEBUG MIGRATION] 이메일 NOT NULL 제약 제거 완료');
+  } else {
+    console.log('[DEBUG MIGRATION] 이메일 컬럼은 이미 nullable 상태.');
+  }
+}
+
 // NEW
 // Insert required users BEFORE any foreign key dependencies
 db.prepare(`
@@ -42,6 +90,7 @@ console.log('✅ Utilisateurs spéciaux insérés dans la table `users`');
 
 // Fonction principale qui gère toutes les migrations
 async function migrate() {
+  relaxEmailConstraint();
   // GOOGLE OAUTH
   safeAlter('google_id', 'TEXT');
 
@@ -59,7 +108,9 @@ async function migrate() {
 
   // Account creation time
   safeAlter('created_at', 'TIMESTAMP');
-  // Tournois
+
+  // flag for anonymization (익명화 여부 플래그)
+  safeAlter('is_anonymized', 'INTEGER DEFAULT 0');
 
 
   // GAME : création de la table match

@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 import db from '../db/db';
 import dotenv from 'dotenv';
 import { authenticateToken } from './authMiddleware';
+import { generateAnonymousUsername } from '../utils/anonymize';
+import { RecentGame } from '../types';
 
 dotenv.config();
 
@@ -49,6 +51,43 @@ export async function meRoutes(app: FastifyInstance) {
       }
       
     });
+  
+  app.get('/me/recent-games', async (req, reply) => {
+    const userId = req.user?.id;
+    if (!userId) return reply.code(401).send({ error: 'Unauthorized' });
+
+    try {
+      const games = db.prepare(`
+        SELECT created_at, opponent_id
+        FROM games
+        WHERE user_id = ?
+        ORDER BY datetime(created_at) DESC
+        LIMIT 3
+      `).all(userId) as { created_at: string; opponent_id: number }[];
+
+      const formatted = games.map((game) => {
+        const date = new Date(game.created_at);
+        const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const year = date.getFullYear();
+        const formattedDate = `${month}/${day}/${year}`;
+
+        // Map opponent_id to name
+        let opponentName = 'Unknown';
+        if (game.opponent_id === 2) opponentName = 'AI';
+        else if (game.opponent_id === 3) opponentName = 'Guest';
+
+        return `You played a game against ${opponentName} at ${time} on ${formattedDate}.`;
+      });
+
+      reply.send(formatted);
+    } catch (err) {
+      console.error('Error fetching recent games:', err);
+      reply.code(500).send({ error: 'Internal server error' });
+    }
+  });
+
   
    // Mise à jour du username
   app.patch('/me', async (req, reply) => {
@@ -141,32 +180,64 @@ export async function meRoutes(app: FastifyInstance) {
     }
   });
 
+  //test 1705 
   app.get('/me/export', async (req, reply) => {
-    const auth = req.headers.authorization;
-    console.log('[EXPORT API] Authorization header:', auth); // debug 추가
-
-    if (!auth)
-      return reply.code(401).send({ error: 'Missing token' });
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return reply.status(401).send({ error: 'Token manquant' });
+  
+    const token = authHeader.split(' ')[1];
+    let payload: any;
   
     try {
-      const token = auth.split(' ')[1];
-      const payload = jwt.verify(token, JWT_SECRET) as any;
-      const userId = payload.userId;
-  
-      const user = db.prepare(`
-        SELECT username, email, image, theme, google_id, is_2fa_enabled, created_at
-        FROM users WHERE id = ?
-      `).get(userId);
-  
-      if (!user) return reply.code(404).send({ error: 'User not found' });
-  
-      reply.header('Content-Type', 'application/json');
-      reply.header('Content-Disposition', 'attachment; filename="my-data.json"');
-      reply.send(user);
+      payload = jwt.verify(token, JWT_SECRET);
     } catch (err) {
-      console.error('[EXPORT API] JWT verification failed:', err); // debug 추가
-      reply.code(500).send({ error: 'Server error during export' });
+      return reply.status(401).send({ error: 'Token invalide' });
     }
+  
+    const userId = payload.userId;
+  
+    // 유저 정보 가져오기
+    const user = db.prepare(`SELECT * FROM users WHERE id = ?`).get(userId);
+  
+    // 참여한 게임 가져오기
+    const games = db.prepare(`
+      SELECT 
+        g.id as game_id,
+        g.user_id,
+        g.opponent_id,
+        g.winner_id,
+        g.created_at,
+        u1.username as user_username,
+        u2.username as opponent_username
+      FROM games g
+      LEFT JOIN users u1 ON g.user_id = u1.id
+      LEFT JOIN users u2 ON g.opponent_id = u2.id
+      WHERE g.user_id = ? OR g.opponent_id = ?
+    `).all(userId, userId);
+  
+    // 게임별 점수 가져오기
+    const gameScores = db.prepare(`
+      SELECT 
+        s.game_id,
+        s.player_id,
+        u.username,
+        s.score
+      FROM scores s
+      JOIN users u ON s.player_id = u.id
+      WHERE s.player_id = ?
+    `).all(userId);
+  
+    const exportData = {
+      user,
+      games,
+      scores: gameScores,
+    };
+  
+    const json = JSON.stringify(exportData, null, 2);
+    reply
+      .header('Content-Type', 'application/json')
+      .header('Content-Disposition', 'attachment; filename=mes-donnees.json')
+      .send(json);
   });
 
   // PATCH /api/me/2fa
@@ -187,6 +258,39 @@ export async function meRoutes(app: FastifyInstance) {
     reply.send({ success: true, is_2fa_enabled: enable });
   });
   
+  app.delete('/me/anonymize', async (req, reply) => {
+    const auth = req.headers.authorization;
+    if (!auth) return reply.code(401).send({ error: 'Missing token' });
+
+    try {
+      const token = auth.split(' ')[1];
+      const payload = jwt.verify(token, JWT_SECRET) as any;
+      const userId = payload.userId;
+
+      // create an anonymous username 유저네임 익명화해줌.
+      const anonymizedName = generateAnonymousUsername(userId);
+
+      const stmt = db.prepare(`
+        UPDATE users
+        SET
+          email = NULL,
+          username = ?,
+          password_hash = NULL,
+          image = NULL,
+          google_id = NULL,
+          is_2fa_enabled = 0,
+          seen_2fa_prompt = 0
+        WHERE id = ?
+      `);
+      stmt.run(anonymizedName, userId);
+
+      return reply.code(200).send({ message: 'User anonymized successfully' });
+    } catch (err: any) {
+      console.error('Anonymization error:', err);
+      return reply.code(500).send({ error: 'Internal Server Error' });
+    }
+  });
+
   app.delete('/me', async (req, reply) => {
     const auth = req.headers.authorization;
     if (!auth) return reply.code(401).send({ error: 'Missing token' });

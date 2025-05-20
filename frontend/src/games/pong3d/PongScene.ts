@@ -16,8 +16,51 @@ import {
   Mesh
 } from "@babylonjs/core";
 
-export async function createPongScene(canvas: HTMLCanvasElement, options: { mode: 'local' | 'ai' }): Promise<Engine> {
+export type PongOptions = {
+  mode: 'local' | 'ai';
+  speed: number;
+  scoreToWin: number;
+  paddleSize: number;
+  theme: number;
+};
+
+export async function createPongScene(
+  canvas: HTMLCanvasElement,
+  options: PongOptions,
+  returnButton: HTMLButtonElement, // bouton reçu depuis l'extérieur
+): Promise<any> {
   const isAI = options.mode === 'ai';
+
+  // 🎨 Définir les styles selon le thème choisi
+  let paddleColor1 = new Color3(0.6, 0.2, 0.8);
+  let paddleColor2 = new Color3(0.2, 0.4, 1);
+  let ballColor = new Color3(1, 0.84, 0);
+  let groundTexturePath = "/assets/background/mat_wallpaper.jpg";
+  let wallColorDiffuse = new Color3(0.05, 0.05, 0.3); // Couleur par défaut
+  let wallColorEmissive = new Color3(0.1, 0.1, 0.4);
+
+  switch (options.theme) {
+    case 1: // Énergie
+      paddleColor1 = new Color3(1, 0.3, 0.3);
+      paddleColor2 = new Color3(1, 1, 0.3);
+      ballColor = new Color3(0.3, 1, 0.3);
+      groundTexturePath = "/assets/background/sun_energy.jpg";
+      wallColorDiffuse = new Color3(0.4, 0.1, 0.1);     // Rouge foncé
+      wallColorEmissive = new Color3(0.8, 0.2, 0.2);    // Rouge lumineux
+      break;
+    case 2: // Nébuleuse
+      paddleColor1 = new Color3(0.2, 0.6, 1);
+      paddleColor2 = new Color3(0.8, 0.3, 1);
+      ballColor = new Color3(0.7, 0.9, 1);
+      groundTexturePath = "/assets/background/new_moon.jpg";
+      wallColorDiffuse = new Color3(0.2, 0.3, 0.5);     // Bleu profond
+      wallColorEmissive = new Color3(0.3, 0.4, 0.7);    // Bleu lumineux
+      break;
+    default: // Classique
+      // Garde les couleurs définies par défaut
+      break;
+  }
+
   const scoreBoard = document.getElementById("scoreBoard");
   const announce = document.getElementById("announce");
 
@@ -25,40 +68,39 @@ export async function createPongScene(canvas: HTMLCanvasElement, options: { mode
   const scene = new Scene(engine);
   scene.clearColor = new Color4(0, 0, 0, 1.0);
 
+  //1705 추가
   let gameId: number | null = null;
 
   async function startMatch() {
-    try {
-      const user_id = 1; // ← à remplacer dynamiquement
-      const opponent_id = isAI ? 2 : 3; // 2 = IA, 3 = Guest ou autre
+    const user_id = Number(sessionStorage.getItem("userId"));
+    const opponent_id = isAI ? 2 : 3;
   
-      const response = await fetch('http://localhost:3001/api/match/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', "Cache-Control": "no-cache" },
-        body: JSON.stringify({
-          user_id,
-          opponent_id
-        })
+    // ✅ user_id 유효성 검사
+    if (!user_id || isNaN(user_id)) {
+      console.error("❗ user_id is missing or invalid in sessionStorage");
+      return;
+    }
+  
+    try {
+      const response = await fetch("/api/match/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id, opponent_id })
       });
   
       const data = await response.json();
-      console.log("🧾 Données retour du backend :", data);
       gameId = data.gameId;
-      console.log('🎮 Nouveau match (gameId):', gameId);
+      console.log("[MATCH STARTED]", { gameId, user_id, opponent_id });
     } catch (err) {
-      console.error('❌ Erreur création match :', err);
+      console.error("❌ Error starting match:", err);
     }
-  }  
-
-  await startMatch();
-
-  // if (!gameId) {
-  //   console.error("❌ Aucun gameId reçu. Annulation du jeu.");
-  //   return engine;
-  // }
+  }
+  
+  await startMatch();  
+// 1705 일단 여기 위에까지 추가임 \\
 
 
-  const SCORE_LIMIT = 5;
+  const SCORE_LIMIT = options.scoreToWin;
   let scorePlayer = 0;
   let scoreIA = 0;
   let gameOver = false;
@@ -91,19 +133,19 @@ export async function createPongScene(canvas: HTMLCanvasElement, options: { mode
   glow.intensity = 0.6;
 
   const paddleMat1 = new StandardMaterial("paddleMat1", scene);
-  paddleMat1.diffuseColor = new Color3(0.6, 0.2, 0.8);
-  paddleMat1.emissiveColor = paddleMat1.diffuseColor;
+  paddleMat1.diffuseColor = paddleColor1;
+  paddleMat1.emissiveColor = paddleColor1;
 
   const paddleMat2 = new StandardMaterial("paddleMat2", scene);
-  paddleMat2.diffuseColor = new Color3(0.2, 0.4, 1);
-  paddleMat2.emissiveColor = paddleMat2.diffuseColor;
+  paddleMat2.diffuseColor = paddleColor2;
+  paddleMat2.emissiveColor = paddleColor2;
 
   const ballMat = new StandardMaterial("ballMat", scene);
-  ballMat.diffuseColor = new Color3(1, 0.84, 0);
-  ballMat.emissiveColor = new Color3(1, 0.84, 0);
+  ballMat.diffuseColor = ballColor;
+  ballMat.emissiveColor = ballColor;
 
   const groundMat = new StandardMaterial("groundMat", scene);
-  groundMat.diffuseTexture = new Texture("/assets/background/mat_wallpaper.jpg", scene);
+  groundMat.diffuseTexture = new Texture(groundTexturePath, scene);
   groundMat.specularColor = new Color3(0, 0, 0);
 
   const ground = MeshBuilder.CreateGround("ground", { width: 9.6, height: 6 }, scene);
@@ -116,6 +158,9 @@ export async function createPongScene(canvas: HTMLCanvasElement, options: { mode
   const paddle2 = MeshBuilder.CreateBox("paddle2", { width: 0.2, height: 0.4, depth: 1 }, scene);
   paddle2.position.set(4.6, 0.2, 0);
   paddle2.material = paddleMat2;
+
+  paddle1.scaling.y = options.paddleSize;
+  paddle2.scaling.y = options.paddleSize;
 
   const ball = MeshBuilder.CreateSphere("ball", { diameter: 0.3 }, scene);
   ball.position.set(0, 0.2, 0);
@@ -145,153 +190,286 @@ export async function createPongScene(canvas: HTMLCanvasElement, options: { mode
   halo.material = haloMat;
   halo.parent = ball;
 
-  MeshBuilder.CreateBox("topWall", { width: 9.6, height: 0.2, depth: 0.2 }, scene).position.set(0, 0.1, -3.1);
-  MeshBuilder.CreateBox("bottomWall", { width: 9.6, height: 0.2, depth: 0.2 }, scene).position.set(0, 0.1, 3.1);
-  MeshBuilder.CreateBox("leftWall", { width: 0.2, height: 0.2, depth: 6.4 }, scene).position.set(-4.8, 0.1, 0);
-  MeshBuilder.CreateBox("rightWall", { width: 0.2, height: 0.2, depth: 6.4 }, scene).position.set(4.8, 0.1, 0);
+  const wallMaterial = new StandardMaterial("wallMaterial", scene);
+  wallMaterial.diffuseColor = wallColorDiffuse;
+  wallMaterial.emissiveColor = wallColorEmissive;
 
-  let ballDir = new Vector3(0.05, 0, 0.03);
-  let targetZ = 0;
-  let iaVelocityZ = 0;
+  const topWall = MeshBuilder.CreateBox("topWall", { width: 9.6, height: 0.2, depth: 0.2 }, scene);
+  topWall.position.set(0, 0.1, -3.1);
+  topWall.material = wallMaterial;
+
+  const bottomWall = MeshBuilder.CreateBox("bottomWall", { width: 9.6, height: 0.2, depth: 0.2 }, scene);
+  bottomWall.position.set(0, 0.1, 3.1);
+  bottomWall.material = wallMaterial;
+
+  const leftWall = MeshBuilder.CreateBox("leftWall", { width: 0.2, height: 0.2, depth: 6.4 }, scene);
+  leftWall.position.set(-4.8, 0.1, 0);
+  leftWall.material = wallMaterial;
+
+  const rightWall = MeshBuilder.CreateBox("rightWall", { width: 0.2, height: 0.2, depth: 6.4 }, scene);
+  rightWall.position.set(4.8, 0.1, 0);
+  rightWall.material = wallMaterial;
+
+  let ballDir = new Vector3(0, 0, 0);
+
+  type IAProfile = {
+  errorRange: number;
+  reactionDelayMin: number;
+  reactionDelayMax: number;
+  adaptation: number;
+  };
+
+  const iaProfiles: { [key: string]: IAProfile } = {
+    cautious: { errorRange: 0.15, reactionDelayMin: 4, reactionDelayMax: 7, adaptation: 0.9 },
+    balanced: { errorRange: 0.07, reactionDelayMin: 3, reactionDelayMax: 5, adaptation: 1.05 },
+    aggressive: { errorRange: 0.03, reactionDelayMin: 2, reactionDelayMax: 3, adaptation: 1.3 },
+  };
+
+  function interpolateProfiles(p1: IAProfile, p2: IAProfile, t: number): IAProfile {
+    return {
+      errorRange: p1.errorRange * (1 - t) + p2.errorRange * t,
+      reactionDelayMin: Math.round(p1.reactionDelayMin * (1 - t) + p2.reactionDelayMin * t),
+      reactionDelayMax: Math.round(p1.reactionDelayMax * (1 - t) + p2.reactionDelayMax * t),
+      adaptation: p1.adaptation * (1 - t) + p2.adaptation * t,
+    };
+  }
+
+  let currentProfile = iaProfiles.balanced; // Par défaut
+
+  let iaOffset = 0;
+  let iaNextReactionIn = 0;
+  let iaVelocity = 0;
+
+  const paddleSpeed = options.speed * 0.045;
 
   function clamp(value: number, min: number, max: number): number {
     return Math.max(min, Math.min(max, value));
   }
 
   function resetBall() {
+    if (gameOver) return;
+
+    ballDir.set(0, 0, 0); // Stoppe la balle pendant le rebours
     ball.position.set(0, 0.2, 0);
-    ballDir = new Vector3(0.05 * (Math.random() > 0.5 ? 1 : -1), 0, 0.03 * (Math.random() > 0.5 ? 1 : -1));
+
+    countdownBeforeServe(() => {
+      const directionX = Math.random() > 0.5 ? 1 : -1;
+      const angleDeg = (Math.random() * 10 + 5) /* ATTENTTION -> endroit pour ajuster l'angle départ de la balle */ 
+          * (Math.random() > 0.5 ? 1 : -1); // entre -15° et +15°
+      const angleRad = (angleDeg * Math.PI) / 180;
+      const baseSpeed = options.speed * 0.01;
+
+      ballDir = new Vector3(
+        baseSpeed * Math.cos(angleRad) * directionX,
+        0,
+        baseSpeed * Math.sin(angleRad)
+      );
+    });
   }
+
+
+  function countdownBeforeServe(callback: () => void) {
+  if (gameOver) return;
+  let count = 5;
+  announce!.textContent = `Reprise dans ${count}...`;
+  announce!.style.display = "block";
+
+  const interval = setInterval(() => {
+    count--;
+    if (count > 0) {
+      announce!.textContent = `Reprise dans ${count}...`;
+    } else {
+      clearInterval(interval);
+      announce!.style.display = "none";
+      callback();
+      iaOffset = (Math.random() - 0.5) * 0.5; // aléa entre -0.25 et 0.25
+
+    }
+  }, 1000);
+  }
+
 
   function resetGame() {
     scorePlayer = 0;
     scoreIA = 0;
     gameOver = false;
-    if (scoreBoard) scoreBoard.innerText = "0 - 0";
-    if (announce) announce.innerText = "";
+    scoreBoard!.textContent = `${scorePlayer} - ${scoreIA}`;
+    announce!.style.display = "none";
+    returnButton.style.display = "none";
     resetBall();
   }
 
-  function flashColor(mesh: Mesh, color: Color3) {
-    const mat = mesh.material as StandardMaterial;
-    const original = mat.emissiveColor.clone();
-    mat.emissiveColor = color;
-    setTimeout(() => {
-      mat.emissiveColor = original;
-    }, 120);
-  }
+  //1705 추가
+  async function checkGameOver() {
+    if (scorePlayer >= SCORE_LIMIT || scoreIA >= SCORE_LIMIT) {
+      gameOver = true;
+  
+      const isWin = scorePlayer > scoreIA;
+      announce!.textContent = isWin ? "Victoire !" : "Défaite...";
+      announce!.style.display = "block";
+      returnButton.style.display = "block";
+  
+      if (isAI) {
+        const scoreDiff = scorePlayer - scoreIA;
+        if (scoreDiff >= 2) {
+          currentProfile = iaProfiles.aggressive;
+        } else if (scoreDiff <= -2) {
+          currentProfile = iaProfiles.cautious;
+        } else {
+          currentProfile = iaProfiles.balanced;
+        }
+      }
+
+      if (gameId !== null) {
+        const user_id = Number(sessionStorage.getItem("userId"));
+        const opponent_id = isAI ? 2 : 3;
+  
+        try {
+          const res = await fetch("/api/match/end", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              gameId,
+              user_id,
+              opponent_id,
+              score1: scorePlayer,
+              score2: scoreIA
+            })
+          });
+  
+          const result = await res.json();
+          console.log("[MATCH ENDED]", result);
+        } catch (err) {
+          console.error("[DEBUG GAME/PONG SCENE] Error ending match:", err);
+        }
+      }
+    }
+  }  
+  // 여기까지 \\
+
+
+  resetBall();
 
   window.addEventListener("keydown", (e) => {
-    const speed = 0.2;
+    if (e.key.toLowerCase() === "r" && gameOver) {
+      resetGame();
+      return;
+    }
+
     if (gameOver) return;
-    if (["s"].includes(e.key) && paddle1.position.z > -2.4) paddle1.position.z -= speed;
-    if (["w"].includes(e.key) && paddle1.position.z < 2.4) paddle1.position.z += speed;
+
+    if (e.key === "s" && paddle1.position.z > -2.4) paddle1.position.z -= paddleSpeed;
+    if (e.key === "w" && paddle1.position.z < 2.4) paddle1.position.z += paddleSpeed;
 
     if (!isAI) {
-      if (["ArrowDown"].includes(e.key) && paddle2.position.z > -2.4) paddle2.position.z -= speed;
-      if (["ArrowUp"].includes(e.key) && paddle2.position.z < 2.4) paddle2.position.z += speed;
+      if (e.key === "ArrowDown" && paddle2.position.z > -2.4) paddle2.position.z -= paddleSpeed;
+      if (e.key === "ArrowUp" && paddle2.position.z < 2.4) paddle2.position.z += paddleSpeed;
     }
   });
 
-  if (isAI) {
-    setInterval(() => {
-      if (ballDir.x > 0) {
-        let predictedZ = ball.position.z + ballDir.z * ((paddle2.position.x - ball.position.x) / ballDir.x);
-        predictedZ = clamp(predictedZ, -2.9, 2.9);
-        const stress = Math.max(0.8, 1.5 - scoreIA * 0.05);
-        const errorMargin = 0.2 * stress;
-        targetZ = predictedZ + (Math.random() - 0.5) * errorMargin;
-      }
-    }, 1000);
-  }
-
   scene.onBeforeRenderObservable.add(() => {
     if (gameOver) return;
-    ball.position.addInPlace(ballDir);
 
     if (isAI) {
-      const dz = targetZ - paddle2.position.z;
-      if (Math.abs(dz) > 0.1) {
-        iaVelocityZ += Math.sign(dz) * 0.01;
-      } else {
-        iaVelocityZ *= 0.8;
-      }
-      iaVelocityZ = clamp(iaVelocityZ, -0.25, 0.25);
-      paddle2.position.z += iaVelocityZ;
-      paddle2.position.z = clamp(paddle2.position.z, -2.4, 2.4);
+      const diff = scoreIA - scorePlayer;
+      const maxDiff = SCORE_LIMIT;
+      const t = clamp((diff + maxDiff) / (2 * maxDiff), 0, 1);
+      currentProfile = interpolateProfiles(iaProfiles.aggressive, iaProfiles.cautious, t);
     }
 
-    if (ball.position.z >= 3 || ball.position.z <= -3) ballDir.z *= -1;
+    if (isAI && ballDir.length() > 0) {
+      if (iaNextReactionIn <= 0) {
+        const hesitateChance = 0.05; // 5% de chance de ne pas réagir du tout
+        if (Math.random() < hesitateChance && Math.abs(ball.position.x) > 2) {
+          iaNextReactionIn = 6; // fait "perdre du temps" à l’IA
+          return;
+        }
+        // IA réagit maintenant
+        const dx = paddle2.position.x - ball.position.x;
+        const timeToReach = Math.abs(dx / ballDir.x);
+        const predictedZ = ball.position.z + (ballDir.z * timeToReach);
+
+        const dz = predictedZ + iaOffset - paddle2.position.z;
+
+        const error = (Math.random() - 0.5) * currentProfile.errorRange;
+        const speedFactor = clamp(1 - Math.abs(ball.position.x) / 6, 0.4, 1);
+        const maxStep = paddleSpeed * 0.5 * speedFactor * currentProfile.adaptation;
+
+        // Appliquer accélération/inertie
+        const desiredVelocity = clamp(dz + error, -maxStep, maxStep);
+        const acceleration = 0.04;
+        iaVelocity += clamp(desiredVelocity - iaVelocity, -acceleration, acceleration);
+        iaVelocity = clamp(iaVelocity, -maxStep, maxStep);
+
+        paddle2.position.z += iaVelocity;
+        paddle2.position.z = clamp(paddle2.position.z, -2.4, 2.4);
+
+        // Prochaine réaction dans X frames
+        iaNextReactionIn = Math.floor(
+          Math.random() * (currentProfile.reactionDelayMax - currentProfile.reactionDelayMin + 1)
+        ) + currentProfile.reactionDelayMin;
+      } else {
+        iaNextReactionIn--;
+      }
+    }
+
+    ball.position.addInPlace(ballDir);
+
+    if (ball.position.z >= 2.9 || ball.position.z <= -2.9) ballDir.z *= -1;
 
     const hitP1 = ball.position.x <= paddle1.position.x + 0.15 && Math.abs(ball.position.z - paddle1.position.z) <= 0.6;
     const hitP2 = ball.position.x >= paddle2.position.x - 0.15 && Math.abs(ball.position.z - paddle2.position.z) <= 0.6;
 
+    const adjustBounce = (paddle: Mesh, isLeft: boolean) => {
+      // distance entre le centre de la raquette et la balle
+      const dz = ball.position.z - paddle.position.z;
+
+      // normalisation : si dz est proche de 0.5, max effet ; si proche de 0, peu d'effet
+      const normalizedZ = clamp(dz / (paddle.scaling.y * 0.5), -1, 1);
+
+      const speed = ballDir.length();
+      const angleFactor = 0.6; // plus élevé = plus d'effet
+
+      const newAngle = normalizedZ * angleFactor;
+      const directionX = isLeft ? 1 : -1;
+
+      const angleRad = Math.atan2(newAngle, 1);
+      ballDir = new Vector3(
+        directionX * speed * Math.cos(angleRad),
+        0,
+        speed * Math.sin(angleRad)
+      );
+
+      // repositionner la balle juste à côté de la raquette pour éviter les collisions multiples
+      ball.position.x = isLeft ? paddle.position.x + 0.3 : paddle.position.x - 0.3;
+    };
+
     if (hitP1) {
-      ballDir.x *= -1;
-      ball.position.x = paddle1.position.x + 0.3;
-      flashColor(paddle1, new Color3(1, 1, 0));
+      adjustBounce(paddle1, true);
+    } else if (hitP2) {
+      adjustBounce(paddle2, false);
     }
-    else if (hitP2) {
-      ballDir.x *= -1;
-      ball.position.x = paddle2.position.x - 0.3;
-      flashColor(paddle2, new Color3(1, 1, 0));
-    }
-    else if (ball.position.x >= 5 || ball.position.x <= -5) {
-      if (ball.position.x >= 5) scorePlayer++;
-      else scoreIA++;
 
-      if (scoreBoard) scoreBoard.innerText = `${scorePlayer} - ${scoreIA}`;
 
-      if (announce) {
-        if (scorePlayer === SCORE_LIMIT) {
-          announce.innerText = "✨ Victoire céleste ! ✨";
-        } else if (scoreIA === SCORE_LIMIT) {
-          announce.innerText = "💀 Défaite cosmique...";
-        } else {
-          announce.innerText = ball.position.x >= 5 ? "Point pour vous ✨" : "Point pour l'IA 💀";
-        }
-        setTimeout(() => {
-          if (!gameOver) announce!.innerText = "";
-        }, 2000);
-      }
-
-      if (scorePlayer === SCORE_LIMIT || scoreIA === SCORE_LIMIT) {
-        gameOver = true;
-        ballDir.scaleInPlace(0);
-
-        if (gameId !== null) {
-          fetch('http://localhost:3001/api/match/end', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              gameId,
-              user_id: 1, // user_id should be diff than 1 no ? 
-              opponent_id: isAI ? 2 : 3,
-              score1: scorePlayer,
-              score2: scoreIA
-            })
-          })
-            .then(() => {
-              console.log('✅ Match enregistré !', { gameId, score1: scorePlayer, score2: scoreIA });
-            })
-            .catch(err => console.error('❌ Erreur enregistrement match :', err));
-        }        
-
-        const button = document.createElement("button");
-        button.textContent = "Rejouer la partie";
-        button.className = "absolute top-1/2 left-1/2 transform -translate-x-1/2 bg-indigo-700 hover:bg-indigo-800 text-white py-2 px-4 rounded shadow-lg z-50";
-        button.onclick = () => {
-          button.remove();
-          resetGame();
-        };
-        canvas.parentElement?.appendChild(button);
-      } else {
-        resetBall();
-      }
+    if (ball.position.x > 4.8) {
+      scorePlayer++;
+      console.log(`[GAME DEBUG] Point for Player Score: ${scorePlayer} - ${scoreIA}`);
+      scoreBoard!.textContent = `${scorePlayer} - ${scoreIA}`;
+      checkGameOver();
+      if (!gameOver) resetBall();
+    } else if (ball.position.x < -4.8) {
+      scoreIA++;
+      console.log(`[GAME DEBUG] Point for AI! Score: ${scorePlayer} - ${scoreIA}`);
+      scoreBoard!.textContent = `${scorePlayer} - ${scoreIA}`;
+      checkGameOver();
+      if (!gameOver) resetBall();
     }
   });
 
   engine.runRenderLoop(() => scene.render());
 
-  return engine;
+  return {
+    engine,
+    scene
+  };
 }

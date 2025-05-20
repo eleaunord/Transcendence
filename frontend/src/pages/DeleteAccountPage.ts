@@ -7,10 +7,12 @@ export function createDeleteAccountPage(navigate: (path: string) => void): HTMLE
 
   // 사이드바 그대로 유지
   const sidebar = createSidebar(navigate);
+  sidebar.classList.add('z-40'); // 추가
   container.appendChild(sidebar);
 
   // 배경 이미지 그대로 유지
   const backgroundImage = document.createElement('div');
+  backgroundImage.id = 'backgroundImage'; // 추가
   backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
  
   container.appendChild(backgroundImage);

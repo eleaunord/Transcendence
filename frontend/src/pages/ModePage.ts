@@ -49,7 +49,7 @@ export function createModePage(navigate: (path: string) => void): HTMLElement {
     modeMenu.append(versusBtn, tournamentBtn);
       // Gestion du clic sur Versus
       versusBtn.addEventListener('click', () => {
-        navigate('/versus');
+        navigate('/customization-game'); // ATTENTION 
       });
     
       // Gestion du clic sur Tournoi

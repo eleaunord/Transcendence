@@ -22,6 +22,10 @@ export function createGoogleOauthPage(navigate: (path: string) => void): HTMLEle
   
 
   if (token) {
+    //1505 추가
+    const id = urlParams.get('id');
+    if (id) sessionStorage.setItem('userId', id);
+
     // store token and redirect
     localStorage.setItem('token', token);
     sessionStorage.setItem('token', token);

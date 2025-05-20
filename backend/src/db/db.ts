@@ -19,7 +19,12 @@ db.prepare(`
 // === Ensure theme column exists and is populated ===
 function ensureThemeColumn() {
   // Check existing columns
-  const columns = db.prepare(`PRAGMA table_info(users)`).all() as { name: string }[];
+  // const columns = db.prepare(`PRAGMA table_info(users)`).all() as { name: string }[];
+  //1715
+  const columns = db.prepare(`PRAGMA table_info(users)`).all() as {
+    name: string;
+    notnull: number;
+  }[];
   
   // Check if theme column exists
   const themeColumnExists = columns.some(c => c.name === 'theme');

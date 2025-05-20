@@ -110,17 +110,15 @@ async function fetchLeaderboardData(): Promise<PlayerScore[]> {
 
   //throw new Error('Simulated API failure');
   
-  // Update the API URL to match what's being used in the browser
-  const API_BASE_URL = window.location.hostname === 'localhost' 
-    ? 'http://localhost:3001' 
-    : 'https://api.yourgame.com'; // Update with your production API URL
+  // Update with your production API URL
+  const API_BASE_URL = '';
     
   try {
-    const response = await fetch(`${API_BASE_URL}/api/leaderboard`, {
+    const response = await fetch(`/api/leaderboard`, {
       method: 'GET',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      cache: 'no-store' // <- disables fetch cache
+      cache: 'no-store'
     });
 
     // Check if the response is okay (status 2xx)

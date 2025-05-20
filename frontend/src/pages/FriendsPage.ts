@@ -90,7 +90,7 @@ export function createFriendsPage(navigate: (path: string) => void): HTMLElement
   // === Fetch & Render ===
   async function fetchUserData() {
     try {
-      const res = await fetch("http://localhost:3001/api/me", {
+      const res = await fetch("/api/me", {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
         },
@@ -183,7 +183,7 @@ export function createFriendsPage(navigate: (path: string) => void): HTMLElement
 
   async function addFriendById(id: number) {
     try {
-      const res = await fetch("http://localhost:3001/api/friends", {
+      const res = await fetch("/api/friends", {
         method: "POST",
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
@@ -202,7 +202,7 @@ export function createFriendsPage(navigate: (path: string) => void): HTMLElement
 
   async function removeFriend(id: number) {
     try {
-      const res = await fetch("http://localhost:3001/api/friends", {
+      const res = await fetch("/api/friends", {
         method: "DELETE",
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),

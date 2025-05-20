@@ -32,6 +32,11 @@ export interface FriendRow {
   profile_picture: string; 
 }
 
+export interface RecentGame {
+  created_at: string;
+  opponent_id: number;
+}
+
 
 // interface Game {
 //     id: number;

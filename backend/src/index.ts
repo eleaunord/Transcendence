@@ -34,7 +34,7 @@ async function main() {
 
   // register CORS
   await app.register(cors, {
-    origin: 'https://localhost',
+    origin: 'https://localhost:8443',
     credentials: true,
     // added
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
