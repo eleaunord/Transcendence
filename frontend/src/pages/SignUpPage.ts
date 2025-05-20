@@ -44,6 +44,7 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
           sessionStorage.setItem('username', user.username);
           sessionStorage.setItem('userEmail', user.email); // 추가
           sessionStorage.setItem('profilePicture', user.image);
+          sessionStorage.setItem('userId', user.id.toString()); // 1905 추가
           console.log('[SIGNUP] Utilisateur chargé :', user);
         } else {
           console.warn('[SIGNUP] Impossible de charger /api/me');
