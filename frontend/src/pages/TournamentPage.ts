@@ -60,6 +60,7 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
   //Mise a jour des slots
   const updateSlots = () => {
     slotsContainer.innerHTML = '';
+
     playerSlots.forEach((player, index) => {
       const slot = document.createElement('div');
       slot.className = 'bg-black-800 rounded p-4 text-center flex flex-col items-center gap-2 min-w-[180px]';
@@ -85,17 +86,30 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
           slot.appendChild(img);
         }
         const name = document.createElement('div');
-        if (index === 0) 
-        {
-          name.textContent = player.name;
-        } 
-        else 
-          name.textContent = `${player.name} (${player.source === 'friend' ? 'Ami' : 'Invité'})`;
+        name.textContent =
+          index === 0
+            ? player.name
+            : `${player.name} (${player.source === 'friend' ? 'Ami' : 'Invité'})`;
         name.className = 'text-lg font-semibold';
         slot.appendChild(name);
-        
+
+        // [X] 제거 버튼 (첫 슬롯 제외)
+        if (index !== 0) 
+        {
+          const removeBtn = document.createElement('button');
+          removeBtn.textContent = '❌';
+          removeBtn.title = 'Supprimer ce joueur';
+          removeBtn.className =
+            'mt-1 text-red-500 hover:text-red-700 font-bold transition duration-200';
+          removeBtn.addEventListener('click', () => {
+            playerSlots[index] = null;
+            updateSlots();
+            refreshFriendDropdown(); // 친구 드롭다운도 갱신 필요
+          });
+          slot.appendChild(removeBtn);
+        }
       } 
-      else 
+      else
         slot.textContent = `Joueur ${index + 1} : vide`;
       slotsContainer.appendChild(slot);
     });
@@ -150,6 +164,31 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
   // 🎯 Event listeners
   const token = localStorage.getItem('token');
   let friends: Player[] = [];
+  
+ // 2005 추가  
+  function refreshFriendDropdown() {
+    friendSelect.innerHTML = ''; // 드롭다운 초기화
+  
+    const defaultOption = document.createElement('option');
+    defaultOption.text = 'Choisir un ami';
+    defaultOption.disabled = true;
+    defaultOption.selected = true;
+    friendSelect.appendChild(defaultOption);
+  
+    friends.forEach(friend => {
+      const isAlreadySelected = playerSlots.some(
+        p => p !== null && p !== 'loading' && p.id === friend.id
+      );
+      if (isAlreadySelected) return;
+  
+      const option = document.createElement('option');
+      option.value = friend.id;
+      option.textContent = friend.name;
+      friendSelect.appendChild(option);
+    });
+  }
+  // 2005 추가 끝
+  
 
   if (token) {
     fetch('/api/me', { headers: { Authorization: `Bearer ${token}` } })
@@ -173,12 +212,7 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
           source: 'friend',
           avatar: f.profile_picture
         }));
-        friends.forEach(friend => {
-          const option = document.createElement('option');
-          option.value = friend.id;
-          option.textContent = friend.name;
-          friendSelect.appendChild(option);
-        });
+        refreshFriendDropdown(); // 2005 추가
         updateSlots();
       });
   }
@@ -192,12 +226,22 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
     if (emptyIndex !== -1) {
       playerSlots[emptyIndex] = selectedFriend;
       updateSlots();
+      refreshFriendDropdown();
     }
   });
+
   addGuestBtn.addEventListener('click', () => {
     const name = guestInput.value.trim();
     if (!name) return;
   
+    const isNameTaken = playerSlots.some(
+      p => p !== null && p !== 'loading' && p.name.toLowerCase() === name.toLowerCase()
+    );
+    if (isNameTaken) {
+      alert('This guest name is already taken!');
+      return;
+    }
+
     const emptyIndex = playerSlots.findIndex((p, idx) => p === null && idx !== 0);
     if (emptyIndex !== -1) {
       const guestAvatar = guestAvatars[emptyIndex - 1] || '/assets/profile-pictures/default.jpg';
