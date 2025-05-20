@@ -1,7 +1,7 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
 
-export function createModeMemoryPage(navigate: (path: string) => void): HTMLElement {
+export function createMemoryOpponentPage(navigate: (path: string) => void): HTMLElement {
     const container = document.createElement('div');
     container.className = 'flex flex-col h-screen bg-gray-900 text-white';
     
@@ -37,27 +37,33 @@ export function createModeMemoryPage(navigate: (path: string) => void): HTMLElem
     modeMenu.className = "absolute inset-0 flex flex-col items-center justify-center z-20 bg-black bg-opacity-70 gap-10 ";
     
     //   boutons de sélection du mode
-      const versusBtn = document.createElement('button');
-      versusBtn.textContent = 'Mode Versus';
-      versusBtn.className =
-        ' bg-blue-600/80 hover:bg-blue-700/50 text-white text-5xl font-bold py-4 px-14 rounded-lg shadow-lg transition duration-300';
+    const versusBtn = document.createElement('button');
+    versusBtn.textContent = 'Versus Friend';
+    versusBtn.className =
+      ' bg-blue-600/80 hover:bg-blue-700/50 text-white text-5xl font-bold py-4 px-14 rounded-lg shadow-lg transition duration-300';
+  
+    const guestBtn = document.createElement('button');
+    guestBtn.textContent = 'Versus Guest';
+    guestBtn.className =
+      ' bg-purple-800 hover:bg-purple-800/50 text-white text-5xl font-bold py-4 px-12 rounded-lg shadow-lg transition duration-300';
+    modeMenu.append(versusBtn, guestBtn);
     
-      const tournamentBtn = document.createElement('button');
-      tournamentBtn.textContent = 'Mode Solo';
-      tournamentBtn.className =
-        ' bg-purple-800 hover:bg-purple-800/50 text-white text-5xl font-bold py-4 px-12 rounded-lg shadow-lg transition duration-300';
-    modeMenu.append(versusBtn, tournamentBtn);
-      // Gestion du clic sur Versus
-      versusBtn.addEventListener('click', () => {
-        localStorage.setItem('memory-mode', 'versus');
-        navigate('/memory-opponent');
-      });
-    
-      // Gestion du clic sur Solo
-      tournamentBtn.addEventListener('click', () => {
-        localStorage.setItem('memory-mode', 'solo');
-        navigate('/customization-memory');
-      });
+    // Gestion du clic sur Versus Friend
+    versusBtn.addEventListener('click', () => {
+      localStorage.setItem('memory-mode', 'versus');
+      localStorage.setItem('memory-opponent', 'friend');
+      navigate('/memory-friend');
+    });
+  
+    // Gestion du clic sur Versus Guest
+    guestBtn.addEventListener('click', () => {
+      localStorage.setItem('memory-mode', 'versus');
+      localStorage.setItem('memory-opponent', 'guest');
+      localStorage.setItem('opponent-name', 'Invité');
+      localStorage.removeItem('opponent-id');
+      navigate('/customization-memory');
+    });
+
 
     gameFrame.appendChild(canvas);
     gameArea.appendChild(gameFrame);

@@ -5,7 +5,13 @@ import { loadMemorySettings } from '../utils/memorySettings';
 export function createMemoryVersusPage(navigate: (path: string) => void): HTMLElement {
   let moves = 0;
   let userId: number | null = null;
+  const storedUserId = sessionStorage.getItem('userId');
+  if (storedUserId && !isNaN(Number(storedUserId))) {
+    userId = Number(storedUserId);
+  }
   let currentPlayer = 1;
+  const opponentType = localStorage.getItem('memory-opponent') || 'guest';
+  const opponentName = localStorage.getItem('opponent-name') || 'Invité';
   const scores: Record<number, number> = { 1: 0, 2: 0 };
   const { pairCount, theme, turnTime } = loadMemorySettings();
 
@@ -54,9 +60,9 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   const turnIndicator = document.createElement('div');
   const timerDisplay = document.createElement('div');
 
-  player1Status.textContent = `👤 ${userId !== null ? 'Vous' : 'Joueur 1'} : 0`;
-  player2Status.textContent = '🎮 Invité : 0';
-  turnIndicator.textContent = '👉 Tour de Joueur 1';
+  player1Status.textContent = player1Status.textContent = `👤 Vous : 0`;
+  player2Status.textContent = `🎮 ${opponentName} : 0`;
+  turnIndicator.textContent = '👉 Votre tour';
   timerDisplay.textContent = '';
   timerDisplay.className = 'text-white';
 
@@ -97,7 +103,9 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
       if (timeLeft <= 0) {
         clearTurnTimer();
         currentPlayer = currentPlayer === 1 ? 2 : 1;
-        turnIndicator.textContent = `👉 Tour de ${currentPlayer === 1 ? 'Joueur 1' : 'Invité'}`;
+        turnIndicator.textContent = currentPlayer === 1
+          ? '👉 Votre tour'
+          : `👉 Tour de ${opponentName}`;
         startTurnTimer();
       }
     }, 1000);
@@ -140,8 +148,8 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   }
 
   function updateScoreDisplay() {
-    player1Status.textContent = `👤 ${userId !== null ? 'Vous' : 'Joueur 1'} : ${scores[1]}`;
-    player2Status.textContent = `🎮 Invité : ${scores[2]}`;
+    player1Status.textContent = `👤 Vous : ${scores[1]}`;
+    player2Status.textContent = `🎮 ${opponentName} : ${scores[2]}`;
   }
 
   cards.forEach(icon => {
@@ -182,7 +190,9 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
         second.card.classList.remove('flipped');
 
         currentPlayer = currentPlayer === 1 ? 2 : 1;
-        turnIndicator.textContent = `👉 Tour de ${currentPlayer === 1 ? 'Joueur 1' : 'Invité'}`;
+        turnIndicator.textContent = currentPlayer === 1
+          ? '👉 Votre tour'
+          : `👉 Tour de ${opponentName}`;
         startTurnTimer();
       }, 500);
     }
@@ -208,10 +218,10 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
 
     const result = {
       user_id,
-      opponent: 'Invité',
+      opponent: opponentName,
       score1: scores[1],
       score2: scores[2],
-      winner: scores[1] > scores[2] ? 'Joueur' : scores[2] > scores[1] ? 'Invité' : 'Égalité',
+      winner: scores[1] > scores[2] ? 'Joueur' : scores[2] > scores[1] ? opponentName : 'Égalité',
       pairCount,
       turnTime,
       timestamp: new Date().toISOString(),
@@ -219,6 +229,21 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
 
     console.log('[DEBUG MEMORY RESULT] Résultat envoyé au backend :', result);
 
+    try {
+      const response = await fetch('/api/memory/end', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(result)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP ${response.status}`);
+      }
+
+      console.log('✅ Résultat sauvegardé avec succès.');
+    } catch (error) {
+      console.error('❌ Erreur lors de l’envoi des résultats :', error);
+    }
   }
 
 
@@ -226,23 +251,21 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
     const overlay = document.createElement('div');
     overlay.className = 'fixed inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
 
-    const winner = scores[1] > scores[2] ? 'Joueur 1' : scores[2] > scores[1] ? 'Invité' : 'Égalité';
+    const winner = scores[1] > scores[2] ? 'Vous' : scores[2] > scores[1] ? opponentName : 'Égalité';
     const victoryText = document.createElement('div');
     victoryText.textContent = `🏆 ${winner} a gagné !`;
 
     const scoreText = document.createElement('div');
     scoreText.className = 'text-2xl mt-4';
-    scoreText.textContent = `Scores - Joueur 1 : ${scores[1]}, Invité : ${scores[2]}`;
+    scoreText.textContent = `Scores - Vous : ${scores[1]}, ${opponentName} : ${scores[2]}`;
 
-    const replayBtn = document.createElement('button');
-    replayBtn.className = 'mt-6 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300';
-    replayBtn.textContent = 'Rejouer';
-    replayBtn.onclick = () => {
-      container.innerHTML = '';
-      container.appendChild(createMemoryVersusPage(navigate));
-    };
+    const backBtn = document.createElement('button');
+    backBtn.className = 'fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg';
+    backBtn.textContent = 'Retour aux modes de jeu';
+    backBtn.onclick = () => navigate('/memory-mode');
+    container.appendChild(backBtn);
 
-    overlay.append(victoryText, scoreText, replayBtn);
+    overlay.append(victoryText, scoreText, backBtn);
     saveMemoryGameResult();
     container.appendChild(overlay);
   }

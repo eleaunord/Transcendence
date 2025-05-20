@@ -26,6 +26,8 @@ import { createModeMemoryPage } from './pages/ModeMemoryPage';
 import { createMemoryVersusPage } from './pages/MemoryVersusPage';
 import { createGameCustomizationPage } from './pages/GameCustomizationPage';
 import { createMemoryCustomizationPage } from './pages/MemoryCustomizationPage';
+import { createMemoryOpponentPage } from './pages/MemoryOpponentPage';
+import { createMemoryFriendPage } from './pages/MemoryFriendPage';
 import { createBracketPage } from './pages/BracketPage';
 
 // Fonction utilitaire pour injecter `navigate` dans chaque page
@@ -70,6 +72,8 @@ const routes = {
   '/mode': useWithNavigate(protectedRoute(createModePage)),
   '/memory-mode': useWithNavigate(protectedRoute(createModeMemoryPage)),
   '/memory-versus': useWithNavigate(protectedRoute(createMemoryVersusPage)),
+  '/memory-opponent': useWithNavigate(protectedRoute(createMemoryOpponentPage)),
+  '/memory-friend': useWithNavigate(protectedRoute(createMemoryFriendPage)),
   '/anonymize': useWithNavigate(protectedRoute(createAnonymizePage)),
   '/delete-account': useWithNavigate(protectedRoute(createDeleteAccountPage)),
   '/privacy-policy': useWithNavigate(createPrivacyPolicyPage),
