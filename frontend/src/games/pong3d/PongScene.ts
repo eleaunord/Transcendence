@@ -305,7 +305,15 @@ export async function createPongScene(
       gameOver = true;
   
       const isWin = scorePlayer > scoreIA;
-      announce!.textContent = isWin ? "Victoire !" : "Défaite...";
+      //announce!.textContent = isWin ? "Victoire !" : "Défaite...";
+      const winnerName = isWin 
+        ? sessionStorage.getItem("username") || "Player 1"
+        : isAI 
+          ? "AI"
+          : "Guest";
+
+      announce!.textContent = `${winnerName} won!`;
+
       announce!.style.display = "block";
       returnButton.style.display = "block";
   
