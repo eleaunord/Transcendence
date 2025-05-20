@@ -346,14 +346,35 @@ function launchBracketGame(container: HTMLElement) {
   `.replace(/\s+/g, ' ').trim();
   btnReturn.addEventListener("click", () => location.reload());
 
-const layout = document.getElementById('game-layout');
-layout!.innerHTML = '';
-layout!.className = 'flex flex-1 justify-center items-center'; // ensure it's centered
+  const layout = document.getElementById('game-layout');
+  layout!.innerHTML = '';
+  layout!.className = 'flex flex-1 justify-center items-center';
 
   const frame = document.createElement('div');
   frame.className = 'w-3/4 h-3/4 border-4 border-white relative overflow-hidden bg-black';
   frame.style.position = 'relative';
   frame.style.margin = 'auto';
+
+  // ✅ Add player labels from sessionStorage
+  const matchData = sessionStorage.getItem('currentMatch');
+  if (matchData) {
+    const { p1, p2 } = JSON.parse(matchData);
+
+    const playerLabel = document.createElement("div");
+    playerLabel.textContent = p1.username;
+    playerLabel.className = `
+      absolute top-4 left-6 text-white font-bold z-30 text-lg
+    `.replace(/\s+/g, ' ').trim();
+
+    const opponentLabel = document.createElement("div");
+    opponentLabel.textContent = p2.username;
+    opponentLabel.className = `
+      absolute top-4 right-6 text-white font-bold z-30 text-lg text-right
+    `.replace(/\s+/g, ' ').trim();
+
+    frame.appendChild(playerLabel);
+    frame.appendChild(opponentLabel);
+  }
 
   frame.appendChild(canvas);
   frame.appendChild(scoreBoard);
@@ -361,7 +382,6 @@ layout!.className = 'flex flex-1 justify-center items-center'; // ensure it's ce
   frame.appendChild(btnReturn);
 
   layout!.appendChild(frame);
-
 
   const settings = loadPongSettings();
   createPongScene(
@@ -376,6 +396,7 @@ layout!.className = 'flex flex-1 justify-center items-center'; // ensure it's ce
     btnReturn
   );
 }
+
 
   return container;
 }
