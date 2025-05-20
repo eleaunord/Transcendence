@@ -26,6 +26,7 @@ import { createModeMemoryPage } from './pages/ModeMemoryPage';
 import { createMemoryVersusPage } from './pages/MemoryVersusPage';
 import { createGameCustomizationPage } from './pages/GameCustomizationPage';
 import { createMemoryCustomizationPage } from './pages/MemoryCustomizationPage';
+import { setLanguage, applyTranslations } from './utils/translator'
 
 // Fonction utilitaire pour injecter `navigate` dans chaque page
 function withNavigate(navigate: (path: string) => void) {
@@ -77,3 +78,13 @@ const routes = {
 // Maintenant qu'on a les routes, on peut initialiser proprement
 navigate = initRouter(routes)!;
 console.log('🏁 Router chargé');
+
+// // === INTERNATIONALISATION ===
+window.addEventListener('DOMContentLoaded', () => {
+  applyTranslations();
+});
+
+(window as any).switchLang = (lang: string) => {
+    setLanguage(lang as 'en' | 'fr' | 'ko');
+  applyTranslations();
+};

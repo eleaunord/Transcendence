@@ -1,0 +1,83 @@
+{
+  "home.title": "Bienvenue sur HaneulPong !",
+  "home.subtitle": "Préparez-vous à jouer à un jeu classique avec vos amis.",
+  "home.login": "Se connecter",
+  "home.signup": "Créer un compte",
+  "home.google": "Connexion/inscription avec Google",
+  "warning.2fa": "Veuillez vous connecter pour continuer la double authentification.",
+  "privacy.consent": "J'accepte la <a href=\"#\" id=\"privacy-link\" class=\"underline text-blue-400\">collecte et l'utilisation de mes données personnelles</a> (obligatoire)",
+
+  "privacy.title": "Politique de confidentialité",
+  "privacy.intro": "Cette politique de confidentialité est établie dans le cadre de notre engagement à respecter le RGPD.",
+  "privacy.1.title": "1. Responsable du traitement des données",
+  "privacy.1.content": "Transcendance est responsable du traitement de vos données personnelles. Vous pouvez nous contacter à : haneulpong42@gmail.com.",
+  "privacy.2.title": "2. Données personnelles collectées",
+  "privacy.2.items": [
+    "Nom d'utilisateur",
+    "Adresse email",
+    "Identifiant Google (lors d'une connexion via Google OAuth)",
+    "Image de profil (facultative)",
+    "Mot de passe sous forme hachée",
+    "Activation et codes temporaires d'authentification à deux facteurs (2FA)"
+  ],
+  "privacy.2.note": "Nous ne collectons pas d'adresse IP, cookies, ou informations techniques similaires.",
+  "privacy.3.title": "3. Finalité du traitement",
+  "privacy.3.content": "Gestion du compte, authentification sécurisée, amélioration du service, communication avec les utilisateurs, statistiques anonymisées.",
+  "privacy.4.title": "4. Durée de conservation des données",
+  "privacy.4.content": "Conservées tant que le compte est actif, suppression sous 30 jours après suppression du compte.",
+  "privacy.5.title": "5. Vos droits",
+  "privacy.5.content": "Droit d'accès, rectification, suppression, opposition, limitation, portabilité, retrait du consentement. Contactez-nous : haneulpong42@gmail.com.",
+  "privacy.6.title": "6. Sécurité",
+  "privacy.6.content": "Mesures techniques et organisationnelles strictes, mots de passe chiffrés.",
+  "privacy.8.title": "8. Réclamations",
+  "privacy.8.content": "Commission Nationale de l’Informatique et des Libertés (CNIL) :",
+
+  "auth.title": "Connexion",
+  "auth.username": "Nom d'utilisateur",
+  "auth.password": "Mot de passe",
+  "auth.button": "Se connecter",
+  "auth.error.connection": "Erreur de connexion",
+  "auth.error.loadProfile": "Impossible de charger le profil utilisateur",
+  "auth.error.profileFetch": "Erreur lors du chargement du profil",
+  "auth.error.network": "Erreur réseau",
+  "auth.devMode": "⚠️ MODE DÉVELOPPEMENT ACTIVÉ ⚠️",
+  "auth.devLogin": "Connexion Dev",
+
+  "signup.title": "Inscription",
+  "signup.username": "Nom d'utilisateur",
+  "signup.email": "Email",
+  "signup.password": "Mot de passe",
+  "signup.button": "S'inscrire",
+  "signup.error.failed": "Échec de l'inscription",
+  "signup.error.network": "Erreur réseau",
+
+  "google.connecting": "Connexion Google en cours...",
+  "google.error.noToken": "Erreur : aucun token trouvé",
+
+  "profile.welcome": "Bienvenue",
+  "profile.game": "Aller au jeu",
+  "profile.customize": "Personnaliser",
+  "profile.logout": "Se déconnecter",
+
+  "user.username": "Nom d'utilisateur",
+  "user.email": "Email :",
+  "user.loading": "Chargement...",
+  "user.password": "Mot de passe :",
+  "user.newUsername": "Nouveau nom d'utilisateur",
+  "user.updateUsername": "Mettre à jour le nom",
+  "user.success": "✅ Profil mis à jour avec succès !",
+  "user.2fa.loading": "Statut 2FA : chargement...",
+  "user.2fa.on": "Statut 2FA : ACTIVÉ",
+  "user.2fa.off": "Statut 2FA : DÉSACTIVÉ",
+  "user.2fa.turnOn": "Activer 2FA",
+  "user.2fa.turnOff": "Désactiver 2FA",
+  "user.exportData": "Exporter mes données",
+  "user.anonymize": "Anonymiser mon compte",
+  "user.deleteAccount": "Supprimer le compte"
+
+
+
+}
+
+
+
