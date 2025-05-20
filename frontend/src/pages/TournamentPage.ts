@@ -261,7 +261,7 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
     const selectedPlayers = playerSlots.filter(p => p !== null && p !== 'loading') as Player[];
     console.log('Joueurs sélectionnés :', selectedPlayers);
     try {
-      const response = await fetch('http://localhost:3001/api/tournaments/create', {
+      const response = await fetch('/api/tournaments/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: 'Tournoi Local', players: selectedPlayers })
