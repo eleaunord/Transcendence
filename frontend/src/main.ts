@@ -29,6 +29,7 @@ import { createMemoryCustomizationPage } from './pages/MemoryCustomizationPage';
 import { createMemoryOpponentPage } from './pages/MemoryOpponentPage';
 import { createMemoryFriendPage } from './pages/MemoryFriendPage';
 import { createBracketPage } from './pages/BracketPage';
+//import { createTeamMemberPage } from './pages/TeamMemberPage';
 
 // Fonction utilitaire pour injecter `navigate` dans chaque page
 function withNavigate(navigate: (path: string) => void) {
@@ -64,7 +65,7 @@ const routes = {
   '/memory': useWithNavigate(protectedRoute(createMemoryGamePage)),
   '/friends': useWithNavigate(protectedRoute(createFriendsPage)),
   '/leaderboard': useWithNavigate(protectedRoute(createLeaderboardPage)),
-  '/about': useWithNavigate(protectedRoute(createAboutPage)), // 여기 변경해야함: maybe this shouldn't be a protected route
+  '/about': useWithNavigate((createAboutPage)), // 여기 변경해야함: maybe this shouldn't be a protected route
   //'/local': useWithNavigate(protectedRoute(createLocalPage)), // ATTENTION vérifier l'utilité de cette page
   '/ai': useWithNavigate(protectedRoute(createAIPage)),
   '/tournament': useWithNavigate(protectedRoute(createTournamentPage)),
@@ -82,5 +83,14 @@ const routes = {
 
 }
 
-navigate = initRouter(routes)!;
+navigate = initRouter(routes, 'team')!;
+
+// const path = window.location.pathname;
+// if (path.startsWith('/team/')) {
+//   const name = decodeURIComponent(path.split('/team/')[1]);
+//   const container = document.getElementById('app');
+//   container.innerHTML = '';
+//   container.appendChild(createTeamMemberPage(name));
+// }
+
 console.log('🏁 Router chargé');

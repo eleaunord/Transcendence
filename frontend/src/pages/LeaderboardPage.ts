@@ -28,7 +28,7 @@ export function createLeaderboardPage(navigate: (path: string) => void): HTMLEle
 
   const title = document.createElement('h2');
   title.textContent = 'Leaderboard';
-  title.className = 'text-4xl font-bold mb-8 text-white';
+  title.className = 'text-4xl font-bold mb-10 text-white';
   leaderboardSection.appendChild(title);
 
   const leaderboardCard = document.createElement('div');
