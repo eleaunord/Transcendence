@@ -38,37 +38,46 @@ export function createAboutPage(navigate: (path: string) => void): HTMLElement {
   const bottomNames = ['Rime', 'Eléonore'];
 
   // Helper function to create a member block
-  const createMember = (name: string): HTMLElement => {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'flex flex-col items-center';
+const createMember = (name: string): HTMLElement => {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'flex flex-col items-center';
 
-    const imgWrapper = document.createElement('div');
-    imgWrapper.className = `
-      w-44 h-44 md:w-52 md:h-52
-      rounded-full overflow-hidden
-      border-4 border-white shadow-xl
-      transform transition-transform duration-300 hover:scale-110
-    `.trim();
+  const button = document.createElement('button');
+  button.className = `
+    w-44 h-44 md:w-52 md:h-52
+    rounded-full overflow-hidden
+    border-4 border-white shadow-xl
+    transform transition-transform duration-300 hover:scale-110
+    focus:outline-none
+  `.trim();
 
-    const img = document.createElement('img');
-    img.src = defaultImage;
-    img.alt = name;
-    img.className = 'w-full h-full object-cover';
+  button.addEventListener('click', () => {
+    //window.location.href = `/team/${name.toLowerCase()}`;
+    navigate(`/team/${name.toLowerCase()}`);
+  });
 
-    const label = document.createElement('span');
-    label.textContent = name;
-    label.className = `
-      mt-3 text-base font-medium text-white bg-black/60
-      px-4 py-1 rounded-full shadow-md text-center
-      min-w-[9rem]
-    `.replace(/\s+/g, ' ').trim();
 
-    imgWrapper.appendChild(img);
-    wrapper.appendChild(imgWrapper);
-    wrapper.appendChild(label);
 
-    return wrapper;
-  };
+  const img = document.createElement('img');
+  img.src = defaultImage;
+  img.alt = name;
+  img.className = 'w-full h-full object-cover';
+
+  button.appendChild(img);
+
+  const label = document.createElement('span');
+  label.textContent = name;
+  label.className = `
+    mt-3 text-base font-medium text-white bg-black/60
+    px-4 py-1 rounded-full shadow-md text-center
+    min-w-[9rem]
+  `.trim();
+
+  wrapper.appendChild(button);
+  wrapper.appendChild(label);
+
+  return wrapper;
+};
 
   // Top row (3 members)
   const topRow = document.createElement('div');
