@@ -25,6 +25,7 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
   const canvas = document.createElement('canvas');
   canvas.id = 'pong-canvas';
   canvas.className = 'w-full h-full absolute top-0 left-0';
+  canvas.style.zIndex = "0";
   canvas.style.display = 'block';
   canvas.style.backgroundColor = 'black';
 
@@ -115,7 +116,7 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
     let opponentCard: HTMLElement;
     if (mode === 'local') {
       const player2Image = sessionStorage.getItem("profilePicture") || "/assets/profile-pictures/default.jpg";
-      const player2Name = "Player 2";
+      const player2Name = "Guest";
       opponentCard = createPlayerCard(player2Image, player2Name);
     } else {
       opponentCard = createPlayerCard("/assets/profile-pictures/default.jpg", "AI");
@@ -186,6 +187,24 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
     gameFrame.appendChild(scoreBoard);
     gameFrame.appendChild(announce);
     gameFrame.appendChild(btnReturn);
+
+    const username = sessionStorage.getItem("username") || "Player 1";
+    const opponentName = mode === "ai" ? "AI" : "Guest";
+
+    const playerLabel = document.createElement("div");
+    playerLabel.textContent = username;
+    playerLabel.className = `
+      absolute top-4 left-6 text-white font-bold z-30 text-lg
+    `.replace(/\s+/g, ' ').trim();
+
+    const opponentLabel = document.createElement("div");
+    opponentLabel.textContent = opponentName;
+    opponentLabel.className = `
+      absolute top-4 right-6 text-white font-bold z-30 text-lg text-right
+    `.replace(/\s+/g, ' ').trim();
+
+    gameFrame.appendChild(playerLabel);
+    gameFrame.appendChild(opponentLabel);
 
     const settings = loadPongSettings();
 

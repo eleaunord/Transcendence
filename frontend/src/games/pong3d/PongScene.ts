@@ -22,6 +22,22 @@ export type PongOptions = {
   scoreToWin: number;
   paddleSize: number;
   theme: number;
+  tournamentContext?: {
+    p1: {
+      id: string;
+      username: string;
+      source: 'friend' | 'guest';
+      avatar?: string;
+    };
+    p2: {
+      id: string;
+      username: string;
+      source: 'friend' | 'guest';
+      avatar?: string;
+    };
+    tournamentId: string;
+    nextPhase: 'semiFinal' | 'final';
+  };
 };
 
 export async function createPongScene(
@@ -60,7 +76,20 @@ export async function createPongScene(
       // Garde les couleurs définies par défaut
       break;
   }
+  let tournamentContext = options.tournamentContext;
 
+  // 🔁 Si on ne reçoit pas via options, on vérifie dans sessionStorage (fallback)
+  if (!tournamentContext) {
+    const matchData = sessionStorage.getItem("currentMatch");
+    if (matchData) {
+      try {
+        tournamentContext = JSON.parse(matchData);
+      } catch (e) {
+        console.warn(" Erreur parsing currentMatch:", e);
+      }
+    }
+  }
+  
   const scoreBoard = document.getElementById("scoreBoard");
   const announce = document.getElementById("announce");
 
@@ -301,50 +330,102 @@ export async function createPongScene(
 
   //1705 추가
   async function checkGameOver() {
-    if (scorePlayer >= SCORE_LIMIT || scoreIA >= SCORE_LIMIT) {
-      gameOver = true;
-  
-      const isWin = scorePlayer > scoreIA;
-      announce!.textContent = isWin ? "Victoire !" : "Défaite...";
-      announce!.style.display = "block";
-      returnButton.style.display = "block";
-  
-      if (isAI) {
-        const scoreDiff = scorePlayer - scoreIA;
-        if (scoreDiff >= 2) {
-          currentProfile = iaProfiles.aggressive;
-        } else if (scoreDiff <= -2) {
-          currentProfile = iaProfiles.cautious;
+  if (scorePlayer >= SCORE_LIMIT || scoreIA >= SCORE_LIMIT) {
+    gameOver = true;
+    const isWin = scorePlayer > scoreIA;
+
+    let winnerName = "Unknown";
+
+    const currentMatchData = sessionStorage.getItem("currentMatch");
+    if (currentMatchData) {
+      const { p1, p2, nextPhase } = JSON.parse(currentMatchData);
+      winnerName = isWin ? p1.username : p2.username;
+
+      sessionStorage.setItem(
+        "matchWinner",
+        JSON.stringify({ winner: isWin ? p1 : p2, nextPhase })
+      );
+    } else {
+      const userId = Number(sessionStorage.getItem("userId"));
+
+      if (currentMatchData) {
+        const { p1, p2, nextPhase } = JSON.parse(currentMatchData);
+        winnerName = isWin ? p1.username : p2.username;
+
+        sessionStorage.setItem(
+          "matchWinner",
+          JSON.stringify({ winner: isWin ? p1 : p2, nextPhase })
+        );
+      } else {
+        const opponentId = isAI ? 2 : 3;
+        const winnerId = isWin ? userId : opponentId;
+
+        if (winnerId === 2) {
+          winnerName = "AI";
+        } else if (winnerId === 3) {
+          winnerName = "Guest";
         } else {
-          currentProfile = iaProfiles.balanced;
+          winnerName = isWin
+            ? sessionStorage.getItem("username") || "Player 1"
+            : opponentId === 3
+              ? "Guest"
+              : "Unknown";
         }
       }
+      
 
-      if (gameId !== null) {
-        const user_id = Number(sessionStorage.getItem("userId"));
-        const opponent_id = isAI ? 2 : 3;
-  
-        try {
-          const res = await fetch("/api/match/end", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              gameId,
-              user_id,
-              opponent_id,
-              score1: scorePlayer,
-              score2: scoreIA
-            })
-          });
-  
-          const result = await res.json();
-          console.log("[MATCH ENDED]", result);
-        } catch (err) {
-          console.error("[DEBUG GAME/PONG SCENE] Error ending match:", err);
-        }
+    }
+
+    announce!.textContent = `${winnerName} won!`;
+    announce!.style.display = "block";
+    returnButton.style.display = "block";
+
+    if (isAI) {
+      const scoreDiff = scorePlayer - scoreIA;
+      currentProfile = scoreDiff >= 2
+        ? iaProfiles.aggressive
+        : scoreDiff <= -2
+        ? iaProfiles.cautious
+        : iaProfiles.balanced;
+    }
+
+    if (gameId !== null) {
+      const user_id = Number(sessionStorage.getItem("userId"));
+      const opponent_id = isAI ? 2 : 3;
+      try {
+        const res = await fetch("/api/match/end", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gameId,
+            user_id,
+            opponent_id,
+            score1: scorePlayer,
+            score2: scoreIA
+          })
+        });
+        const result = await res.json();
+        console.log("[MATCH ENDED]", result);
+      } catch (err) {
+        console.error("[DEBUG GAME/PONG SCENE] Error ending match:", err);
+      }
+      if (tournamentContext) {
+        const winner = isWin ? tournamentContext.p1 : tournamentContext.p2;
+      
+        sessionStorage.setItem("matchWinner", JSON.stringify({
+          winner,
+          nextPhase: tournamentContext.nextPhase,
+          tournamentId: tournamentContext.tournamentId
+        }));
+      
+        setTimeout(() => {
+          window.location.href = `/bracket?id=${tournamentContext.tournamentId}`;
+        }, 2000);
       }
     }
-  }  
+  }
+}
+
   // 여기까지 \\
 
 
