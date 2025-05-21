@@ -26,7 +26,7 @@ export function createAuthPage(navigate: (path: string) => void): HTMLElement {
       console.log(data);
 
       if (!res.ok) {
-        error = data.error || t('auth.error.connection');
+        error = t(data.error) || t('auth.error.connection');
         updateError();
         return;
       }

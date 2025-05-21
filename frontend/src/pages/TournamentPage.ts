@@ -1,5 +1,6 @@
 import { createSidebar } from '../utils/sidebar';
 import { applyUserTheme } from "../utils/theme";
+import { setLanguage, t } from "../utils/translator";
 
 type Player = {
   id: string;
@@ -238,7 +239,7 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
       p => p !== null && p !== 'loading' && p.name.toLowerCase() === name.toLowerCase()
     );
     if (isNameTaken) {
-      alert('This guest name is already taken!');
+      alert(t('guest.duplicate_name'));
       return;
     }
 

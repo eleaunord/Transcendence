@@ -68,11 +68,11 @@ export function create2FAPage(
   
 		if (!res.ok) {
 		  const err = await res.json();
-		  alert('Failed to send 2FA code: ' + (err.error || 'unknown error'));
+		  alert(t('auth.2fa_code_not_sent') + (err.error || t('auth.default_error')));
 		  return;
 		}
   
-		alert(t('2fa.code_sent'));
+		alert(t('auth.2fa_code_sent'));
 		navigate('/2fa?mode=input');
 	  };
   
@@ -145,7 +145,7 @@ export function create2FAPage(
 		  alert(t('2fa.verified'));
 		  navigate('/profile-creation');
 		} else {
-		  alert(data.error || 'Verification failed');
+		  alert(t(data.error) || t('auth.default_error'));
 		}
 	  };
   

@@ -59,10 +59,17 @@ export function getLanguage(): Lang {
 }
 
 // Traduction simple (ne retourne que les string, pas les tableaux)
-export function t(key: string): string {
-  const val = translations[currentLang][key as keyof Translations];
-  if (typeof val === 'string') return val;
-  return key; // fallback si la valeur est un tableau ou undefined
+export function t(key: string, vars?: Record<string, string | number>): string {
+  let val = translations[currentLang][key as keyof Translations];
+  if (typeof val === 'string') {
+    if (vars) {
+      for (const [k, v] of Object.entries(vars)) {
+        val = val.replace(`{{${k}}}`, String(v));
+      }
+    }
+    return val;
+  }
+  return key;
 }
 
 export function tArray(key: string): string[] {

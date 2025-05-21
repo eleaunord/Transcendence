@@ -95,7 +95,7 @@ export function createDeleteAccountPage(navigate: (path: string) => void): HTMLE
         navigate('/');
       } else {
         const data = await res.json();
-        alert(data.error || t('delete.failed'));
+        alert(t(data.error) || t('delete.failed'));
       }
     } catch (err) {
       console.error('Delete error:', err);

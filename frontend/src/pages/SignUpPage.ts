@@ -27,7 +27,7 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
       console.log(data);
 
       if (!res.ok) {
-        error = data.error || t('signup.error.failed');
+        error = t(data.error )|| t('signup.error.failed');
         updateError();
         return;
       }

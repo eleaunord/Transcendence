@@ -1,5 +1,6 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
+import { t } from '../utils/translator';
 
 export function createMemoryOpponentPage(navigate: (path: string) => void): HTMLElement {
     const container = document.createElement('div');
@@ -38,12 +39,12 @@ export function createMemoryOpponentPage(navigate: (path: string) => void): HTML
     
     //   boutons de sélection du mode
     const versusBtn = document.createElement('button');
-    versusBtn.textContent = 'Versus Friend';
+    versusBtn.textContent = t('memory.opponent.friend');
     versusBtn.className =
       ' bg-blue-600/80 hover:bg-blue-700/50 text-white text-5xl font-bold py-4 px-14 rounded-lg shadow-lg transition duration-300';
   
     const guestBtn = document.createElement('button');
-    guestBtn.textContent = 'Versus Guest';
+    guestBtn.textContent = t('memory.opponent.guest');
     guestBtn.className =
       ' bg-purple-800 hover:bg-purple-800/50 text-white text-5xl font-bold py-4 px-12 rounded-lg shadow-lg transition duration-300';
     modeMenu.append(versusBtn, guestBtn);

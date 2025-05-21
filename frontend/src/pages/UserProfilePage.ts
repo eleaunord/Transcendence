@@ -1,10 +1,33 @@
 import { createSidebar } from "../utils/sidebar"; 
 import { applyUserTheme } from "../utils/theme";
-import { t } from "../utils/translator";
+import { setLanguage, t } from "../utils/translator";
 
 export function createUserProfilePage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
   container.className = 'relative min-h-screen bg-gray-900 text-white overflow-hidden';
+
+  // Lang selector (identique à HomePage)
+  const langSelector = document.createElement('div');
+  langSelector.className = 'absolute top-4 right-4 flex gap-2 z-20';
+
+  ['en', 'fr', 'ko'].forEach((langCode) => {
+    const btn = document.createElement('button');
+    btn.className = 'px-2 py-1 border rounded text-sm bg-white text-black';
+    btn.textContent = langCode.toUpperCase();
+
+    btn.addEventListener('click', () => {
+      setLanguage(langCode as 'en' | 'fr' | 'ko');
+      const root = document.getElementById('app');
+      if (root) {
+        root.innerHTML = '';
+        root.appendChild(createUserProfilePage(navigate)); // Recharge la page actuelle
+      }
+    });
+
+    langSelector.appendChild(btn);
+  });
+
+  container.appendChild(langSelector); // Ajout au DOM
 
   const sidebar = createSidebar(navigate);
   sidebar.style.zIndex = '50';
@@ -100,7 +123,7 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
 
       // 🔒 Vérification de la taille du fichier
       if (file.size > 2 * 1024 * 1024) { // 2 Mo
-        alert("Image trop volumineuse. Choisissez une image de moins de 2 Mo.");
+        alert(t('image.too_large'));
         return;
       }
 
@@ -126,7 +149,7 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
           })
           .catch(err => {
             console.error('Erreur mise à jour avatar :', err);
-            alert('Erreur lors de la sauvegarde de la photo');
+            alert(t('image.save_failed'));
           });
         }
       
@@ -191,13 +214,13 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   updateButton.addEventListener('click', async () => {
     const newUsername = usernameInput.value.trim();
     if (newUsername.length === 0) {
-      alert('Username cannot be empty!');
+     alert(t('user.username_required'));
       return;
     }
 
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('You must be logged in.');
+     alert(t('auth.must_be_logged_in'));
       return;
     }
 
@@ -225,11 +248,11 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
         setTimeout(() => successMessage.classList.add('hidden'), 3000); // Message disparaît après 3s
       } else {
         const data = await res.json();
-        alert(data.error || 'Failed to update.');
+        alert(t(data.error) || 'Failed to update.');
       }
     } catch (err) {
       console.error('Update error:', err);
-      alert('Server error');
+     alert(t('server_error'));
     } finally {
       updateButton.disabled = false; // Réactive le bouton
     }
@@ -300,7 +323,7 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
 
   twoFAButton.addEventListener('click', async () => {
     const token = localStorage.getItem('token');
-    if (!token) return alert('Not authenticated.');
+    if (!token) return alert(t('auth.not_authenticated'));
   
     twoFAButton.disabled = true;
   
@@ -330,7 +353,7 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
       }
     } catch (err) {
       console.error('2FA toggle error:', err);
-      alert('Error toggling 2FA');
+      alert(t('auth.2fa_toggle_failed'));
     } finally {
       twoFAButton.disabled = false;
     }

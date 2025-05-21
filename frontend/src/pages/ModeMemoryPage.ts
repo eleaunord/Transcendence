@@ -1,5 +1,6 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
+import { t } from '../utils/translator';
 
 export function createModeMemoryPage(navigate: (path: string) => void): HTMLElement {
     const container = document.createElement('div');
@@ -38,12 +39,12 @@ export function createModeMemoryPage(navigate: (path: string) => void): HTMLElem
     
     //   boutons de sélection du mode
       const versusBtn = document.createElement('button');
-      versusBtn.textContent = 'Mode Versus';
+      versusBtn.textContent = t('memory.mode.versus');
       versusBtn.className =
         ' bg-blue-600/80 hover:bg-blue-700/50 text-white text-5xl font-bold py-4 px-14 rounded-lg shadow-lg transition duration-300';
     
       const tournamentBtn = document.createElement('button');
-      tournamentBtn.textContent = 'Mode Solo';
+      tournamentBtn.textContent = t('memory.mode.solo');
       tournamentBtn.className =
         ' bg-purple-800 hover:bg-purple-800/50 text-white text-5xl font-bold py-4 px-12 rounded-lg shadow-lg transition duration-300';
     modeMenu.append(versusBtn, tournamentBtn);

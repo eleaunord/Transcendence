@@ -2,6 +2,7 @@ import { createSidebar } from '../utils/sidebar';
 import { createPongScene } from '../games/pong3d/PongScene';
 import { applyUserTheme } from "../utils/theme";
 import { loadPongSettings } from '../utils/pongSettings';
+import { setLanguage, t } from "../utils/translator";
 
 export function createVersusPage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
@@ -136,12 +137,12 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
     announcementOverlay.appendChild(matchBox);
 
     let countdown = 4;
-    message.textContent = `Game starts in ${countdown}...`;
+    message.textContent = t('versus.countdown', { seconds: countdown });
 
     const interval = setInterval(() => {
       countdown--;
       if (countdown > 0) {
-        message.textContent = `Game starts in ${countdown}...`;
+        message.textContent = t('versus.countdown', { seconds: countdown });
       } else {
         clearInterval(interval);
         announcementOverlay.remove();
@@ -173,7 +174,7 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
     announce.innerText = "";
 
     const btnReturn = document.createElement("button");
-    btnReturn.textContent = "Rejouer";
+    btnReturn.textContent = t('versus.retry');
     btnReturn.className = `
       absolute bottom-8 left-1/2 transform -translate-x-1/2 
       bg-yellow-400 hover:bg-yellow-500 text-black font-bold 

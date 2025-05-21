@@ -25,29 +25,29 @@ export async function authRoutes(app: FastifyInstance) {
     const username = rawUsername?.trim();
     const email = rawEmail?.trim();
     if (!username || !email || !password) {
-      return reply.code(400).send({ error: 'All fields are required' });
+      return reply.code(400).send({ error: 'auth.missing_fields' });
     }
     // Vérification de l'email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return reply.code(400).send({ error: 'Invalid email address' });
+      return reply.code(400).send({ error: 'auth.invalid_email' });
     }
     // Vérification du username (3 à 20 caractères, lettres, chiffres ou underscore)
     const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
     if (!usernameRegex.test(username)) {
-      return reply.code(400).send({ error: 'Invalid username. Use 3-20 letters, numbers or underscores.' });
+      return reply.code(400).send({ error: 'auth.invalid_username' });
     }
     // Vérification du mot de passe( Au moins 8 caractères,au moins une majuscule, une minuscule, un chiffre, et un caractère spécial.)
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
     if (!passwordRegex.test(password)) {
       return reply.code(400).send({
-        error: "Password must be at least 8 characters and include uppercase, lowercase, number, and special character(!@#$%_).",
+        error: "auth.invalid_password",
     });
     }
 
     const existing = db.prepare('SELECT * FROM users WHERE username = ? OR email = ?').get(username, email);
     if (existing) 
-      return reply.code(409).send({ error: 'Username or email already exists' });
+      return reply.code(409).send({ error: 'auth.duplicate_user' });
 
     const hashed = await bcrypt.hash(password, 10);
     db.prepare('INSERT INTO users (username, email, password_hash, created_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)').run(username, email, hashed);
@@ -58,7 +58,7 @@ export async function authRoutes(app: FastifyInstance) {
       return reply.code(500).send({ error: 'User creation failed' });}
     
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-    reply.code(201).send({ message: 'User created successfully', token });  
+    reply.code(201).send({ message: 'auth.creation_failed', token });  
   });
 
   app.post('/login', async (req, reply) => {
@@ -66,10 +66,10 @@ export async function authRoutes(app: FastifyInstance) {
 
     const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username) as User | undefined;
 
-    if (!user) return reply.code(401).send({ error: 'Username not found' });
+    if (!user) return reply.code(401).send({ error: 'auth.user_not_found' });
 
     const match = await bcrypt.compare(password, user.password_hash || '');
-    if (!match) return reply.code(401).send({ error: 'Incorrect password' });
+    if (!match) return reply.code(401).send({ error: 'auth.incorrect_password' });
 
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
     console.log('[STANDARD LOGIN] USER EMAIL:', user.email);
@@ -101,7 +101,7 @@ export async function authRoutes(app: FastifyInstance) {
       return reply.redirect(redirectUrl);
     }
     
-    if (!code) return reply.code(400).send({ error: 'Missing code' });
+    if (!code) return reply.code(400).send({ error: 'auth.missing_code' });
 
     try {
       const tokenRes = await axios.post<{ access_token: string }>(
@@ -152,7 +152,7 @@ export async function authRoutes(app: FastifyInstance) {
 
     } catch (err: any) {
       console.error('Google Auth Error:', err?.response?.data || err.message);
-      reply.code(500).send({ error: 'Authentication failed' });
+      reply.code(500).send({ error: 'auth.oauth_failed' });
     }
   });
   
@@ -161,7 +161,7 @@ export async function authRoutes(app: FastifyInstance) {
     try {
       const authHeader = req.headers.authorization;
       if (!authHeader?.startsWith('Bearer ')) {
-        return reply.code(401).send({ error: 'Unauthorized' });
+        return reply.code(401).send({ error: 'auth.unauthorized' });
       }
 
       const token = authHeader.split(' ')[1];
@@ -186,11 +186,11 @@ export async function authRoutes(app: FastifyInstance) {
       console.log('[2FA] Sending code to email...'); // debug
       
       await sendEmail(user.email, 'Your 2FA Code', `Your code is ${code}. It will expire in 5 minutes.`);
-      reply.send({ message: '2FA code sent' });
+      reply.send({ message: 'auth.2fa_code_sent' });
 
     } catch (err) {
       console.error('2FA enable error:', err);
-      reply.code(500).send({ error: 'Failed to enable 2FA' });
+      reply.code(500).send({ error: 'auth.2fa_enable_failed' });
     }
   });
 
@@ -201,7 +201,7 @@ export async function authRoutes(app: FastifyInstance) {
       const authHeader = req.headers.authorization;
   
       if (!authHeader?.startsWith('Bearer ')) {
-        return reply.code(401).send({ error: 'Unauthorized' });
+        return reply.code(401).send({ error: 'auth.unauthorized' });
       }
 
       const token = authHeader.split(' ')[1];
@@ -209,18 +209,18 @@ export async function authRoutes(app: FastifyInstance) {
 
       const user = db.prepare('SELECT * FROM users WHERE id = ?').get(decoded.userId) as User | undefined;
       if (!user || !user.two_fa_code || !user.two_fa_expires_at) {
-        return reply.code(400).send({ error: '2FA not initiated or already verified' });
+        return reply.code(400).send({ error: 'auth.2fa_not_initiated' });
       }
 
       const now = new Date();
       const expiresAt = new Date(user.two_fa_expires_at);
   
       if (now > expiresAt) {
-        return reply.code(400).send({ error: '2FA code expired' });
+        return reply.code(400).send({ error: 'auth.2fa_expired' });
       }
 
       if (code !== user.two_fa_code) {
-        return reply.code(400).send({ error: 'Invalid 2FA code' });
+        return reply.code(400).send({ error: 'auth.2fa_invalid' });
       }
 
       // 인증 성공 처리
@@ -237,7 +237,7 @@ export async function authRoutes(app: FastifyInstance) {
 
     } catch (err) {
       console.error('2FA verification error:', err);
-      reply.code(500).send({ error: '2FA verification failed' });
+      reply.code(500).send({ error: 'auth.2fa_verification_failed' });
     }
   });
 

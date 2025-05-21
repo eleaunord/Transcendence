@@ -95,7 +95,7 @@ export function createAnonymizePage(navigate: (path: string) => void): HTMLEleme
         navigate('/');
       } else {
         const data = await res.json();
-        alert(data.error || t('anonymize.failed'));
+        alert(t(data.error) || t('anonymize.failed'));
       }
     } catch (err) {
       console.error('Anonymization error:', err);
