@@ -262,6 +262,8 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
     const selectedPlayers = playerSlots.filter(p => p !== null && p !== 'loading') as Player[];
     console.log('Joueurs sélectionnés :', selectedPlayers);
     try {
+      sessionStorage.removeItem('semiFinalists'); //2105 추가
+
       const response = await fetch('http://localhost:3001/api/tournaments/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

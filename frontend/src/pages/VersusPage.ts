@@ -150,6 +150,12 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
   }
 
   async function launchGame(mode: 'local' | 'ai') {
+    // 2105 추가
+    sessionStorage.removeItem("currentMatch");
+    sessionStorage.removeItem("matchWinner");
+    sessionStorage.removeItem("semiFinalists");
+    sessionStorage.removeItem("tournamentId");
+
     const scoreBoard = document.createElement("div");
     scoreBoard.id = "scoreBoard";
     scoreBoard.className = `

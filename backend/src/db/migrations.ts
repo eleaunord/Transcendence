@@ -196,6 +196,13 @@ console.log('Utilisateurs spéciaux insérés dans la table `users`');
       insertFriend.run(friend.id, friend.username, friend.status, friend.profile_picture);
       console.log(`✅ Ami fictif ajouté : ${friend.username}`);
     });
+
+    // 2105 추가: potential_friends → users 테이블에도 복사 삽입
+    db.prepare(`
+      INSERT OR IGNORE INTO users (id, username, image)
+      SELECT id, username, profile_picture FROM potential_friends
+    `).run();
+    console.log('✅ Les amis fictifs ont été insérés dans la table `users` aussi');
     
     await db.exec(`
       CREATE TABLE IF NOT EXISTS tournaments (

@@ -81,7 +81,8 @@ export async function createPongScene(
   let tournamentContext = options.tournamentContext;
 
   // 🔁 Si on ne reçoit pas via options, on vérifie dans sessionStorage (fallback)
-  if (!tournamentContext) {
+  if (!tournamentContext) 
+  {
     const matchData = sessionStorage.getItem("currentMatch");
     if (matchData) {
       try {
@@ -364,7 +365,10 @@ export async function createPongScene(
       }      
 
       if (gameId !== null) {
-        const user_id = Number(sessionStorage.getItem("userId"));
+        const user_id = tournamentContext
+        ? Number(tournamentContext.p1.id)  // 수정
+        : Number(sessionStorage.getItem("userId"));
+
         const opponent_id = tournamentContext
         ? Number(tournamentContext.p2.id)
         : (isAI ?  2 : 3);  
@@ -516,7 +520,7 @@ export async function createPongScene(
     if (ball.position.x > 4.8) {
       scorePlayer++;
       // const label = opponentIsAI ? "AI" : "Player 2";
-      const label = opponentIsAI ? "AI" : tournamentContext?.p2.username ?? "Player 2"; 
+      const label = opponentIsAI ? "AI" : tournamentContext?.p2.username || "Player 2"; 
       console.log(`[GAME DEBUG] Point for Player Score: ${scorePlayer} - ${scoreIA}`);
       scoreBoard!.textContent = `${scorePlayer} - ${scoreIA}`;
       checkGameOver();
@@ -524,7 +528,7 @@ export async function createPongScene(
     } else if (ball.position.x < -4.8) {
       scoreIA++;
       // const label = opponentIsAI ? "AI" : "Player 2";
-      const label = opponentIsAI ? "AI" : tournamentContext?.p2.username ?? "Player 2"; 
+      const label = opponentIsAI ? "AI" : tournamentContext?.p2.username || "Player 2"; 
       console.log(`[GAME DEBUG] Point for ${label}! Score: ${scorePlayer} - ${scoreIA}`);
       scoreBoard!.textContent = `${scorePlayer} - ${scoreIA}`;
       checkGameOver();
