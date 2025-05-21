@@ -250,25 +250,28 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
 
   function showVictoryAnimation() {
     const overlay = document.createElement('div');
-    overlay.className = 'fixed inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
+    overlay.className = 'absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
 
     const winner = scores[1] > scores[2] ? 'Vous' : scores[2] > scores[1] ? opponentName : 'Égalité';
     const victoryText = document.createElement('div');
-    victoryText.textContent = `🏆 ${winner} a gagné !`;
-
+    if (winner === 'Égalité') {
+      victoryText.textContent = '🤝 Égalité !';
+    } else if (winner === 'Vous') {
+      victoryText.textContent = '🏆 Vous avez gagné !';
+    } else {
+      victoryText.textContent = `🏆 ${winner} a gagné !`;
+    }
     const scoreText = document.createElement('div');
-    scoreText.className = 'text-2xl mt-4';
-    scoreText.textContent = `Scores - Vous : ${scores[1]}, ${opponentName} : ${scores[2]}`;
+    scoreText.className = 'text-2xl mt-4 text-center leading-relaxed';
+    scoreText.innerHTML = `
+      <div class="text-3xl font-semibold underline mb-2">Scores</div>
+      <div class="text-center">Vous : ${scores[1]}</div>
+      <div class="text-center">${opponentName} : ${scores[2]}</div>
+    `;
 
-    const backBtn = document.createElement('button');
-    backBtn.className = 'fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg';
-    backBtn.textContent = 'Retour aux modes de jeu';
-    backBtn.onclick = () => navigate('/memory-mode');
-    container.appendChild(backBtn);
-
-    overlay.append(victoryText, scoreText, backBtn);
+    overlay.append(victoryText, scoreText);
     saveMemoryGameResult();
-    container.appendChild(overlay);
+    gameFrame.appendChild(overlay);
   }
 
   gameFrame.appendChild(cardsContainer);

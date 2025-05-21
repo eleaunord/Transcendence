@@ -50,12 +50,27 @@ export function createModeMemoryPage(navigate: (path: string) => void): HTMLElem
     soloBtn.className =
       'bg-purple-800 hover:bg-purple-800/50 ' + btnStyle;
 
-    // bouton pour le Mode Survie (indisponible)
+    // bouton du mode 'Survie' (à venir)
+    const survivalWrapper = document.createElement('div');
+    survivalWrapper.className = 'relative animate-fade-in';
+
     const survivalBtn = document.createElement('button');
     survivalBtn.textContent = 'Mode Survie';
     survivalBtn.className =
       'bg-gray-700 text-white opacity-50 cursor-not-allowed ' + btnStyle;
-    survivalBtn.disabled = true; // désactive le clic
+    survivalBtn.disabled = true;
+    survivalBtn.title = 'Fonctionnalité bientôt disponible !';
+
+    // Badge "À venir"
+    const comingSoonBadge = document.createElement('span');
+    comingSoonBadge.textContent = 'À venir';
+    comingSoonBadge.className =
+      'absolute top-0 right-0 -mt-3 -mr-3 bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded-full shadow';
+
+    // Regroupe le bouton et son badge
+    survivalWrapper.appendChild(survivalBtn);
+    survivalWrapper.appendChild(comingSoonBadge);
+
 
     
     // Gestion du clic sur Versus
@@ -72,7 +87,7 @@ export function createModeMemoryPage(navigate: (path: string) => void): HTMLElem
 
 
     gameFrame.appendChild(canvas);
-    modeMenu.append(versusBtn, soloBtn, survivalBtn);
+    modeMenu.append(versusBtn, soloBtn, survivalWrapper);
     gameFrame.appendChild(modeMenu);
     gameArea.appendChild(gameFrame);
 

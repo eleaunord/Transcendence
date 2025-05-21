@@ -153,36 +153,18 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
 
   function showVictoryAnimation() {
     const overlay = document.createElement('div');
-    overlay.className = 'fixed inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
+    overlay.className = 'absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
+
     overlay.innerHTML = `<div>🎉 Bravo ! 🎉</div><div class="text-2xl mt-4">Tu as terminé en ${moves} coups !</div>`;
-
-    const replayBtn = document.createElement('button');
-    replayBtn.textContent = 'Rejouer';
-    replayBtn.className = 'mt-6 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg';
-    replayBtn.onclick = () => {
-      container.innerHTML = '';
-      container.appendChild(createMemoryGamePage(navigate));
-    };
-
-    overlay.appendChild(replayBtn);
-    container.appendChild(overlay);
+    gameFrame.appendChild(overlay);
   }
 
   function showGameOver() {
     const overlay = document.createElement('div');
-    overlay.className = 'fixed inset-0 bg-black bg-opacity-80 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
+    overlay.className = 'absolute inset-0 bg-black bg-opacity-80 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
+
     overlay.innerHTML = `<div>💀 Temps écoulé !</div><div class="text-2xl mt-4">Tu as perdu...</div>`;
-
-    const retryBtn = document.createElement('button');
-    retryBtn.textContent = 'Réessayer';
-    retryBtn.className = 'mt-6 bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg';
-    retryBtn.onclick = () => {
-      container.innerHTML = '';
-      container.appendChild(createMemoryGamePage(navigate));
-    };
-
-    overlay.appendChild(retryBtn);
-    container.appendChild(overlay);
+    gameFrame.appendChild(overlay);
   }
 
   cards.forEach(icon => {
