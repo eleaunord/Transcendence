@@ -71,10 +71,12 @@ db.prepare(`
  opponent_id INTEGER NOT NULL,
  winner_id INTEGER,
  created_at TIMESTAMP DEFAULT (datetime('now', '+2 hours')),
- FOREIGN KEY (user_id) REFERENCES users(id),
- FOREIGN KEY (opponent_id) REFERENCES users(id)
+ FOREIGN KEY (user_id) REFERENCES users(id)
  )
 `).run();
+
+//2105 일단 games 에서 마지막 줄 제거 removed : FOREIGN KEY (opponent_id) REFERENCES users(id)
+
 
 // === Création de la table scores ===
 db.prepare(`
@@ -83,9 +85,8 @@ db.prepare(`
  game_id INTEGER NOT NULL,
  player_id INTEGER NOT NULL,
  score INTEGER NOT NULL,
- FOREIGN KEY (game_id) REFERENCES games(id),
- FOREIGN KEY (player_id) REFERENCES users(id)
- )
+ FOREIGN KEY (game_id) REFERENCES games(id)
+)
 `).run();
 
 export default db;

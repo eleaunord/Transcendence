@@ -228,6 +228,7 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
       updateSlots();
       refreshFriendDropdown();
     }
+    console.log('[SLOT DEBUG] Friend selected:', selectedFriend);
   });
 
   addGuestBtn.addEventListener('click', () => {

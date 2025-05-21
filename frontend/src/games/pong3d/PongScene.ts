@@ -76,6 +76,8 @@ export async function createPongScene(
       // Garde les couleurs définies par défaut
       break;
   }
+
+  // const isTournament = options.mode === 'tournament';
   let tournamentContext = options.tournamentContext;
 
   // 🔁 Si on ne reçoit pas via options, on vérifie dans sessionStorage (fallback)
@@ -90,6 +92,10 @@ export async function createPongScene(
     }
   }
   
+  // 2105 추가
+  const opponentIsAI = !tournamentContext && isAI;
+
+
   const scoreBoard = document.getElementById("scoreBoard");
   const announce = document.getElementById("announce");
 
@@ -101,9 +107,17 @@ export async function createPongScene(
   let gameId: number | null = null;
 
   async function startMatch() {
-    const user_id = Number(sessionStorage.getItem("userId"));
-    const opponent_id = isAI ? 2 : 3;
-  
+    const user_id = tournamentContext
+    ? Number(tournamentContext.p1.id) // 2105 수정됨
+    : Number(sessionStorage.getItem("userId"));
+    //2105 수정
+    const opponent_id = tournamentContext
+      ? Number(tournamentContext.p2.id)
+      : (isAI ?  2 : 3);
+    
+    console.log("[START MATCH] user_id:", user_id);
+    console.log("[START MATCH] opponent_id:", opponent_id);
+
     // ✅ user_id 유효성 검사
     if (!user_id || isNaN(user_id)) {
       console.error("❗ user_id is missing or invalid in sessionStorage");
@@ -338,7 +352,7 @@ export async function createPongScene(
       announce!.style.display = "block";
       returnButton.style.display = "block";
   
-      if (isAI) {
+      if (opponentIsAI) {
         const scoreDiff = scorePlayer - scoreIA;
         if (scoreDiff >= 2) {
           currentProfile = iaProfiles.aggressive;
@@ -347,11 +361,13 @@ export async function createPongScene(
         } else {
           currentProfile = iaProfiles.balanced;
         }
-      }
+      }      
 
       if (gameId !== null) {
         const user_id = Number(sessionStorage.getItem("userId"));
-        const opponent_id = isAI ? 2 : 3;
+        const opponent_id = tournamentContext
+        ? Number(tournamentContext.p2.id)
+        : (isAI ?  2 : 3);  
   
         try {
           const res = await fetch("/api/match/end", {
@@ -373,6 +389,8 @@ export async function createPongScene(
         }
       }
       if (tournamentContext) {
+        console.log('[GAME OVER] tournamentContext:', tournamentContext);
+
         const winner = isWin ? tournamentContext.p1 : tournamentContext.p2;
       
         sessionStorage.setItem("matchWinner", JSON.stringify({
@@ -380,7 +398,9 @@ export async function createPongScene(
           nextPhase: tournamentContext.nextPhase,
           tournamentId: tournamentContext.tournamentId
         }));
-      
+        console.log('[GAME OVER] isWin:', isWin);
+        console.log('[GAME OVER] Winner to be saved in sessionStorage:', winner);
+
         setTimeout(() => {
           window.location.href = `/bracket?id=${tournamentContext.tournamentId}`;
         }, 2000);
@@ -495,13 +515,17 @@ export async function createPongScene(
 
     if (ball.position.x > 4.8) {
       scorePlayer++;
+      // const label = opponentIsAI ? "AI" : "Player 2";
+      const label = opponentIsAI ? "AI" : tournamentContext?.p2.username ?? "Player 2"; 
       console.log(`[GAME DEBUG] Point for Player Score: ${scorePlayer} - ${scoreIA}`);
       scoreBoard!.textContent = `${scorePlayer} - ${scoreIA}`;
       checkGameOver();
       if (!gameOver) resetBall();
     } else if (ball.position.x < -4.8) {
       scoreIA++;
-      console.log(`[GAME DEBUG] Point for AI! Score: ${scorePlayer} - ${scoreIA}`);
+      // const label = opponentIsAI ? "AI" : "Player 2";
+      const label = opponentIsAI ? "AI" : tournamentContext?.p2.username ?? "Player 2"; 
+      console.log(`[GAME DEBUG] Point for ${label}! Score: ${scorePlayer} - ${scoreIA}`);
       scoreBoard!.textContent = `${scorePlayer} - ${scoreIA}`;
       checkGameOver();
       if (!gameOver) resetBall();
@@ -515,3 +539,7 @@ export async function createPongScene(
     scene
   };
 }
+
+
+
+

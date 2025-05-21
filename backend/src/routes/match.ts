@@ -8,8 +8,21 @@ export async function matchRoutes(app: FastifyInstance) {
       user_id: number;
       opponent_id: number;
     };
-
+    const userExists = db.prepare('SELECT id FROM users WHERE id = ?').get(user_id);
+    
+    //2105 추가
+    const opponentExists =
+    db.prepare('SELECT id FROM users WHERE id = ?').get(opponent_id) ||
+    db.prepare('SELECT id FROM potential_friends WHERE id = ?').get(opponent_id);
+  
+    console.log('[BACKEND] userExists:', userExists);
+    console.log('[BACKEND] opponentExists:', opponentExists);
     console.log('📥 Reçu POST /match/start', { user_id, opponent_id });
+    
+    if (!userExists || !opponentExists) {
+      console.error('❌ Invalid user or opponent');
+      return reply.status(400).send({ error: 'Invalid user or opponent ID' });
+    }
 
     try {
       const stmtGame = db.prepare(`
@@ -51,6 +64,18 @@ export async function matchRoutes(app: FastifyInstance) {
       gameId, user_id, opponent_id, score1, score2
     });
 
+    // 유저 존재 여부 체크 (users 또는 potential_friends)
+    const userExists = db.prepare('SELECT id FROM users WHERE id = ?').get(user_id);
+    const opponentExists =
+      db.prepare('SELECT id FROM users WHERE id = ?').get(opponent_id) ||
+      db.prepare('SELECT id FROM potential_friends WHERE id = ?').get(opponent_id);
+  
+    if (!userExists || !opponentExists) {
+      console.error('❌ Invalid user or opponent in /match/end');
+      return reply.status(400).send({ error: 'Invalid user or opponent ID' });
+    }
+
+    
     const winner_id = score1 > score2 ? user_id : opponent_id;
     console.log(`[DEBUG GAME DATA BAKCEND] Winner determined: winner_id=${winner_id}`);
 

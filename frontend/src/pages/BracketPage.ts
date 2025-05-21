@@ -123,7 +123,9 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     playBtn.textContent = 'play';
     playBtn.className = 'mt-2 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm';
     playBtn.addEventListener('click', () => {
+      console.log(`[MATCH] ${p1.username} vs ${p2.username}`);
       const nextPhase = semiFinalists.includes(null) ? 'semiFinal' : 'final';
+      console.log(`[MATCH DEBUG] NEXT PHASE : ${nextPhase}`);
       showTournamentAnnouncement(p1, p2, nextPhase, id);
     });
 
@@ -153,6 +155,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
   };
 
   const updateSemiFinal = () => {
+    console.log('[SEMI FINAL] Updating semi-final with players:', semiFinalists);
     semiFinal.innerHTML = '';
 
     semiFinalists.forEach((player) => {
@@ -170,6 +173,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
   };
 
   const renderFinal = (p1: Player, p2: Player) => {
+    console.log('[FINAL] Rendering final between:', p1.username, 'and', p2.username);
     final.innerHTML = '';
     final.appendChild(renderMatch(p1, p2, (winner) => {
       finalist = winner;
@@ -206,28 +210,32 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
         semiFinalists[1] = winner;
         updateSemiFinal();
       }));
+      const matchWinnerStr = sessionStorage.getItem('matchWinner');
+      if (matchWinnerStr) {
+        console.log('[BRACKET PAGE] matchWinner from session:', matchWinnerStr);
+        const { winner, nextPhase } = JSON.parse(matchWinnerStr);
+        sessionStorage.removeItem('matchWinner');
+        console.log(`[SESSION DEBUG] winner from session:`, winner);
+        console.log(`[SESSION DEBUG] nextPhase:`, nextPhase);
 
+        if (nextPhase === 'semiFinal') {
+          const alreadyIn = semiFinalists.some(p => p?.id === winner.id);
+          if (!alreadyIn) {
+            if (!semiFinalists[0]) semiFinalists[0] = winner;
+            else if (!semiFinalists[1]) semiFinalists[1] = winner;
+          }
+          console.log(`[SESSION] semiFinalists:`, semiFinalists);
+          updateSemiFinal();
+        } else if (nextPhase === 'final') {
+          finalist = winner;
+          renderWinner();
+        }
+      }
     //   setTimeout(updateLines, 300);
     })
     .catch(err => {
       console.error(err);
     });
-
-const matchWinnerStr = sessionStorage.getItem('matchWinner');
-if (matchWinnerStr) {
-  const { winner, nextPhase } = JSON.parse(matchWinnerStr);
-  sessionStorage.removeItem('matchWinner');
-
-  if (nextPhase === 'semiFinal') {
-    if (!semiFinalists[0]) semiFinalists[0] = winner;
-    else if (!semiFinalists[1]) semiFinalists[1] = winner;
-    updateSemiFinal();
-  } else if (nextPhase === 'final') {
-    finalist = winner;
-    renderWinner();
-  }
-}
-
 
   const layout = document.createElement('div');
   layout.className = 'flex flex-1';
@@ -298,12 +306,15 @@ if (matchWinnerStr) {
   let timeLeft = 4;
   countdown.textContent = `Début dans ${timeLeft}...`;
 
+  sessionStorage.removeItem("matchWinner"); // 2105 추가
   const interval = setInterval(() => {
     timeLeft--;
     if (timeLeft > 0) {
       countdown.textContent = `Début dans ${timeLeft}...`;
     } else {
       clearInterval(interval);
+      console.log(`[MATCH ANNONCE] saving match res for next phase:` , { p1, p2, nextPhase });
+      sessionStorage.removeItem("matchWinner"); // 여기 추가
       sessionStorage.setItem('currentMatch', JSON.stringify({ p1, p2, nextPhase, tournamentId }));
       overlay.remove();
       launchBracketGame(container);

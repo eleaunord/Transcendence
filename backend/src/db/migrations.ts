@@ -37,7 +37,7 @@ function relaxEmailConstraint() {
     db.exec(`
       PRAGMA foreign_keys = OFF;
 
-      DROP TABLE IF EXISTS users_tmp;  -- ✅ 여기 추가됨
+      DROP TABLE IF EXISTS users_tmp;
 
       CREATE TABLE users_tmp (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -73,19 +73,6 @@ function relaxEmailConstraint() {
   }
 }
 
-// NEW
-// Insert required users BEFORE any foreign key dependencies
-db.prepare(`
-  INSERT OR IGNORE INTO users (id, username, email)
-  VALUES
-    (1, 'PlayerOne', 'player1@example.com'),
-    (2, 'AI', 'ai@game.com'),
-    (3, 'Guest', 'guest@game.com')
-`).run();
-
-console.log('✅ Utilisateurs spéciaux insérés dans la table `users`');
-
-
 // --- add new vairables in DB --- \\
 
 // Fonction principale qui gère toutes les migrations
@@ -112,29 +99,49 @@ async function migrate() {
   // flag for anonymization (익명화 여부 플래그)
   safeAlter('is_anonymized', 'INTEGER DEFAULT 0');
 
-
-  // GAME : création de la table match
   await db.exec(`
-    CREATE TABLE IF NOT EXISTS games (
+    PRAGMA foreign_keys = OFF;
+    DROP TABLE IF EXISTS scores;
+    DROP TABLE IF EXISTS games;
+    PRAGMA foreign_keys = ON;
+  `);
+
+
+  // Insert required users BEFORE any foreign key dependencies
+  db.prepare(`
+    INSERT OR IGNORE INTO users (id, username, email)
+    VALUES
+      (1, 'PlayerOne', 'player1@example.com'),
+      (2, 'AI', 'ai@game.com'),
+      (3, 'Guest', 'guest@game.com')
+  `).run();
+
+console.log('Utilisateurs spéciaux insérés dans la table `users`');
+
+
+  // 2105 수정 (opponent_id에 외래키 제거)
+  await db.exec(`
+    DROP TABLE IF EXISTS games;
+  
+    CREATE TABLE games (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,
       opponent_id INTEGER NOT NULL,
       winner_id INTEGER,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(id),
-      FOREIGN KEY (opponent_id) REFERENCES users(id)
+      FOREIGN KEY (user_id) REFERENCES users(id)
     );
   `);
-  console.log('✅ Table `games` créée');
+  console.log('✅ Table `games` recreated WITHOUT opponent_id foreign key');
   
+  // 2105 수정 removed: FOREIGN KEY (player_id) REFERENCES users(id)
   await db.exec(`
     CREATE TABLE IF NOT EXISTS scores (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       game_id INTEGER NOT NULL,
       player_id INTEGER NOT NULL,
       score INTEGER NOT NULL,
-      FOREIGN KEY (game_id) REFERENCES games(id),
-      FOREIGN KEY (player_id) REFERENCES users(id)
+      FOREIGN KEY (game_id) REFERENCES games(id)
     );
   `);
   console.log('✅ Table `scores` créée');
