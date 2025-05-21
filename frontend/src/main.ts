@@ -30,7 +30,7 @@ import { setLanguage, applyTranslations } from './utils/translator'
 import { createMemoryOpponentPage } from './pages/MemoryOpponentPage';
 import { createMemoryFriendPage } from './pages/MemoryFriendPage';
 import { createBracketPage } from './pages/BracketPage';
-
+import { renderNotFoundPage } from './pages/404Page'; 
 // Fonction utilitaire pour injecter `navigate` dans chaque page
 function withNavigate(navigate: (path: string) => void) {
   return (fn: (n: typeof navigate) => HTMLElement): () => HTMLElement => {
@@ -80,6 +80,7 @@ const routes = {
   '/privacy-policy': useWithNavigate(createPrivacyPolicyPage),
   '/export-data': useWithNavigate(protectedRoute(createExportDataPage)), //0805 추가
   '/bracket': useWithNavigate(protectedRoute(createBracketPage)),
+  '/404': useWithNavigate(() => renderNotFoundPage()),
 
 }
 

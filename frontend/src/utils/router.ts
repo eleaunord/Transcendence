@@ -42,12 +42,26 @@ export function initRouter(routes: RouteMap, rootId = 'app') {
     renderRoute(path);
   }
 
+  // function renderRoute(path: string) {
+  //   const pathOnly = path.split('?')[0]; // DONT REMOVE THIS LINE: c'est pour enlève la query string (ex: ?mode=input) pour matcher uniquement la route de base (ex: /2fa)
+  //   const page = routes[pathOnly];
+  //   if (page && root) {
+  //     root.innerHTML = '';
+  //     root.appendChild(page(navigate));
+  //   }
+  // }
   function renderRoute(path: string) {
-    const pathOnly = path.split('?')[0]; // DONT REMOVE THIS LINE: c'est pour enlève la query string (ex: ?mode=input) pour matcher uniquement la route de base (ex: /2fa)
-    const page = routes[pathOnly];
+    const pathOnly = path.split('?')[0];
+    const page = routes[pathOnly] || routes['/404']; // ✅ fallback ici
+
     if (page && root) {
       root.innerHTML = '';
       root.appendChild(page(navigate));
+      
+      // (Optionnel) Mettre l’URL à /404 si la route n’existe pas
+      if (!routes[pathOnly]) {
+        window.history.replaceState({}, '', '/404');
+      }
     }
   }
 
