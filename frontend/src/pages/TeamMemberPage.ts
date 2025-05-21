@@ -3,11 +3,11 @@ import { applyUserTheme } from "../utils/theme";
 
 // Map route names to full display names
 const fullNameMap: Record<string, string> = {
-  shinhye: "Shinhye Yun",
-  alix: "Alix Ceralin",
-  gnouma: "Gnouma Dukuray",
-  rime: "Rime Younssi",
-  eléonore: "Eléonore Roty",
+  shinhye: "Shinhye YUN",
+  alix: "Alix CERALINE",
+  gnouma: "Gnouma DUKURAY",
+  rime: "Rime YOUNSSI",
+  eléonore: "Eléonore ROTY",
 };
 
 export function createTeamMemberPage(navigate: (path: string) => void, name: string): HTMLElement {
@@ -28,15 +28,30 @@ export function createTeamMemberPage(navigate: (path: string) => void, name: str
 
   // Main section
   const mainSection = document.createElement('div');
-  mainSection.className = 'relative mt-24 flex flex-col items-center z-30 px-6';
+  //mainSection.className = 'relative mt-24 flex flex-col items-center z-30 px-6'; //middle
+  mainSection.className = 'relative mt-24 flex flex-col z-30 px-10';
+
 
   const title = document.createElement('h2');
   title.textContent = fullNameMap[name.toLowerCase()] || 'Member';
   title.className = 'text-4xl font-bold mb-10 text-white text-center';
   mainSection.appendChild(title);
 
+  const bioWrapper = document.createElement('div');
+bioWrapper.className = `
+  bg-white/10 backdrop-blur-md
+  p-10 rounded-2xl shadow-2xl
+  max-w-4xl w-full
+  transform transition-all duration-300
+  hover:scale-[1.01]
+  ml-auto mr-auto md:ml-32
+`.replace(/\s+/g, ' ').trim();
+
+
   const bio = document.createElement('p');
-  bio.className = 'text-lg text-gray-300 text-justify max-w-4xl leading-relaxed';
+  //bio.className = 'text-lg text-gray-300 text-justify max-w-4xl leading-relaxed'; //middle
+ bio.className = 'text-lg text-gray-300 text-justify max-w-4xl leading-relaxed';
+
 
   bio.textContent = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ut est vel nisi lacinia vestibulum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur at sem tincidunt, suscipit erat vitae, accumsan quam. Vivamus auctor lacinia sem eu efficitur. Cras tincidunt eros lacus, vel eleifend est feugiat ac.
 
@@ -44,7 +59,10 @@ Suspendisse iaculis facilisis tempus. Mauris vel ipsum tellus. Donec non cursus 
 
 Ut luctus neque massa, eget sagittis mi feugiat sit amet. Nulla odio dui, pharetra ultricies suscipit id, finibus ac ipsum. Integer egestas metus velit, vitae placerat enim feugiat quis. Phasellus nisi purus, luctus ac ornare ac, efficitur aliquet sem. Ut scelerisque neque quis sagittis tempus. Aliquam in eros sit amet nibh ultricies efficitur vitae at libero.`;
 
-  mainSection.appendChild(bio);
+  bioWrapper.appendChild(bio);
+  mainSection.appendChild(bioWrapper);
+
+  //mainSection.appendChild(bio);
   container.appendChild(mainSection);
 
   return container;

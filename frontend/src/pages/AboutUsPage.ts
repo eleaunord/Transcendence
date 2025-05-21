@@ -68,10 +68,11 @@ const createMember = (name: string): HTMLElement => {
   const label = document.createElement('span');
   label.textContent = name;
   label.className = `
-    mt-3 text-base font-medium text-white bg-black/60
+    mt-3 text-xl font-semibold text-white bg-black/60
     px-4 py-1 rounded-full shadow-md text-center
     min-w-[9rem]
   `.trim();
+
 
   wrapper.appendChild(button);
   wrapper.appendChild(label);
