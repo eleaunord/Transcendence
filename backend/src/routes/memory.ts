@@ -1,12 +1,17 @@
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { authenticateToken } from './authMiddleware';
 import db from '../db/db';
 
 export async function memoryRoutes(app: FastifyInstance) {
   console.log('✅ memoryRoutes enregistré');
 
-  app.post('/memory/end', async (req, reply) => {
+  app.addHook('preHandler', authenticateToken);
+
+  app.post('/memory/end', async (req: FastifyRequest, reply: FastifyReply) => {
+    const userId = req.user?.id;
+    if (!userId) return reply.status(401).send({ error: 'Unauthorized' });
+
     const {
-      user_id,
       opponent,
       score1,
       score2,
@@ -15,7 +20,6 @@ export async function memoryRoutes(app: FastifyInstance) {
       turnTime,
       timestamp,
     } = req.body as {
-      user_id: number;
       opponent: string;
       score1: number;
       score2: number;
@@ -26,7 +30,7 @@ export async function memoryRoutes(app: FastifyInstance) {
     };
 
     console.log('📥 Reçu POST /memory/end', {
-      user_id, opponent, score1, score2, winner, pairCount, turnTime, timestamp
+      user_id: userId, opponent, score1, score2, winner, pairCount, turnTime, timestamp
     });
 
     try {
@@ -38,7 +42,7 @@ export async function memoryRoutes(app: FastifyInstance) {
       `);
 
       stmt.run(
-        user_id, opponent, score1, score2, winner,
+        userId, opponent, score1, score2, winner,
         pairCount, turnTime, timestamp
       );
 
@@ -48,4 +52,26 @@ export async function memoryRoutes(app: FastifyInstance) {
       reply.status(500).send({ error: 'Memory game save failed' });
     }
   });
+
+
+  app.get('/me/memory-games', async (req, reply) => {
+    const userId = req.user?.id;
+    if (!userId) return reply.status(401).send({ error: 'Unauthorized' });
+
+    try {
+      const games = db.prepare(`
+        SELECT opponent, score1, score2, winner, timestamp
+        FROM memory_games
+        WHERE user_id = ?
+        ORDER BY timestamp DESC
+        LIMIT 10
+      `).all(userId);
+
+      reply.send(games);
+    } catch (err) {
+      console.error('❌ Erreur récupération parties Memory :', err);
+      reply.status(500).send({ error: 'Memory history failed' });
+    }
+  });
 }
+

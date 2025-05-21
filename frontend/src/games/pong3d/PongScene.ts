@@ -111,11 +111,15 @@ export async function createPongScene(
     }
   
     try {
-      const response = await fetch("/api/match/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id, opponent_id })
-      });
+    const response = await fetch("/api/match/start", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+      body: JSON.stringify({ user_id, opponent_id })
+    });
+
   
       const data = await response.json();
       gameId = data.gameId;
@@ -395,7 +399,10 @@ export async function createPongScene(
       try {
         const res = await fetch("/api/match/end", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`  // 🔐 AJOUT ICI
+          },
           body: JSON.stringify({
             gameId,
             user_id,

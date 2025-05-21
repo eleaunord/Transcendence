@@ -1,34 +1,27 @@
 import { FastifyInstance } from 'fastify';
 import db from '../db/db';
+import { authenticateToken } from './authMiddleware';
 
 export async function matchRoutes(app: FastifyInstance) {
-  // Créer un nouveau match (game + scores)
-  app.post('/match/start', async (req, reply) => {
-    const { user_id, opponent_id } = req.body as {
-      user_id: number;
-      opponent_id: number;
-    };
+  app.addHook('preHandler', authenticateToken);
 
-    console.log('📥 Reçu POST /match/start', { user_id, opponent_id });
+  app.post('/match/start', async (req, reply) => {
+    const user_id = req.user?.id;
+    const { opponent_id } = req.body as { opponent_id: number };
+
+    if (!user_id) return reply.status(401).send({ error: 'Unauthorized' });
 
     try {
-      const stmtGame = db.prepare(`
+      const result = db.prepare(`
         INSERT INTO games (user_id, opponent_id) VALUES (?, ?)
-      `);
-      console.log(`[DEBUG GAME DATA BAKCEND] Inserting game: user_id=${user_id}, opponent_id=${opponent_id}`);
-      const result = stmtGame.run(user_id, opponent_id);
+      `).run(user_id, opponent_id);
+
       const gameId = result.lastInsertRowid as number;
 
-      console.log('[DEBUG GAME DATA BAKCEND] Match inséré avec gameId =', gameId);
-
-      const stmtScore = db.prepare(`
-        INSERT INTO scores (game_id, player_id, score) VALUES (?, ?, ?)
-      `);
-      console.log(`[DEBUG GAME DATA BAKCEND] Creating score for user ${user_id} -> game_id=${gameId}, score=0`);
-      stmtScore.run(gameId, user_id, 0);
-
-      console.log(`[DEBUG GAME DATA BAKCEND] Creating score for opponent ${opponent_id} -> game_id=${gameId}, score=0`);
-      stmtScore.run(gameId, opponent_id, 0);
+      db.prepare(`INSERT INTO scores (game_id, player_id, score) VALUES (?, ?, ?)`)
+        .run(gameId, user_id, 0);
+      db.prepare(`INSERT INTO scores (game_id, player_id, score) VALUES (?, ?, ?)`)
+        .run(gameId, opponent_id, 0);
 
       reply.send({ status: 'created', gameId });
     } catch (err) {
@@ -37,57 +30,63 @@ export async function matchRoutes(app: FastifyInstance) {
     }
   });
 
-  // Enregistrer les scores à la fin d’un match
   app.post('/match/end', async (req, reply) => {
-    const { gameId, user_id, opponent_id, score1, score2 } = req.body as {
+    const user_id = req.user?.id;
+    const { gameId, opponent_id, score1, score2 } = req.body as {
       gameId: number;
-      user_id: number;
       opponent_id: number;
       score1: number;
       score2: number;
     };
 
-    console.log('[DEBUG GAME DATA BAKCEND] Reçu POST /match/end', {
-      gameId, user_id, opponent_id, score1, score2
-    });
+    if (!user_id) return reply.status(401).send({ error: 'Unauthorized' });
 
     const winner_id = score1 > score2 ? user_id : opponent_id;
-    console.log(`[DEBUG GAME DATA BAKCEND] Winner determined: winner_id=${winner_id}`);
 
-    db.prepare(`UPDATE scores SET score = ? WHERE game_id = ? AND player_id = ?`)
-      .run(score1, gameId, user_id);
-    db.prepare(`UPDATE scores SET score = ? WHERE game_id = ? AND player_id = ?`)
-      .run(score2, gameId, opponent_id);
+    try {
+      db.prepare(`UPDATE scores SET score = ? WHERE game_id = ? AND player_id = ?`)
+        .run(score1, gameId, user_id);
+      db.prepare(`UPDATE scores SET score = ? WHERE game_id = ? AND player_id = ?`)
+        .run(score2, gameId, opponent_id);
 
-    db.prepare(`UPDATE games SET winner_id = ? WHERE id = ?`)
-      .run(winner_id, gameId);
+      db.prepare(`UPDATE games SET winner_id = ? WHERE id = ?`)
+        .run(winner_id, gameId);
 
-    console.log('🎯 Match mis à jour', { gameId, score1, score2, winner_id });
-
-    reply.send({ status: 'match updated', winner_id });
+      reply.send({ status: 'match updated', winner_id });
+    } catch (err) {
+      console.error('❌ Erreur lors de la mise à jour du match :', err);
+      reply.status(500).send({ error: 'Match update failed' });
+    }
   });
 
-  // Historique d’un joueur
-  app.get('/match/history', async (req, reply) => {
-    const playerId = parseInt((req.query as any).player_id);
-    console.log(`[DEBUG GAME DATA MATCH HISTORY] Requesting history for player_id=${playerId}`);
+  app.get('/me/pong-games', { preHandler: authenticateToken }, async (req, reply) => {
+    const userId = req.user?.id;
+    if (!userId) return reply.status(401).send({ error: 'Unauthorized' });
 
-    const stmt = db.prepare(`
-      SELECT g.id as game_id, g.created_at, g.winner_id,
-             u1.username as player1, u2.username as player2,
-             s1.score as score1, s2.score as score2
-      FROM games g
-      JOIN users u1 ON g.user_id = u1.id
-      JOIN users u2 ON g.opponent_id = u2.id
-      JOIN scores s1 ON s1.game_id = g.id AND s1.player_id = u1.id
-      JOIN scores s2 ON s2.game_id = g.id AND s2.player_id = u2.id
-      WHERE g.user_id = ? OR g.opponent_id = ?
-      ORDER BY g.created_at DESC
-    `);
+    try {
+      const stmt = db.prepare(`
+        SELECT g.created_at as timestamp,
+               u2.username as opponent,
+               s1.score as score1,
+               s2.score as score2
+        FROM games g
+        JOIN users u1 ON g.user_id = u1.id
+        JOIN users u2 ON g.opponent_id = u2.id
+        JOIN scores s1 ON s1.game_id = g.id AND s1.player_id = u1.id
+        JOIN scores s2 ON s2.game_id = g.id AND s2.player_id = u2.id
+        WHERE g.user_id = ?
+        ORDER BY g.created_at DESC
+        LIMIT 10
+      `);
 
-    const games = stmt.all(playerId, playerId);
-    reply.send(games);
+      const games = stmt.all(userId);
+      reply.send(games);
+    } catch (err) {
+      console.error('❌ Erreur récupération parties Pong :', err);
+      reply.status(500).send({ error: 'Pong history failed' });
+    }
   });
+}
 
   // app.get('/leaderboard', async (request, reply) => {
   //   try {
@@ -124,4 +123,3 @@ export async function matchRoutes(app: FastifyInstance) {
   //     reply.status(500).send({ error: 'Failed to fetch leaderboard data' });
   //   }
   // });
-}

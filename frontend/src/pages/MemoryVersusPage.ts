@@ -209,15 +209,14 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   }
 
   async function saveMemoryGameResult() {
-    const user_id = Number(sessionStorage.getItem("userId"));
+    const token = localStorage.getItem("token");
 
-    if (!user_id || isNaN(user_id)) {
-      console.warn("❗ user_id invalide ou manquant dans sessionStorage");
+    if (!token) {
+      console.warn("❗ Token manquant. Utilisateur non connecté ?");
       return;
     }
 
     const result = {
-      user_id,
       opponent: opponentName,
       score1: scores[1],
       score2: scores[2],
@@ -232,8 +231,11 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
     try {
       const response = await fetch('/api/memory/end', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(result)
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(result),
       });
 
       if (!response.ok) {
@@ -245,7 +247,6 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
       console.error('❌ Erreur lors de l’envoi des résultats :', error);
     }
   }
-
 
   function showVictoryAnimation() {
     const overlay = document.createElement('div');

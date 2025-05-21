@@ -2,6 +2,8 @@ import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
 
 export function createUserProfilePage(navigate: (path: string) => void): HTMLElement {
+  const token: string | null = localStorage.getItem('token');
+  
   const container = document.createElement('div');
   container.className = 'relative min-h-screen bg-gray-900 text-white overflow-hidden';
 
@@ -412,56 +414,115 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   settingsSection.appendChild(settingsContainer);
   container.appendChild(settingsSection);
 
-  // HISTORY
+  const historyWrapper = document.createElement('div');
+  historyWrapper.className = `
+    relative z-20 mt-12
+    flex flex-col md:flex-row justify-center items-start gap-8
+    w-full max-w-5xl mx-auto px-4
+  `.replace(/\s+/g, ' ').trim();
 
-const recentGamesSection = document.createElement('div');
-recentGamesSection.className = `
-  relative mt-6 ml-24
-  flex flex-col items-center
-  z-20 w-full
-`.replace(/\s+/g, ' ').trim();
+  // === HISTORIQUE MEMORY ===
+  const memoryGamesSection = document.createElement('div');
+  memoryGamesSection.className = 'relative flex flex-col items-center w-full';
 
-const recentGamesContainer = document.createElement('div');
-recentGamesContainer.className = `
-  bg-white/10 backdrop-blur-md
-  rounded-2xl shadow-2xl
-  transform transition-all duration-300
-  hover:scale-105 hover:shadow-3xl
-  px-6 pt-6 pb-8 min-h-[120px] w-full max-w-5xl
-`.replace(/\s+/g, ' ').trim();
+  const memoryGamesContainer = document.createElement('div');
+  memoryGamesContainer.className = `
+    bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl
+    transform transition-all duration-300 hover:scale-105 hover:shadow-3xl
+    px-6 pt-6 pb-8 min-h-[120px] w-full max-w-2xl
+  `.replace(/\s+/g, ' ').trim();
 
-const recentGamesTitle = document.createElement('h3');
-recentGamesTitle.textContent = 'Recent games';
-recentGamesTitle.className = 'text-xl font-semibold mb-4';
+  const memoryTitle = document.createElement('h3');
+  memoryTitle.textContent = 'Parties de Memory';
+  memoryTitle.className = 'text-xl font-semibold mb-4';
 
-const recentGamesList = document.createElement('div');
-recentGamesList.id = 'recentGamesList';
-recentGamesList.className = 'text-gray-300 space-y-2 italic';
+  const memoryList = document.createElement('div');
+  memoryList.className = 'text-gray-300 space-y-2 italic';
 
-// Fetch recent games
-const tokenForGames = localStorage.getItem('token');
-if (tokenForGames) {
-  fetch('/api/me/recent-games', {
-    headers: { 'Authorization': `Bearer ${tokenForGames}` }
-  })
-    .then(res => res.json())
-    .then(games => {
-      games.forEach((entry: string) => {
-        const p = document.createElement('p');
-        p.textContent = entry;
-        recentGamesList.appendChild(p);
+  if (token) {
+    fetch('/api/me/memory-games', { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => res.json())
+      .then(games => {
+        console.log('🧪 Reçu du backend pour memory-games :', games);
+        if (!Array.isArray(games)) {
+          console.error('❌ La réponse mémoire n\'est pas un tableau :', games);
+          const errorMsg = document.createElement('p');
+          errorMsg.textContent = 'Impossible de charger l’historique des parties.';
+          memoryList.appendChild(errorMsg);
+          return;
+        }
+
+        if (games.length === 0) {
+          const emptyMsg = document.createElement('p');
+          emptyMsg.textContent = 'Aucune partie jouée récemment.';
+          memoryList.appendChild(emptyMsg);
+          return;
+        }
+
+        games.forEach((game: any) => {
+          const p = document.createElement('p');
+          p.textContent = `🃏 ${game.score1} - ${game.score2} contre ${game.opponent} • ${new Date(game.timestamp).toLocaleString()}`;
+          memoryList.appendChild(p);
+        });
+      })
+      .catch(err => {
+        console.error('Erreur mémoire :', err);
+        const errorMsg = document.createElement('p');
+        errorMsg.textContent = 'Erreur lors du chargement de l’historique.';
+        memoryList.appendChild(errorMsg);
       });
-    })
-    .catch(err => {
-      console.error('Error loading recent games:', err);
-    });
-}
+  }
 
-recentGamesContainer.appendChild(recentGamesTitle);
-recentGamesContainer.appendChild(recentGamesList);
-recentGamesSection.appendChild(recentGamesContainer);
-container.appendChild(recentGamesSection);
+  memoryGamesContainer.append(memoryTitle, memoryList);
+  memoryGamesSection.appendChild(memoryGamesContainer);
 
+  // === HISTORIQUE PONG ===
+  const pongGamesSection = document.createElement('div');
+  pongGamesSection.className = 'relative flex flex-col items-center w-full';
+
+  const pongGamesContainer = memoryGamesContainer.cloneNode(false) as HTMLElement;
+
+  const pongTitle = document.createElement('h3');
+  pongTitle.textContent = 'Parties de Pong';
+  pongTitle.className = 'text-xl font-semibold mb-4';
+
+  const pongList = document.createElement('div');
+  pongList.className = 'text-gray-300 space-y-2 italic';
+
+  if (token) {
+    fetch('/api/me/pong-games', { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => res.json())
+      .then(games => {
+        if (!Array.isArray(games)) {
+          console.error('❌ La réponse pong n\'est pas un tableau :', games);
+          const errorMsg = document.createElement('p');
+          errorMsg.textContent = 'Impossible de charger l’historique des parties.';
+          pongList.appendChild(errorMsg);
+          return;
+        }
+
+        if (games.length === 0) {
+          const emptyMsg = document.createElement('p');
+          emptyMsg.textContent = 'Aucune partie jouée récemment.';
+          pongList.appendChild(emptyMsg);
+          return;
+        }
+
+        games.forEach((game: any) => {
+          const p = document.createElement('p');
+          p.textContent = `🏓 ${game.score1} - ${game.score2} contre ${game.opponent} • ${new Date(game.timestamp).toLocaleString()}`;
+          pongList.appendChild(p);
+        });
+      })
+      .catch(err => console.error('Erreur pong :', err));
+  }
+
+  pongGamesContainer.append(pongTitle, pongList);
+  pongGamesSection.appendChild(pongGamesContainer);
+  
+  historyWrapper.appendChild(pongGamesSection);
+  historyWrapper.appendChild(memoryGamesSection);
+  container.appendChild(historyWrapper);
 
   // Sidebar hover events (mouvement sidebar)
   sidebar.addEventListener('mouseenter', () => {
@@ -478,11 +539,10 @@ container.appendChild(recentGamesSection);
     const profileSection = document.getElementById('profileCard')?.parentElement;
     if (profileSection) {
       profileSection.className = `
-      relative mt-24
-      flex flex-row items-start justify-center gap-12
-      z-30
-    `.replace(/\s+/g, ' ').trim();
-    
+        relative mt-24
+        flex flex-row justify-center items-start gap-20
+        z-20 w-full max-w-7xl mx-auto px-4
+      `.replace(/\s+/g, ' ').trim();
     }
   });
 
@@ -497,7 +557,7 @@ container.appendChild(recentGamesSection);
       backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
     }
 
-    const profileSection = document.getElementById('profileCard')?.parentElement;
+    const profileSection = document.getElementById('profileSection');
     if (profileSection) {
       profileSection.className = `
       relative mt-24
@@ -509,7 +569,6 @@ container.appendChild(recentGamesSection);
   });
 
   // Chargement dynamique des infos utilisateur
-  const token = localStorage.getItem('token');
   if (token) {
     fetch('/api/me', {
       headers: {

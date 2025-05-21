@@ -32,36 +32,50 @@ export function createModeMemoryPage(navigate: (path: string) => void): HTMLElem
     canvas.style.display = 'block';
     canvas.style.backgroundColor = 'black';
 
-    //Menu de sélection du mode
+    // Menu de sélection du mode
     const modeMenu = document.createElement("div");
     modeMenu.className = "absolute inset-0 flex flex-col items-center justify-center z-20 bg-black bg-opacity-70 gap-10 ";
     
-    //   boutons de sélection du mode
-      const versusBtn = document.createElement('button');
-      versusBtn.textContent = 'Mode Versus';
-      versusBtn.className =
-        ' bg-blue-600/80 hover:bg-blue-700/50 text-white text-5xl font-bold py-4 px-14 rounded-lg shadow-lg transition duration-300';
+    const btnStyle =
+    'w-96 text-center text-white text-5xl font-bold py-4 rounded-lg shadow-lg transition duration-300';
     
-      const tournamentBtn = document.createElement('button');
-      tournamentBtn.textContent = 'Mode Solo';
-      tournamentBtn.className =
-        ' bg-purple-800 hover:bg-purple-800/50 text-white text-5xl font-bold py-4 px-12 rounded-lg shadow-lg transition duration-300';
-    modeMenu.append(versusBtn, tournamentBtn);
-      // Gestion du clic sur Versus
-      versusBtn.addEventListener('click', () => {
-        localStorage.setItem('memory-mode', 'versus');
-        navigate('/memory-opponent');
-      });
+    // boutons de sélection du mode
+    const versusBtn = document.createElement('button');
+    versusBtn.textContent = 'Mode Versus';
+    versusBtn.className =
+      'bg-blue-600/80 hover:bg-blue-700/50 ' + btnStyle;
+
+    const soloBtn = document.createElement('button');
+    soloBtn.textContent = 'Mode Solo';
+    soloBtn.className =
+      'bg-purple-800 hover:bg-purple-800/50 ' + btnStyle;
+
+    // bouton pour le Mode Survie (indisponible)
+    const survivalBtn = document.createElement('button');
+    survivalBtn.textContent = 'Mode Survie';
+    survivalBtn.className =
+      'bg-gray-700 text-white opacity-50 cursor-not-allowed ' + btnStyle;
+    survivalBtn.disabled = true; // désactive le clic
+
     
-      // Gestion du clic sur Solo
-      tournamentBtn.addEventListener('click', () => {
-        localStorage.setItem('memory-mode', 'solo');
-        navigate('/customization-memory');
-      });
+    // Gestion du clic sur Versus
+    versusBtn.addEventListener('click', () => {
+      localStorage.setItem('memory-mode', 'versus');
+      navigate('/memory-opponent');
+    });
+  
+    // Gestion du clic sur Solo
+    soloBtn.addEventListener('click', () => {
+      localStorage.setItem('memory-mode', 'solo');
+      navigate('/customization-memory');
+    });
+
 
     gameFrame.appendChild(canvas);
-    gameArea.appendChild(gameFrame);
+    modeMenu.append(versusBtn, soloBtn, survivalBtn);
     gameFrame.appendChild(modeMenu);
+    gameArea.appendChild(gameFrame);
+
   
     // Main layout
     const layout = document.createElement('div');
