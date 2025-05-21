@@ -2,7 +2,16 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
   const sidebar = document.createElement('div');
   sidebar.id = 'sidebar';
   // sidebar.className = 'fixed top-0 left-0 h-full bg-gray-800 bg-opacity-75 transition-all duration-300 ease-in-out z-20 flex flex-col justify-between p-4 w-20 hover:w-64 overflow-hidden';
-  sidebar.className = 'fixed top-0 left-0 h-full bg-gray-800 bg-opacity-75 transition-all duration-300 ease-in-out z-20 flex flex-col justify-between p-4 w-20 hover:w-64 overflow-visible';
+  //sidebar.className = 'fixed top-0 left-0 h-full bg-gray-800 bg-opacity-75 transition-all duration-300 ease-in-out z-20 flex flex-col justify-between p-4 w-20 hover:w-64 overflow-visible';
+
+  sidebar.className = `
+  fixed top-0 left-0 h-full w-20 hover:w-64
+  bg-gray-800 text-white
+  transition-all duration-300 ease-in-out
+  z-40
+  flex flex-col justify-between p-4
+  overflow-visible
+`.replace(/\s+/g, ' ').trim();
 
   // --- Partie haute de la sidebar ---
   const topContainer = document.createElement('div');
