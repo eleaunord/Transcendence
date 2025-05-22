@@ -1,4 +1,4 @@
-import { setLanguage, t,applyTranslations } from '../utils/translator'
+import { setLanguage, t, applyTranslations } from '../utils/translator'
 
 export function createHomePage(navigate: (path: string) => void): HTMLElement {
   // Fonction pour démarrer le jeu
@@ -33,35 +33,34 @@ export function createHomePage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
   container.className = 'relative flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
 
-// Création du conteneur des boutons de langue
-const langSelector = document.createElement('div');
-langSelector.className = 'absolute top-4 right-4 flex gap-2 z-20'; // z-20 pour s'assurer qu'ils sont visibles
+  // Création du conteneur des boutons de langue
+  const langSelector = document.createElement('div');
+  langSelector.className = 'absolute top-4 right-4 flex gap-2 z-20'; // z-20 pour s'assurer qu'ils sont visibles
 
-// Création des boutons de langue
-['en', 'fr', 'ko'].forEach((langCode) => {
-  const btn = document.createElement('button');
-  btn.className = 'px-2 py-1 border rounded text-sm bg-white text-black';
-  btn.textContent = langCode.toUpperCase();
+  // Création des boutons de langue
+  ['en', 'fr', 'ko'].forEach((langCode) => {
+    const btn = document.createElement('button');
+    btn.className = 'px-2 py-1 border rounded text-sm bg-white text-black';
+    btn.textContent = langCode.toUpperCase();
 
-  btn.addEventListener('click', () => {
-    setLanguage(langCode as 'en' | 'fr' | 'ko');
+    btn.addEventListener('click', () => {
+      setLanguage(langCode as 'en' | 'fr' | 'ko');
 
-    // Pour tester que le bouton fonctionne, on peut recharger
-    // location.reload();
+      // Pour tester que le bouton fonctionne, on peut recharger
+      // location.reload();
 
-    // Version propre : on reconstruit la page dynamiquement
-    const root = document.getElementById('app');
-    if (root) {
-      root.innerHTML = '';
-      root.appendChild(createHomePage(navigate));
-    }
+      // Version propre : on reconstruit la page dynamiquement
+      const root = document.getElementById('app');
+      if (root) {
+        root.innerHTML = '';
+        root.appendChild(createHomePage(navigate));
+      }
+    });
+
+    langSelector.appendChild(btn);
   });
 
-  langSelector.appendChild(btn);
-});
-
-// Ajout du sélecteur de langue dans le conteneur principal
-container.appendChild(langSelector);
+  // Ajout du sélecteur de langue dans le conteneur principal
   container.appendChild(langSelector);
 
   const background = document.createElement('div');
@@ -98,6 +97,7 @@ container.appendChild(langSelector);
   const paragraph = document.createElement('p');
   paragraph.className = 'text-xl mb-8';
   paragraph.textContent = t('home.subtitle');
+  
   // Création de la checkbox GDPR
   const privacyCheckboxContainer = document.createElement('div');
   privacyCheckboxContainer.className = 'mb-4 flex items-center text-xl';
@@ -124,30 +124,37 @@ container.appendChild(langSelector);
   privacyCheckboxContainer.appendChild(privacyCheckbox);
   privacyCheckboxContainer.appendChild(privacyLabel);
 
-  // Création des boutons
+  // Création des boutons avec alignement fixe
   const signup = document.createElement('button');
   signup.id = 'signup';
-  signup.className = 'bg-white hover:bg-gray-100 text-blue-600 border border-gray-300 font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300';
+  signup.className = 'w-full bg-white hover:bg-gray-100 text-blue-600 border border-gray-300 font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300';
   signup.textContent = t('home.signup');
   signup.addEventListener('click', handleSignUp);
 
   const signin = document.createElement('button');
   signin.id = 'SignIn';
-  signin.className = 'bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300';
+  signin.className = 'w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300';
   signin.textContent = t('home.login');
   signin.addEventListener('click', handleSignIn);
 
   const googleButton = document.createElement('button');
-  googleButton.textContent = t('home.google');
-  googleButton.className = 'bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300 mt-4';
+  googleButton.className = 'w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300';
   googleButton.textContent = t('home.google');
   googleButton.addEventListener('click', handleGoogleLogin);
 
+  // Nouveau conteneur pour tous les boutons avec largeur fixe
   const buttonContainer = document.createElement('div');
-  buttonContainer.className = 'flex space-x-4';
+  buttonContainer.className = 'w-80 flex flex-col space-y-4'; // Largeur fixe et espacement vertical
 
-  buttonContainer.appendChild(signup);
-  buttonContainer.appendChild(signin);
+  // Conteneur pour les deux premiers boutons côte à côte
+  const topButtonsContainer = document.createElement('div');
+  topButtonsContainer.className = 'flex space-x-4';
+
+  topButtonsContainer.appendChild(signup);
+  topButtonsContainer.appendChild(signin);
+  
+  buttonContainer.appendChild(topButtonsContainer);
+  buttonContainer.appendChild(googleButton);
 
   // Assemblage des éléments
   content.appendChild(title);
@@ -157,14 +164,11 @@ container.appendChild(langSelector);
   content.appendChild(privacyCheckboxContainer);
 
   content.appendChild(buttonContainer);
-  content.appendChild(googleButton);
 
   container.appendChild(content);
 
   return container;
 }
-
-
 
 // export function createHomePage(navigate: (path: string) => void): HTMLElement {
 //   // Fonction pour démarrer le jeu
