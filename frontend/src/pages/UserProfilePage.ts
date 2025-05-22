@@ -1,6 +1,5 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
-
 import { createProfileCard } from "../profile_utils/profileCard";
 import { createProfileForm } from "../profile_utils/profileForm";
 import { createSettingsPanel } from "../profile_utils/settingsPanel";
@@ -30,7 +29,7 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
       const root = document.getElementById('app');
       if (root) {
         root.innerHTML = '';
-        root.appendChild(createUserProfilePage(navigate));
+        root.appendChild(createUserProfilePage(navigate)); // Recharge la page actuelle
       }
     });
 
@@ -97,20 +96,20 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   container.className = 'relative min-h-screen bg-gray-900 text-white overflow-hidden';
 
   const sidebar = createSidebar(navigate);
+  sidebar.classList.add('sidebar'); // nécessaire pour les effets de hover
   sidebar.style.zIndex = '50';
   container.appendChild(sidebar);
 
-  
-  //---------------------Background Image--------------------/
- 
+  // -------- Background Image --------
   const backgroundImage = document.createElement('div');
   backgroundImage.id = 'backgroundImage';
   backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
   container.appendChild(backgroundImage);
   applyUserTheme(backgroundImage);
 
-  // --- Profile Section (Cadre + Formulaire côte à côte) ---
+  // -------- Profile Section (card + form) --------
   const profileSection = document.createElement('div');
+  profileSection.id = 'profileSection';
   profileSection.className = `
     relative mt-24 ml-24
     flex flex-row items-start justify-center gap-x-20
@@ -330,6 +329,13 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   formContainer.appendChild(passwordRow);
   formContainer.appendChild(updateButton);
   formContainer.appendChild(successMessage);
+    relative mt-11
+    flex flex-row items-start justify-center gap-x-16
+    z-20 w-full max-w-5xl mx-auto px-4
+  `.replace(/\s+/g, ' ').trim();
+
+  const profileCard = createProfileCard();
+  const formContainer = createProfileForm();
 
   profileSection.appendChild(profileCard);
   profileSection.appendChild(formContainer);
@@ -580,125 +586,23 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
   const pongList = document.createElement('div');
   pongList.className = 'text-gray-300 space-y-2 italic';
 
+  
+  // -------- History Section --------
   if (token) {
-    fetch('/api/me/pong-games', { headers: { Authorization: `Bearer ${token}` } })
-      .then(res => res.json())
-      .then(games => {
-        if (!Array.isArray(games)) {
-          console.error('❌ La réponse pong n\'est pas un tableau :', games);
-          const errorMsg = document.createElement('p');
-          errorMsg.textContent = 'Impossible de charger l’historique des parties.';
-          pongList.appendChild(errorMsg);
-          return;
-        }
-
-        if (games.length === 0) {
-          const emptyMsg = document.createElement('p');
-          emptyMsg.textContent = 'Aucune partie jouée récemment.';
-          pongList.appendChild(emptyMsg);
-          return;
-        }
-
-        games.forEach((game: any) => {
-          const p = document.createElement('p');
-          p.textContent = `🏓 ${game.score1} - ${game.score2} contre ${game.opponent} • ${new Date(game.timestamp).toLocaleString()}`;
-          pongList.appendChild(p);
-        });
-      })
-      .catch(err => console.error('Erreur pong :', err));
+    const historySection = createHistorySection(token);
+    container.appendChild(historySection);
   }
 
-  pongGamesContainer.append(pongTitle, pongList);
-  pongGamesSection.appendChild(pongGamesContainer);
-  
-  historyWrapper.appendChild(pongGamesSection);
-  historyWrapper.appendChild(memoryGamesSection);
-  container.appendChild(historyWrapper);
+  // -------- Settings Section --------
+  const settingsSection = createSettingsPanel(navigate);
+  container.appendChild(settingsSection);
 
-  // Sidebar hover events (mouvement sidebar)
-  sidebar.addEventListener('mouseenter', () => {
-    document.querySelectorAll('.sidebar-label').forEach(label => {
-      (label as HTMLElement).classList.remove('opacity-0');
-      (label as HTMLElement).classList.add('opacity-100');
-    });
+  // -------- Events (hover + user data) --------
+  initSidebarHoverEffects();
 
-    const backgroundImage = document.getElementById('backgroundImage');
-    if (backgroundImage) {
-      backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-    }
-
-    const profileSection = document.getElementById('profileCard')?.parentElement;
-    if (profileSection) {
-      profileSection.className = `
-        relative mt-24
-        flex flex-row justify-center items-start gap-20
-        z-20 w-full max-w-7xl mx-auto px-4
-      `.replace(/\s+/g, ' ').trim();
-    }
-  });
-
-  sidebar.addEventListener('mouseleave', () => {
-    document.querySelectorAll('.sidebar-label').forEach(label => {
-      (label as HTMLElement).classList.add('opacity-0');
-      (label as HTMLElement).classList.remove('opacity-100');
-    });
-
-    const backgroundImage = document.getElementById('backgroundImage');
-    if (backgroundImage) {
-      backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-    }
-
-    const profileSection = document.getElementById('profileSection');
-    if (profileSection) {
-      profileSection.className = `
-      relative mt-24
-      flex flex-row items-start justify-center gap-12
-      z-30
-    `.replace(/\s+/g, ' ').trim();
-    
-    }
-  });
-
-  // Chargement dynamique des infos utilisateur
   if (token) {
-    fetch('/api/me', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(res => res.json())
-      .then(user => {
-        const usernameDisplay = document.getElementById('usernameValue');
-        const emailValue = document.getElementById('emailValue');
-        const profileImg = document.querySelector('img[alt="Player Profile"]') as HTMLImageElement;
-      
-        if (usernameDisplay) usernameDisplay.textContent = user.username;
-        if (emailValue) emailValue.textContent = user.email;
-        
-        sessionStorage.setItem('username', user.username);
-      
-        if (user.image) {
-          profileImg.src = user.image;
-          sessionStorage.setItem('profilePicture', user.image);
-        }
-      
-        const sidebarUsername = document.getElementById('sidebar-username');
-        if (sidebarUsername) sidebarUsername.textContent = user.username;
-
-        const toggle2FAButton = document.getElementById('toggle2FAButton') as HTMLButtonElement;
-
-        if (user.is_2fa_enabled !== undefined && toggle2FAButton) {
-          if (user.is_2fa_enabled === 1) {
-            toggle2FAButton.textContent = 'ON';
-            toggle2FAButton.className = toggle2FAButton.className.replace('bg-red-400 hover:bg-red-500', 'bg-green-400 hover:bg-green-500');
-          } else {
-            toggle2FAButton.textContent = 'OFF';
-            toggle2FAButton.className = toggle2FAButton.className.replace('bg-green-400 hover:bg-green-500', 'bg-red-400 hover:bg-red-500');
-          }
-        }
-      })
-      .catch(err => console.error('Erreur chargement profil:', err));
+    loadUserData(token);
   }
 
   return container;
-} */
+}*/

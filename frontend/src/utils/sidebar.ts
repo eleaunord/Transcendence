@@ -21,7 +21,8 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
 
   // --- Profil Section ---
   const profileSection = document.createElement('div');
-  profileSection.className = 'flex flex-col items-center mb-28 transition-all duration-300';
+  // profileSection.className = 'flex flex-col items-center mb-28 transition-all duration-300';
+  profileSection.className = 'relative flex flex-col items-center mb-28 h-36';
 
   const profileImage = document.createElement('img');
   let profilePictureSrc = sessionStorage.getItem('profilePicture') || '/assets/profile-pictures/default.jpg';
@@ -32,12 +33,23 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
     const customEvent = e as CustomEvent<string>;
     profileImage.src = customEvent.detail;
   });
-  profileImage.className = 'w-36 h-36 rounded-full mb-2 border-2 border-white object-cover transition-transform duration-300 hover:scale-110';
+  profileImage.className = `
+  absolute top-0 
+  w-12 h-12 hover:w-36 hover:h-36
+  rounded-full mb-2 
+  border-2 border-white 
+  object-cover 
+  transition-all duration-300
+`.replace(/\s+/g, ' ').trim();
+
+  // profileImage.className = 'w-36 h-36 rounded-full mb-2 border-2 border-white object-cover transition-transform duration-300 hover:scale-110';
   profileImage.id = 'profile-img-sidebar';
 
   const usernameText = document.createElement('span');
   usernameText.id = 'sidebar-username';
-  usernameText.className = 'text-white text-lg opacity-0 sidebar-label transition-opacity duration-300 mb-1';
+  // usernameText.className = 'text-white text-lg opacity-0 sidebar-label transition-opacity duration-300 mb-1';
+  usernameText.className = 'text-white text-xl opacity-0 sidebar-label transition-opacity duration-300 p-4 mt-36 absolute';
+
   //met a jour username avec ce qui est stocke
   usernameText.textContent = sessionStorage.getItem('username') || t('sidebar.username');
 
@@ -45,29 +57,6 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
   const statsContainer = document.createElement('div');
   statsContainer.id = 'sidebar-stats-container';
   statsContainer.className = 'flex gap-2 mt-2 opacity-0 sidebar-label transition-opacity duration-300';
-
-  const winsBox = document.createElement('div');
-  winsBox.className = 'bg-green-700 text-white px-3 py-2 rounded-md flex items-center gap-1';
-  const winEmoji = document.createElement('span');
-  winEmoji.textContent = ' 🏆 ';
-  const winCount = document.createElement('span');
-  winCount.id = 'win-count';
-  winCount.textContent = '0';
-  winsBox.appendChild(winEmoji);
-  winsBox.appendChild(winCount);
-
-  const lossesBox = document.createElement('div');
-  lossesBox.className = 'bg-red-600 text-white px-3 py-2 rounded-md flex items-center gap-1';
-  const lossEmoji = document.createElement('span');
-  lossEmoji.textContent = ' 💀 ';
-  const lossCount = document.createElement('span');
-  lossCount.id = 'loss-count';
-  lossCount.textContent = '0';
-  lossesBox.appendChild(lossEmoji);
-  lossesBox.appendChild(lossCount);
-
-  statsContainer.appendChild(winsBox);
-  statsContainer.appendChild(lossesBox);
 
   profileSection.appendChild(profileImage);
   profileSection.appendChild(usernameText);
@@ -145,13 +134,13 @@ const bottomItems = [
 
   // Mouvement de la sidebar
   sidebar.addEventListener('mouseenter', () => {
-      // const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
-      // if (profileImg) {
-      //  // profileImg.style.transform = 'scale(3)';
+      const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
+      if (profileImg) {
+       // profileImg.style.transform = 'scale(3)';
 
-      //   profileImg.classList.remove('w-12', 'h-12');
-      //   profileImg.classList.add('w-36', 'h-36');
-      // }
+        profileImg.classList.remove('w-12', 'h-12');
+        profileImg.classList.add('w-36', 'h-36');
+      }
     
       document.querySelectorAll('.sidebar-label').forEach(label => {
         (label as HTMLElement).classList.remove('opacity-0');
@@ -160,13 +149,13 @@ const bottomItems = [
     });
     
     sidebar.addEventListener('mouseleave', () => {
-      // const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
-      // if (profileImg) {
-      //  //profileImg.style.transform = 'scale(1)';
+      const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
+      if (profileImg) {
+       //profileImg.style.transform = 'scale(1)';
 
-      //   profileImg.classList.remove('w-36', 'h-36');
-      //   profileImg.classList.add('w-12', 'h-12');
-      // }
+        profileImg.classList.remove('w-36', 'h-36');
+        profileImg.classList.add('w-12', 'h-12');
+      }
     
       document.querySelectorAll('.sidebar-label').forEach(label => {
         (label as HTMLElement).classList.add('opacity-0');
@@ -174,23 +163,5 @@ const bottomItems = [
       });
     });
     
-  // // --- Charger dynamiquement les infos du joueur ---
-  // const token = localStorage.getItem('token');
-  // if (token) {
-  //   fetch('/api/me', {
-  //     headers: { Authorization: `Bearer ${token}` }
-  //   })
-  //     .then(res => res.json())
-  //     .then(user => {
-  //       const usernameText = document.getElementById('sidebar-username');
-  //       const winCount = document.getElementById('win-count');
-  //       const lossCount = document.getElementById('loss-count');
-  //       if (usernameText) usernameText.textContent = user.username;
-  //       if (winCount) winCount.textContent = (user.wins || 0).toString();
-  //       if (lossCount) lossCount.textContent = (user.losses || 0).toString();
-  //     })
-  //     .catch(err => console.error('Erreur chargement sidebar:', err));
-  // }
-
   return sidebar;
 }

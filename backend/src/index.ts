@@ -23,15 +23,6 @@ async function main() {
     }
   });
 
-  // Enregistre les routes // pas besoin d'enregistrer 2 fois
-  // friendsRoutes(app); // NEW
-  // authRoutes(app);
-  // meRoutes(app);
-  // themeRoutes(app);
-  //await matchRoutes(app);
-
-  //leaderboardRoutes(app); // NEW
-
   // register CORS
   await app.register(cors, {
     origin: 'https://localhost',

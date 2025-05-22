@@ -116,11 +116,9 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
 
     let opponentCard: HTMLElement;
     if (mode === 'local') {
-      const player2Image = sessionStorage.getItem("profilePicture") || "/assets/profile-pictures/default.jpg";
-      const player2Name = "Guest";
-      opponentCard = createPlayerCard(player2Image, player2Name);
+      opponentCard = createPlayerCard("/assets/guest-avatars/moon.jpg", "Guest");
     } else {
-      opponentCard = createPlayerCard("/assets/profile-pictures/default.jpg", "AI");
+      opponentCard = createPlayerCard("/assets/guest-avatars/bigstar.jpg", "AI");
     }
 
     const vsLabel = document.createElement("div");
@@ -174,12 +172,13 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
     announce.innerText = "";
 
     const btnReturn = document.createElement("button");
-    btnReturn.textContent = t('versus.retry');
+    btnReturn.textContent = "Retour aux modes de jeu";
     btnReturn.className = `
-      absolute bottom-8 left-1/2 transform -translate-x-1/2 
-      bg-yellow-400 hover:bg-yellow-500 text-black font-bold 
-      py-3 px-8 rounded-lg shadow-lg transition duration-300 hidden z-20
+      fixed bottom-8 left-1/2 transform -translate-x-1/2
+      bg-amber-600 hover:bg-amber-500 text-white font-bold
+      py-3 px-6 rounded-lg shadow-lg transition-colors duration-200
     `.replace(/\s+/g, ' ').trim();
+
 
     btnReturn.addEventListener("click", () => {
       navigate("/mode");
@@ -192,20 +191,20 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
     const username = sessionStorage.getItem("username") || "Player 1";
     const opponentName = mode === "ai" ? "AI" : "Guest";
 
-    const playerLabel = document.createElement("div");
-    playerLabel.textContent = username;
-    playerLabel.className = `
-      absolute top-4 left-6 text-white font-bold z-30 text-lg
-    `.replace(/\s+/g, ' ').trim();
+    // const playerLabel = document.createElement("div");
+    // playerLabel.textContent = username;
+    // playerLabel.className = `
+    //   absolute top-4 left-6 text-white font-bold z-30 text-lg
+    // `.replace(/\s+/g, ' ').trim();
 
-    const opponentLabel = document.createElement("div");
-    opponentLabel.textContent = opponentName;
-    opponentLabel.className = `
-      absolute top-4 right-6 text-white font-bold z-30 text-lg text-right
-    `.replace(/\s+/g, ' ').trim();
+    // const opponentLabel = document.createElement("div");
+    // opponentLabel.textContent = opponentName;
+    // opponentLabel.className = `
+    //   absolute top-4 right-6 text-white font-bold z-30 text-lg text-right
+    // `.replace(/\s+/g, ' ').trim();
 
-    gameFrame.appendChild(playerLabel);
-    gameFrame.appendChild(opponentLabel);
+    // gameFrame.appendChild(playerLabel);
+    // gameFrame.appendChild(opponentLabel);
 
     const settings = loadPongSettings();
 

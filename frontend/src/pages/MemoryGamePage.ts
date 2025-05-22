@@ -152,17 +152,64 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
     }
   }
 
-  function showVictoryAnimation() {
-    const overlay = document.createElement('div');
-    overlay.className = 'absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
+function showVictoryAnimation() {
+  const overlay = document.createElement('div');
+  overlay.className = 'absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white font-bold z-50';
 
-    //overlay.innerHTML = `<div>🎉 Bravo ! 🎉</div><div class="text-2xl mt-4">Tu as terminé en ${moves} coups !</div>`;
-    overlay.innerHTML = `
-      <div>🎉 ${t('memory.victory.solo')}</div>
-      <div class="text-2xl mt-4">${t('memory.victory.moves', { count: moves })}</div>
-    `;
-    gameFrame.appendChild(overlay);
-  }
+  // Title
+  const bravoText = document.createElement('div');
+  bravoText.textContent = '🎉 Bravo ! 🎉';
+  bravoText.style.cssText = `
+    font-size: 48px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+  `;
+
+  // Subtitle
+  const moveCountText = document.createElement('div');
+  moveCountText.textContent = `Tu as terminé en ${moves} coups !`;
+  moveCountText.style.cssText = `
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 30px;
+  `;
+
+  // Styled return button
+  const returnBtn = document.createElement('button');
+  returnBtn.textContent = 'Retour aux modes de jeu';
+  returnBtn.style.cssText = `
+    background-color: #d97706; /* Darker amber for contrast */
+    color: white;
+    font-weight: 700;          /* Bold text */
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s;
+  `;
+
+
+
+  returnBtn.onmouseover = () => {
+    returnBtn.style.backgroundColor = '#facc15'; // Brighter hover effect
+  };
+  returnBtn.onmouseout = () => {
+    returnBtn.style.backgroundColor = '#fbbf24';
+  };
+
+
+  returnBtn.onclick = () => navigate('/memory-mode');
+
+  overlay.appendChild(bravoText);
+  overlay.appendChild(moveCountText);
+  overlay.appendChild(returnBtn);
+
+  gameFrame.appendChild(overlay);
+}
+
 
   function showGameOver() {
     const overlay = document.createElement('div');
@@ -204,33 +251,33 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
 
   container.appendChild(layout);
 
-  const backBtn = document.createElement('button');
-  backBtn.className = 'fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg';
-  backBtn.textContent = t('memory.backToModes');
-  backBtn.onclick = () => navigate('/memory-mode');
-  container.appendChild(backBtn);
+  // const backBtn = document.createElement('button');
+  // backBtn.className = 'fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg';
+  // backBtn.textContent = 'Retour aux modes de jeu';
+  // backBtn.onclick = () => navigate('/memory-mode');
+  // container.appendChild(backBtn);
 
-  sidebar.addEventListener('mouseenter', () => {
-    document.querySelectorAll('.sidebar-label').forEach(label => {
-      (label as HTMLElement).classList.remove('opacity-0');
-      (label as HTMLElement).classList.add('opacity-100');
-    });
-    const bg = document.getElementById('backgroundImage');
-    if (bg) bg.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-    const layoutEl = document.getElementById('game-layout');
-    if (layoutEl) layoutEl.classList.add('ml-44');
-  });
+  // sidebar.addEventListener('mouseenter', () => {
+  //   document.querySelectorAll('.sidebar-label').forEach(label => {
+  //     (label as HTMLElement).classList.remove('opacity-0');
+  //     (label as HTMLElement).classList.add('opacity-100');
+  //   });
+  //   const bg = document.getElementById('backgroundImage');
+  //   if (bg) bg.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+  //   const layoutEl = document.getElementById('game-layout');
+  //   if (layoutEl) layoutEl.classList.add('ml-44');
+  // });
 
-  sidebar.addEventListener('mouseleave', () => {
-    document.querySelectorAll('.sidebar-label').forEach(label => {
-      (label as HTMLElement).classList.add('opacity-0');
-      (label as HTMLElement).classList.remove('opacity-100');
-    });
-    const bg = document.getElementById('backgroundImage');
-    if (bg) bg.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-    const layoutEl = document.getElementById('game-layout');
-    if (layoutEl) layoutEl.classList.remove('ml-44');
-  });
+  // sidebar.addEventListener('mouseleave', () => {
+  //   document.querySelectorAll('.sidebar-label').forEach(label => {
+  //     (label as HTMLElement).classList.add('opacity-0');
+  //     (label as HTMLElement).classList.remove('opacity-100');
+  //   });
+  //   const bg = document.getElementById('backgroundImage');
+  //   if (bg) bg.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+  //   const layoutEl = document.getElementById('game-layout');
+  //   if (layoutEl) layoutEl.classList.remove('ml-44');
+  // });
 
   return container;
 }

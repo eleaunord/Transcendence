@@ -8,10 +8,16 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
   const container = document.createElement('div');
   container.className = 'flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
 
+  // const updateSelectionUI = () => {
+  //   gameBtn.className = baseBtnClass + (selectedOption === 'game' ? ' bg-blue-600' : ' bg-gray-600');
+  //   customBtn.className = baseBtnClass + (selectedOption === 'profile' ? ' bg-blue-600' : ' bg-gray-600');
+  // };
+
   const updateSelectionUI = () => {
-    gameBtn.className = baseBtnClass + (selectedOption === 'game' ? ' bg-blue-600' : ' bg-gray-600');
-    customBtn.className = baseBtnClass + (selectedOption === 'profile' ? ' bg-blue-600' : ' bg-gray-600');
-  };
+  gameBtn.className = baseBtnClass + ' bg-blue-600';
+  customBtn.className = baseBtnClass + ' bg-blue-600';
+};
+
 
   const form = document.createElement('form');
   form.id = 'profileForm';
