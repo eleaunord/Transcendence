@@ -1,6 +1,7 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
 import { saveMemorySettings } from "../utils/memorySettings";
+import { t } from '../utils/translator'; 
 
 export function createMemoryCustomizationPage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
@@ -65,17 +66,17 @@ export function createMemoryCustomizationPage(navigate: (path: string) => void):
   }
 
   // Choix du nombre de cartes (paires)
-  const pairCountGroup = createButtonGroup("Nombre de cartes", [
-    { label: "12 (6 paires)", value: 6 },
-    { label: "18 (9 paires)", value: 9 },
-    { label: "24 (12 paires)", value: 12 },
-  ], 6);
+  const pairCountGroup = createButtonGroup(t('memory.pairs'), [
+  { label: t('memory.pairs.6'), value: 6 },
+  { label: t('memory.pairs.9'), value: 9 },
+  { label: t('memory.pairs.12'), value: 12 },
+], 6);
 
   // Choix du thème Memory
-  const themeGroup = createButtonGroup("Thème visuel", [
-    { label: "Classique", value: "classic" },
-    { label: "Nuage", value: "cloud" },
-    { label: "Soleil", value: "sun" },
+  const themeGroup = createButtonGroup(t('memory.theme'), [
+    { label: t('memory.theme.classic'), value: "classic" },
+    { label: t('memory.theme.cloud'), value: "cloud" },
+    { label: t('memory.theme.sun'), value: "sun" },
   ], "classic");
 
   // Détermination du mode
@@ -88,14 +89,14 @@ export function createMemoryCustomizationPage(navigate: (path: string) => void):
   let timerGroup: HTMLDivElement;
 
   if (mode === 'solo') {
-    timerGroup = createButtonGroup("Limite de temps", [
-      { label: "Aucun", value: "none" },
-      { label: "60 sec", value: "short" },
-      { label: "90 sec", value: "medium" },
-      { label: "120 sec", value: "long" },
+    timerGroup = createButtonGroup(t('memory.timer.solo'), [
+      { label: t('memory.timer.none'), value: "none" },
+      { label: t('memory.timer.short'), value: "short" },
+      { label: t('memory.timer.medium'), value: "medium" },
+      { label: t('memory.timer.long'), value: "long" },
     ], "none");
   } else {
-    timerGroup = createButtonGroup("Temps max par tour", [
+      timerGroup = createButtonGroup(t('memory.timer.versus'), [
       { label: "10 sec", value: 10 },
       { label: "20 sec", value: 20 },
       { label: "30 sec", value: 30 },
@@ -104,7 +105,7 @@ export function createMemoryCustomizationPage(navigate: (path: string) => void):
 
   // Bouton "Jouer"
   const playButton = document.createElement('button');
-  playButton.textContent = "Jouer";
+  playButton.textContent = t('memory.play');
   playButton.className = "bg-green-600 hover:bg-green-700 text-white text-xl font-bold py-2 px-6 rounded transition";
 
   playButton.onclick = () => {
@@ -125,7 +126,7 @@ export function createMemoryCustomizationPage(navigate: (path: string) => void):
   // Affichage de l'adversaire
   if (mode === 'versus') {
     const infoText = document.createElement('p');
-    infoText.textContent = `Vous jouez contre : ${opponentName}`;
+    infoText.textContent = t('memory.opponent', { name: opponentName });
     infoText.className = 'text-xl text-white font-semibold';
     innerPanel.prepend(infoText);
   }

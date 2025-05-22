@@ -1,6 +1,8 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from '../utils/theme';
 import { loadMemorySettings } from '../utils/memorySettings';
+import { t } from '../utils/translator';
+
 
 export function createMemoryGamePage(navigate: (path: string) => void): HTMLElement {
   const { pairCount, theme, timerMode } = loadMemorySettings();
@@ -54,13 +56,13 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
   gameHeader.className = 'flex justify-center items-center gap-8 text-xl font-semibold py-4 bg-black bg-opacity-60 shadow-md z-10';
 
   const movesDisplay = document.createElement('div');
-  movesDisplay.textContent = `🔢 Coups : 0`;
+  movesDisplay.textContent = `🔢 ${t('memory.moves')}: 0`;
 
   const timerDisplay = document.createElement('div');
-  timerDisplay.textContent = timerMode !== 'none' ? `⏱ Temps : ${timeLeft}s` : '';
+  timerDisplay.textContent = timerMode !== 'none' ? `⏱ ${t('memory.time')}: ${timeLeft}s` : '';
   timerDisplay.className = 'text-white';
 
-  gameHeader.appendChild(movesDisplay);
+  gameHeader.appendChild(movesDisplay);timerDisplay.textContent = timerMode !== 'none' ? `⏱ ${t('memory.time')}: ${timeLeft}s` : '';
   if (timerMode !== 'none') gameHeader.appendChild(timerDisplay);
   layout.appendChild(gameHeader);
 
@@ -109,7 +111,7 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
   }
 
   function updateTimerDisplay() {
-    if (timerMode !== 'none') timerDisplay.textContent = `⏱ Temps : ${timeLeft}s`;
+    if (timerMode !== 'none') timerDisplay.textContent = `⏱ ${t('memory.time')}: ${timeLeft}s`;
   }
 
   function startTimer() {
@@ -224,7 +226,7 @@ function showVictoryAnimation() {
       innerCard.style.transform = 'rotateY(180deg)';
       flippedCards.push({ card, inner: innerCard, icon });
       moves++;
-      movesDisplay.textContent = `🔢 Coups : ${moves}`;
+      movesDisplay.textContent = `🔢 ${t('memory.moves')}: ${moves}`;
 
       if (flippedCards.length === 2) {
         lockBoard = true;
