@@ -10,6 +10,23 @@ const fullNameMap: Record<string, string> = {
   eléonore: "Eléonore ROTY",
 };
 
+const bioMap: Record<string, string> = {
+  shinhye: `Shinhye YUN is a multidisciplinary creator passionate about design and user experience. With a background in visual arts, she brings aesthetic finesse to every project, transforming ideas into immersive digital experiences.`,
+  
+  alix: `Alix CERALINE is a technology enthusiast with a keen eye for detail. She excels at turning complex problems into elegant solutions and believes that collaboration is the cornerstone of innovation.`,
+  
+  gnouma: `Gnouma DUKURAY is known for her strong analytical skills and her empathetic leadership. She enjoys working across disciplines to drive impactful results and foster inclusive teamwork.`,
+  
+  rime: `Rime YOUNSSI is a strategist at heart with a flair for storytelling. Her work bridges creativity and logic, bringing a unique voice to every challenge she tackles.`,
+  
+  eléonore: `Étudiante en Master 2 Management de la Technologie et de l’Innovation à Paris-Dauphine, et en formation à l’école 42,  j'ai un profil hybride entre stratégie, innovation et développement informatique. Mon profil hybride témoigne de ma curiosité et de mon envie d’apprendre, de comprendre, et de transformer ces connaissances en projets concrets.
+C’est à 42 que j’ai découvert une passion pour le développement et pour le débogage — comprendre un problème en profondeur, le démonter pièce par pièce, puis le résoudre est devenu une vraie source de satisfaction. L’école est pour moi un terrain d’expérimentation stimulant, qui a nourri une curiosité grandissante pour les nouvelles technologies, comme le machine learning et ses applications concrètes, ou encore le développement de jeux.
+J’ai rejoint le projet Transcendance en cours de route, mais l’intégration s’est faite très naturellement grâce à la dynamique de l’équipe. J’ai principalement travaillé sur le frontend, mais l’organisation en mode collaboratif — où chacun prenait en charge les besoins du moment une fois sa partie terminée — m’a permis d’intervenir sur une grande variété de problèmes. Une posture polyvalente, presque de couteau suisse du développement. Ce projet a été à la fois formateur et stimulant : voir des lignes de code prendre forme à l’écran, jusqu’à devenir une interface fluide, interactive et visuellement soignée, a rendu l’expérience particulièrement motivante.
+Transcendance est une expérience très enrichissante qui m’a donné envie d’aller plus loin dans le développement. Et c’est aussi une super aventure humaine, qui m’a fait grandir à tous les niveaux.
+`,
+};
+
+
 export function createTeamMemberPage(navigate: (path: string) => void, name: string): HTMLElement {
   const container = document.createElement('div');
   container.className = 'relative min-h-screen bg-gray-900 text-white overflow-hidden';
@@ -50,14 +67,11 @@ bioWrapper.className = `
 
   const bio = document.createElement('p');
   //bio.className = 'text-lg text-gray-300 text-justify max-w-4xl leading-relaxed'; //middle
- bio.className = 'text-lg text-gray-300 text-justify max-w-4xl leading-relaxed';
+  bio.className = 'text-lg text-gray-300 text-justify max-w-4xl leading-relaxed';
 
+  
+  bio.textContent = bioMap[name.toLowerCase()] || "This team member is an important part of our team. More details coming soon.";
 
-  bio.textContent = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ut est vel nisi lacinia vestibulum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur at sem tincidunt, suscipit erat vitae, accumsan quam. Vivamus auctor lacinia sem eu efficitur. Cras tincidunt eros lacus, vel eleifend est feugiat ac.
-
-Suspendisse iaculis facilisis tempus. Mauris vel ipsum tellus. Donec non cursus neque, sed lacinia sapien. Integer ut turpis in justo auctor tincidunt. Sed at quam neque. Aliquam porttitor, sem non maximus dictum, leo neque euismod orci, at interdum diam elit auctor mauris. Vivamus vulputate purus molestie tempus mollis. Suspendisse pulvinar pellentesque velit aliquet facilisis.
-
-Ut luctus neque massa, eget sagittis mi feugiat sit amet. Nulla odio dui, pharetra ultricies suscipit id, finibus ac ipsum. Integer egestas metus velit, vitae placerat enim feugiat quis. Phasellus nisi purus, luctus ac ornare ac, efficitur aliquet sem. Ut scelerisque neque quis sagittis tempus. Aliquam in eros sit amet nibh ultricies efficitur vitae at libero.`;
 
   bioWrapper.appendChild(bio);
   mainSection.appendChild(bioWrapper);

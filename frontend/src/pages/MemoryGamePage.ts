@@ -178,9 +178,9 @@ function showVictoryAnimation() {
   const returnBtn = document.createElement('button');
   returnBtn.textContent = 'Retour aux modes de jeu';
   returnBtn.style.cssText = `
-    background-color: #dc2626;
+    background-color: #d97706; /* Darker amber for contrast */
     color: white;
-    font-weight: 600;
+    font-weight: 700;          /* Bold text */
     padding: 12px 24px;
     border-radius: 8px;
     border: none;
@@ -190,12 +190,16 @@ function showVictoryAnimation() {
     transition: background-color 0.2s;
   `;
 
+
+
   returnBtn.onmouseover = () => {
-    returnBtn.style.backgroundColor = '#b91c1c';
+    returnBtn.style.backgroundColor = '#facc15'; // Brighter hover effect
   };
   returnBtn.onmouseout = () => {
-    returnBtn.style.backgroundColor = '#dc2626';
+    returnBtn.style.backgroundColor = '#fbbf24';
   };
+
+
   returnBtn.onclick = () => navigate('/memory-mode');
 
   overlay.appendChild(bravoText);

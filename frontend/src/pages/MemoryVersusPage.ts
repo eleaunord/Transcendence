@@ -283,10 +283,20 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   layout.appendChild(gameHeader);
   layout.appendChild(gameArea);
 
-  const backBtn = document.createElement('button');
+ const backBtn = document.createElement('button');
   backBtn.textContent = 'Retour aux modes de jeu';
-  backBtn.className = 'fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg';
+backBtn.className = `
+  fixed bottom-8 left-1/2 transform -translate-x-1/2
+  bg-amber-600 hover:bg-amber-500 text-white font-bold
+  py-3 px-6 rounded-lg shadow-lg transition-colors duration-200
+`.replace(/\s+/g, ' ').trim();
+
+
+
+
+
   backBtn.onclick = () => navigate('/memory-mode');
+
 
   container.append(layout)
   container.appendChild(backBtn);

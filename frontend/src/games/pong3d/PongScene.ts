@@ -40,6 +40,7 @@ export type PongOptions = {
   };
 };
 
+
 export async function createPongScene(
   canvas: HTMLCanvasElement,
   options: PongOptions,
@@ -90,8 +91,101 @@ export async function createPongScene(
     }
   }
   
+
   const scoreBoard = document.getElementById("scoreBoard");
   const announce = document.getElementById("announce");
+
+  // NEW NAME CONTAINERS
+
+const style = document.createElement('style');
+style.textContent = `
+  .player-box {
+    position: absolute;
+    top: 30px; /* ⬆ More padding from the top */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 100;
+  }
+
+  .player-box.left {
+    left: 30px; /* ⬅ More padding from left edge */
+  }
+
+  .player-box.right {
+    right: 30px; /* ➡ More padding from right edge */
+  }
+
+  .player-avatar {
+    width: 96px;  /* ⬆ Bigger */
+    height: 96px; /* ⬆ Bigger */
+    border-radius: 9999px;
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4); /* Stronger shadow */
+  }
+
+  .player-name {
+    margin-top: 10px;
+    font-size: 1.25rem; /* ⬆ Larger text */
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6); /* Better contrast */
+  }
+`;
+document.head.appendChild(style);
+
+
+const canvasContainer = canvas.parentElement!;
+canvasContainer.style.position = 'relative';
+
+// Profile picture fallback logic
+const userImage = sessionStorage.getItem("profilePicture") || "/assets/profile-pictures/default.jpg";
+const userName = sessionStorage.getItem("username") || "You";
+
+const opponentImage = isAI
+  ? "/assets/guest-avatars/bigstar.jpg"
+  : "/assets/guest-avatars/moon.jpg";
+const opponentName = isAI ? "AI" : "Guest";
+
+// USER box (⟵ now on the LEFT)
+const playerBox = document.createElement('div');
+playerBox.className = 'player-box left';
+
+const playerAvatar = document.createElement('img');
+playerAvatar.className = 'player-avatar';
+playerAvatar.src = tournamentContext?.p1?.avatar || userImage;
+
+const playerLabel = document.createElement('div');
+playerLabel.className = 'player-name';
+playerLabel.textContent = tournamentContext?.p1?.username || userName;
+
+playerBox.appendChild(playerAvatar);
+playerBox.appendChild(playerLabel);
+
+// OPPONENT box (⟶ now on the RIGHT)
+const opponentBox = document.createElement('div');
+opponentBox.className = 'player-box right';
+
+const opponentAvatar = document.createElement('img');
+opponentAvatar.className = 'player-avatar';
+opponentAvatar.src = tournamentContext?.p2?.avatar || opponentImage;
+
+const opponentLabel = document.createElement('div');
+opponentLabel.className = 'player-name';
+opponentLabel.textContent = tournamentContext?.p2?.username || opponentName;
+
+opponentBox.appendChild(opponentAvatar);
+opponentBox.appendChild(opponentLabel);
+
+// Add to canvas container
+canvasContainer.appendChild(playerBox);
+canvasContainer.appendChild(opponentBox);
+
+
+  // END OF NAME CONTAINERS
+
 
   const engine = new Engine(canvas, true);
   const scene = new Scene(engine);
@@ -395,9 +489,9 @@ export async function createPongScene(
     const overlayReturnButton = document.createElement('button');
     overlayReturnButton.textContent = 'Retour aux modes de jeu';
     overlayReturnButton.style.cssText = `
-      background-color: #dc2626;
+      background-color: #d97706; /* Darker amber for contrast */
       color: white;
-      font-weight: 600;
+      font-weight: 700;          /* Bold text */
       padding: 12px 24px;
       border-radius: 8px;
       border: none;
@@ -406,14 +500,16 @@ export async function createPongScene(
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       transition: background-color 0.2s;
     `;
+
+
     
-    // Add hover effect
     overlayReturnButton.onmouseover = () => {
-      overlayReturnButton.style.backgroundColor = '#b91c1c';
+      overlayReturnButton.style.backgroundColor = '#facc15'; // slightly brighter yellow
     };
     overlayReturnButton.onmouseout = () => {
-      overlayReturnButton.style.backgroundColor = '#dc2626';
+      overlayReturnButton.style.backgroundColor = '#fbbf24';
     };
+
     
     // Store the original button's event listeners
     const originalButton = returnButton;
