@@ -1,101 +1,271 @@
 import { FastifyInstance } from 'fastify';
+import jwt from 'jsonwebtoken';
 import db from '../db/db';
 
+
 export async function matchRoutes(app: FastifyInstance) {
+  // JWT 인증 훅
+  app.addHook('onRequest', async (req, reply) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+      req.auth = undefined; // ✅ 토큰 없는 상태도 허용
+      return;
+    }
+  
+    const token = authHeader.split(' ')[1];
+    try {
+      const payload = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number };
+      req.auth = { userId: payload.userId };
+    } catch {
+      return reply.status(401).send({ error: 'Invalid token' });
+    }
+  });
+  
+
   // Créer un nouveau match (game + scores)
   app.post('/match/start', async (req, reply) => {
     const { user_id, opponent_id } = req.body as {
-      user_id: number;
+      user_id?: number;
       opponent_id: number;
     };
-    const userExists = db.prepare('SELECT id FROM users WHERE id = ?').get(user_id);
-    
-    //2105 추가
-    const opponentExists =
-    db.prepare('SELECT id FROM users WHERE id = ?').get(opponent_id) ||
-    db.prepare('SELECT id FROM potential_friends WHERE id = ?').get(opponent_id);
   
-    console.log('[BACKEND] userExists:', userExists);
-    console.log('[BACKEND] opponentExists:', opponentExists);
-    console.log('📥 Reçu POST /match/start', { user_id, opponent_id });
-    
+    // 우선순위: 요청에서 보낸 user_id → 없으면 JWT 토큰에서 추출
+    const finalUserId = user_id ?? req.auth?.userId;
+  
+    // 게스트 vs 게스트인 경우 user_id가 undefined로 올 수 있음 (인증 불필요)
+    const isGuestVsGuest = (user_id === undefined || user_id < 0) && req.auth === undefined;
+
+    // 게스트끼리 아닐 경우에는 user_id/opponent_id 필수
+    if (!isGuestVsGuest && (!finalUserId || !opponent_id)) {
+      return reply.status(400).send({ error: 'Missing user or opponent ID' });
+    }
+  
+    // 유저 존재 여부 확인 (users 또는 potential_friends에 있는지 확인)
+    const userExists =
+      finalUserId === undefined || finalUserId < 0 
+        ? true
+        : db.prepare('SELECT id FROM users WHERE id = ?').get(finalUserId) ||
+          db.prepare('SELECT id FROM potential_friends WHERE id = ?').get(finalUserId);
+  
+    const opponentExists =
+      opponent_id < 0 || // 음수 ID는 guest로 간주
+      db.prepare('SELECT id FROM users WHERE id = ?').get(opponent_id) ||
+      db.prepare('SELECT id FROM potential_friends WHERE id = ?').get(opponent_id);
+  
     if (!userExists || !opponentExists) {
       console.error('❌ Invalid user or opponent');
       return reply.status(400).send({ error: 'Invalid user or opponent ID' });
     }
-
+  
     try {
-      const stmtGame = db.prepare(`
+      const result = db.prepare(`
         INSERT INTO games (user_id, opponent_id) VALUES (?, ?)
-      `);
-      console.log(`[DEBUG GAME DATA BAKCEND] Inserting game: user_id=${user_id}, opponent_id=${opponent_id}`);
-      const result = stmtGame.run(user_id, opponent_id);
+      `).run(finalUserId ?? -9999, opponent_id); // ✅ guest 전용 -9999 fallback 사용
       const gameId = result.lastInsertRowid as number;
-
-      console.log('[DEBUG GAME DATA BAKCEND] Match inséré avec gameId =', gameId);
-
+  
+      // 점수 초기화 (게임 시작 시)
       const stmtScore = db.prepare(`
         INSERT INTO scores (game_id, player_id, score) VALUES (?, ?, ?)
       `);
-      console.log(`[DEBUG GAME DATA BAKCEND] Creating score for user ${user_id} -> game_id=${gameId}, score=0`);
-      stmtScore.run(gameId, user_id, 0);
-
-      console.log(`[DEBUG GAME DATA BAKCEND] Creating score for opponent ${opponent_id} -> game_id=${gameId}, score=0`);
+      stmtScore.run(gameId, finalUserId ?? -9999, 0); // -9999 사용시 이 값도 동일하게 적용
       stmtScore.run(gameId, opponent_id, 0);
-
+  
       reply.send({ status: 'created', gameId });
     } catch (err) {
       console.error('❌ Erreur lors de la création du match :', err);
       reply.status(500).send({ error: 'Match creation failed' });
     }
   });
-
-  // Enregistrer les scores à la fin d’un match
+  
+  // 경기 종료 및 점수 저장
   app.post('/match/end', async (req, reply) => {
+    //  수정된 부분: user_id도 body에서 받음 (게스트용)
     const { gameId, user_id, opponent_id, score1, score2 } = req.body as {
       gameId: number;
-      user_id: number;
+      user_id?: number;
       opponent_id: number;
       score1: number;
       score2: number;
     };
-
-    console.log('[DEBUG GAME DATA BAKCEND] Reçu POST /match/end', {
-      gameId, user_id, opponent_id, score1, score2
+  
+    // 수정된 부분: 로그인 유저가 없으면 게스트 user_id 사용
+    const finalUserId = user_id ?? req.auth?.userId; 
+      
+    // 수정된 부분: 게스트 vs 게스트 판별 강화
+    const isGuestVsGuest = (finalUserId === undefined || finalUserId < 0) && opponent_id < 0;
+  
+    // 기존과 동일한 파라미터 유효성 체크
+    if (
+      !isGuestVsGuest &&
+      (!finalUserId || !gameId || opponent_id === undefined || score1 === undefined || score2 === undefined)
+    ) {
+      return reply.status(400).send({ error: 'Missing parameters' });
+    }
+  
+    console.log('[DEBUG GAME DATA BACKEND] Reçu POST /match/end', {
+      gameId,
+      finalUserId,
+      opponent_id,
+      score1,
+      score2
     });
-
-    // 유저 존재 여부 체크 (users 또는 potential_friends)
-    const userExists = db.prepare('SELECT id FROM users WHERE id = ?').get(user_id);
+  
+    // user_id < 0이면 게스트로 간주하여 DB 체크 생략
+    const userExists =
+      finalUserId === undefined || finalUserId < 0
+        ? true
+        : db.prepare('SELECT id FROM users WHERE id = ?').get(finalUserId) ||
+          db.prepare('SELECT id FROM potential_friends WHERE id = ?').get(finalUserId);
+  
     const opponentExists =
-      db.prepare('SELECT id FROM users WHERE id = ?').get(opponent_id) ||
-      db.prepare('SELECT id FROM potential_friends WHERE id = ?').get(opponent_id);
+      opponent_id < 0
+        ? true
+        : db.prepare('SELECT id FROM users WHERE id = ?').get(opponent_id) ||
+          db.prepare('SELECT id FROM potential_friends WHERE id = ?').get(opponent_id);
   
     if (!userExists || !opponentExists) {
       console.error('❌ Invalid user or opponent in /match/end');
       return reply.status(400).send({ error: 'Invalid user or opponent ID' });
     }
-
-    
-    const winner_id = score1 > score2 ? user_id : opponent_id;
-    console.log(`[DEBUG GAME DATA BAKCEND] Winner determined: winner_id=${winner_id}`);
-
+  
+    //  수정된 부분: 정확한 finalUserId를 winner로 사용
+    const winner_id = score1 > score2 ? finalUserId! : opponent_id;
+  
+    console.log(`[DEBUG GAME DATA BACKEND] Winner determined: winner_id=${winner_id}`);
+  
+    // 점수 저장
     db.prepare(`UPDATE scores SET score = ? WHERE game_id = ? AND player_id = ?`)
-      .run(score1, gameId, user_id);
+      .run(score1, gameId, finalUserId!);
     db.prepare(`UPDATE scores SET score = ? WHERE game_id = ? AND player_id = ?`)
       .run(score2, gameId, opponent_id);
-
+  
+    // 승자 기록
     db.prepare(`UPDATE games SET winner_id = ? WHERE id = ?`)
       .run(winner_id, gameId);
-
+  
     console.log('🎯 Match mis à jour', { gameId, score1, score2, winner_id });
-
+  
     reply.send({ status: 'match updated', winner_id });
   });
+
+    // // 🏁 경기 종료 및 점수 저장
+  // app.post('/match/end', async (req, reply) => {
+  //   const finalUserId = req.auth?.userId; // 로그인 유저일 경우
+  //   const { gameId, opponent_id, score1, score2 } = req.body as {
+  //     gameId: number;
+  //     opponent_id: number;
+  //     score1: number;
+  //     score2: number;
+  //   };
+
+  //   if (gameId === undefined || opponent_id === undefined || score1 === undefined || score2 === undefined) {
+  //     return reply.status(400).send({ error: 'Missing parameters' });
+  //   }
+
+  //   // ✅ 로그인 유저가 있을 때만 user_id 사용
+  //   const isGuestVsGuest = finalUserId === undefined;
+  //   const userIdForMatch = finalUserId ?? -10000; // guest vs guest 대비
+
+  //   console.log('[DEBUG GAME DATA BACKEND] Reçu POST /match/end', {
+  //     gameId, finalUserId, opponent_id, score1, score2
+  //   });
+
+  //   // ✅ 유저 존재 여부 확인
+  //   const userExists =
+  //     finalUserId === undefined || // 게스트면 체크 생략
+  //     db.prepare('SELECT id FROM users WHERE id = ?').get(finalUserId) ||
+  //     db.prepare('SELECT id FROM potential_friends WHERE id = ?').get(finalUserId);
+
+  //   const opponentExists =
+  //     opponent_id < 0 || // ✅ 음수 ID는 게스트로 간주
+  //     db.prepare('SELECT id FROM users WHERE id = ?').get(opponent_id) ||
+  //     db.prepare('SELECT id FROM potential_friends WHERE id = ?').get(opponent_id);
+
+  //   if (!userExists || !opponentExists) {
+  //     console.error('❌ Invalid user or opponent in /match/end');
+  //     return reply.status(400).send({ error: 'Invalid user or opponent ID' });
+  //   }
+
+  //   // ✅ 승자 결정
+  //   const winner_id = score1 > score2 ? userIdForMatch : opponent_id;
+  //   console.log(`[DEBUG GAME DATA BACKEND] Winner determined: winner_id=${winner_id}`);
+
+  //   // ✅ 점수 저장
+  //   db.prepare(`UPDATE scores SET score = ? WHERE game_id = ? AND player_id = ?`)
+  //     .run(score1, gameId, userIdForMatch);
+  //   db.prepare(`UPDATE scores SET score = ? WHERE game_id = ? AND player_id = ?`)
+  //     .run(score2, gameId, opponent_id);
+
+  //   // ✅ 승자 기록
+  //   db.prepare(`UPDATE games SET winner_id = ? WHERE id = ?`)
+  //     .run(winner_id, gameId);
+
+  //   console.log('🎯 Match mis à jour', { gameId, score1, score2, winner_id });
+
+  //   reply.send({ status: 'match updated', winner_id });
+  // });
+
+  // Enregistrer les scores à la fin d’un match
+  // app.post('/match/end', async (req, reply) => {
+  //   const finalUserId = req.auth?.userId;
+  //   const { gameId, opponent_id, score1, score2 } = req.body as {
+  //     gameId: number;
+  //     opponent_id: number;
+  //     score1: number;
+  //     score2: number;
+  //   };
+
+  //   if (!gameId || opponent_id === undefined || score1 === undefined || score2 === undefined || (finalUserId === undefined && opponent_id >= 0)) 
+  //   {
+  //     return reply.status(400).send({ error: 'Missing parameters' });
+  //   }
+
+  //   console.log('[DEBUG GAME DATA BAKCEND] Reçu POST /match/end', { gameId, finalUserId, opponent_id, score1, score2});
+
+  //   // 유저 존재 여부 체크 (users 또는 potential_friends)
+  //   const userExists =
+  //     finalUserId !== undefined
+  //       ? db.prepare('SELECT id FROM users WHERE id = ?').get(finalUserId) ||
+  //         db.prepare('SELECT id FROM potential_friends WHERE id = ?').get(finalUserId)
+  //       : true;
+
+  //   const opponentExists =
+  //     opponent_id < 0 || // ✅ 음수 ID는 guest로 간주
+  //     db.prepare('SELECT id FROM users WHERE id = ?').get(opponent_id) ||
+  //     db.prepare('SELECT id FROM potential_friends WHERE id = ?').get(opponent_id);
+  
+  //   if (!userExists || !opponentExists) {
+  //     console.error('❌ Invalid user or opponent in /match/end');
+  //     return reply.status(400).send({ error: 'Invalid user or opponent ID' });
+  //   }
+
+    
+  //   // ✅ 점수 업데이트
+  //   const userIdToUse = finalUserId ?? -10000; // guest vs guest일 경우도 대응
+  //   const opponentIdToUse = opponent_id < 0 ? -10000 : opponent_id;
+  
+  //   const winner_id = score1 > score2 ? userIdToUse : opponentIdToUse;
+  //   console.log(`[DEBUG GAME DATA BAKCEND] Winner determined: winner_id=${winner_id}`);
+
+  //   db.prepare(`UPDATE scores SET score = ? WHERE game_id = ? AND player_id = ?`)
+  //     .run(score1, gameId, finalUserId);
+  //   db.prepare(`UPDATE scores SET score = ? WHERE game_id = ? AND player_id = ?`)
+  //     .run(score2, gameId, opponent_id);
+
+  //   db.prepare(`UPDATE games SET winner_id = ? WHERE id = ?`)
+  //     .run(winner_id, gameId);
+
+  //   console.log('🎯 Match mis à jour', { gameId, score1, score2, winner_id });
+
+  //   reply.send({ status: 'match updated', winner_id });
+  // });
 
   // Historique d’un joueur
   app.get('/match/history', async (req, reply) => {
     const playerId = parseInt((req.query as any).player_id);
     console.log(`[DEBUG GAME DATA MATCH HISTORY] Requesting history for player_id=${playerId}`);
+
+    if (isNaN(playerId)) return reply.status(400).send({ error: 'Invalid player ID' });
 
     const stmt = db.prepare(`
       SELECT g.id as game_id, g.created_at, g.winner_id,

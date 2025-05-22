@@ -161,7 +161,7 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
   layout.appendChild(gameArea);
   container.appendChild(layout);
 
-  // 🎯 Event listeners
+  // Event listeners
   const token = localStorage.getItem('token');
   let friends: Player[] = [];
   
@@ -246,9 +246,12 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
     const emptyIndex = playerSlots.findIndex((p, idx) => p === null && idx !== 0);
     if (emptyIndex !== -1) {
       const guestAvatar = guestAvatars[emptyIndex - 1] || '/assets/profile-pictures/default.jpg';
-  
+      
+      const newGuestId = `guest-${Date.now()}-${Math.random()}`;  // 추가
+      console.log('[NEW GUEST STRING ID]', newGuestId);       
+
       playerSlots[emptyIndex] = {
-        id: 'guest-' + Date.now(),
+        id: newGuestId,  // 고유한 guest ID 생성!
         name,
         source: 'guest',
         avatar: guestAvatar
