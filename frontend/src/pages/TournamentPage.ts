@@ -299,38 +299,38 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
   });
   observer.observe(slotsContainer, { childList: true, subtree: true });
 
-  // Mouvement de la sidebar
-  sidebar.addEventListener('mouseenter', () => {
-    document.querySelectorAll('.sidebar-label').forEach(label => {
-      (label as HTMLElement).classList.remove('opacity-0');
-      (label as HTMLElement).classList.add('opacity-100');
-    });
+  // // Mouvement de la sidebar
+  // sidebar.addEventListener('mouseenter', () => {
+  //   document.querySelectorAll('.sidebar-label').forEach(label => {
+  //     (label as HTMLElement).classList.remove('opacity-0');
+  //     (label as HTMLElement).classList.add('opacity-100');
+  //   });
 
-    const bg = document.getElementById('backgroundImage');
-    if (bg) {
-      bg.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-    }
-    const layoutDiv = document.getElementById('game-layout');
-    if (layoutDiv) {
-      layoutDiv.classList.add('ml-44');
-    }
-  });
+  //   const bg = document.getElementById('backgroundImage');
+  //   if (bg) {
+  //     bg.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+  //   }
+  //   const layoutDiv = document.getElementById('game-layout');
+  //   if (layoutDiv) {
+  //     layoutDiv.classList.add('ml-44');
+  //   }
+  // });
 
-  sidebar.addEventListener('mouseleave', () => {
-    document.querySelectorAll('.sidebar-label').forEach(label => {
-      (label as HTMLElement).classList.add('opacity-0');
-      (label as HTMLElement).classList.remove('opacity-100');
-    });
+  // sidebar.addEventListener('mouseleave', () => {
+  //   document.querySelectorAll('.sidebar-label').forEach(label => {
+  //     (label as HTMLElement).classList.add('opacity-0');
+  //     (label as HTMLElement).classList.remove('opacity-100');
+  //   });
 
-    const bg = document.getElementById('backgroundImage');
-    if (bg) {
-      bg.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-    }
-    const layoutDiv = document.getElementById('game-layout');
-    if (layoutDiv) {
-      layoutDiv.classList.remove('ml-44');
-    }
-  });
+  //   const bg = document.getElementById('backgroundImage');
+  //   if (bg) {
+  //     bg.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+  //   }
+  //   const layoutDiv = document.getElementById('game-layout');
+  //   if (layoutDiv) {
+  //     layoutDiv.classList.remove('ml-44');
+  //   }
+  // });
 
   return container;
 }

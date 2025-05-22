@@ -100,38 +100,38 @@ export function createModePage(navigate: (path: string) => void): HTMLElement {
   
     container.appendChild(layout);
     
-    sidebar.addEventListener('mouseenter', () => {
-      document.querySelectorAll('.sidebar-label').forEach(label => {
-        (label as HTMLElement).classList.remove('opacity-0');
-        (label as HTMLElement).classList.add('opacity-100');
-      });
+    // sidebar.addEventListener('mouseenter', () => {
+    //   document.querySelectorAll('.sidebar-label').forEach(label => {
+    //     (label as HTMLElement).classList.remove('opacity-0');
+    //     (label as HTMLElement).classList.add('opacity-100');
+    //   });
   
-      const backgroundImage = document.getElementById('backgroundImage');
-      if (backgroundImage) {
-        backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-      }
-      const layout = document.getElementById('game-layout');
-      if (layout) {
-          layout.classList.add('ml-44'); // 11rem = 176px, correspond à w-64 (256px) - w-20 (80px)
-      }
-    });
+    //   const backgroundImage = document.getElementById('backgroundImage');
+    //   if (backgroundImage) {
+    //     backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+    //   }
+    //   const layout = document.getElementById('game-layout');
+    //   if (layout) {
+    //       layout.classList.add('ml-44'); // 11rem = 176px, correspond à w-64 (256px) - w-20 (80px)
+    //   }
+    // });
   
-    // Mouvement de la sidebar 
-    sidebar.addEventListener('mouseleave', () => {
-      document.querySelectorAll('.sidebar-label').forEach(label => {
-        (label as HTMLElement).classList.add('opacity-0');
-        (label as HTMLElement).classList.remove('opacity-100');
-      });
+    // // Mouvement de la sidebar 
+    // sidebar.addEventListener('mouseleave', () => {
+    //   document.querySelectorAll('.sidebar-label').forEach(label => {
+    //     (label as HTMLElement).classList.add('opacity-0');
+    //     (label as HTMLElement).classList.remove('opacity-100');
+    //   });
   
-      const backgroundImage = document.getElementById('backgroundImage');
-      if (backgroundImage) {
-        backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-      }
-      const layout = document.getElementById('game-layout');
-          if (layout) {
-      layout.classList.remove('ml-44');
-      }
-    });
+    //   const backgroundImage = document.getElementById('backgroundImage');
+    //   if (backgroundImage) {
+    //     backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+    //   }
+    //   const layout = document.getElementById('game-layout');
+    //       if (layout) {
+    //   layout.classList.remove('ml-44');
+    //   }
+    // });
   
     return container; 
 }

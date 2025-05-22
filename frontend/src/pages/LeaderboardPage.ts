@@ -44,28 +44,28 @@ export function createLeaderboardPage(navigate: (path: string) => void): HTMLEle
   leaderboardSection.appendChild(leaderboardCard);
   container.appendChild(leaderboardSection);
 
-  // Sidebar hover logic
-  sidebar.addEventListener('mouseenter', () => {
-    document.querySelectorAll('.sidebar-label').forEach(label => {
-      (label as HTMLElement).classList.remove('opacity-0');
-      (label as HTMLElement).classList.add('opacity-100');
-    });
-    const backgroundImage = document.getElementById('backgroundImage');
-    if (backgroundImage) {
-      backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300 z-10';
-    }
-  });
+  // // Sidebar hover logic
+  // sidebar.addEventListener('mouseenter', () => {
+  //   document.querySelectorAll('.sidebar-label').forEach(label => {
+  //     (label as HTMLElement).classList.remove('opacity-0');
+  //     (label as HTMLElement).classList.add('opacity-100');
+  //   });
+  //   const backgroundImage = document.getElementById('backgroundImage');
+  //   if (backgroundImage) {
+  //     backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300 z-10';
+  //   }
+  // });
 
-  sidebar.addEventListener('mouseleave', () => {
-    document.querySelectorAll('.sidebar-label').forEach(label => {
-      (label as HTMLElement).classList.add('opacity-0');
-      (label as HTMLElement).classList.remove('opacity-100');
-    });
-    const backgroundImage = document.getElementById('backgroundImage');
-    if (backgroundImage) {
-      backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300 z-10';
-    }
-  });
+  // sidebar.addEventListener('mouseleave', () => {
+  //   document.querySelectorAll('.sidebar-label').forEach(label => {
+  //     (label as HTMLElement).classList.add('opacity-0');
+  //     (label as HTMLElement).classList.remove('opacity-100');
+  //   });
+  //   const backgroundImage = document.getElementById('backgroundImage');
+  //   if (backgroundImage) {
+  //     backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300 z-10';
+  //   }
+  // });
 
   // Fetch leaderboard data from backend
   fetchLeaderboardData()
