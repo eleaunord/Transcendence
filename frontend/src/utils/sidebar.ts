@@ -1,3 +1,5 @@
+import { t } from "../utils/translator";
+
 export function createSidebar(navigate: (path: string) => void): HTMLElement {
   const sidebar = document.createElement('div');
   sidebar.id = 'sidebar';
@@ -37,7 +39,7 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
   usernameText.id = 'sidebar-username';
   usernameText.className = 'text-white text-lg opacity-0 sidebar-label transition-opacity duration-300 mb-1';
   //met a jour username avec ce qui est stocke
-  usernameText.textContent = sessionStorage.getItem('username') || 'Username';
+  usernameText.textContent = sessionStorage.getItem('username') || t('sidebar.username');
 
 
   const statsContainer = document.createElement('div');
@@ -74,12 +76,12 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
 
   // --- Menu principal ---
   const menuItems = [
-    { icon: '/assets/side-bar/profil.png', label: 'Profile', route: '/user-profile' },
-    { icon: '/assets/side-bar/custom.png', label: 'Customization', route: '/customization' },
-    { icon: '/assets/side-bar/leaderboard.png', label: 'Leaderboard', route: '/leaderboard' },
-    { icon: '/assets/side-bar/friends.png', label: 'Friends', route: '/friends' },
-    { icon: '/assets/side-bar/pong.png', label: 'Games', route: '/game' },
-  ];
+  { icon: '/assets/side-bar/profil.png', label: t('sidebar.profile'), route: '/user-profile' },
+  { icon: '/assets/side-bar/custom.png', label: t('sidebar.customization'), route: '/customization' },
+  { icon: '/assets/side-bar/leaderboard.png', label: t('sidebar.leaderboard'), route: '/leaderboard' },
+  { icon: '/assets/side-bar/friends.png', label: t('sidebar.friends'), route: '/friends' },
+  { icon: '/assets/side-bar/pong.png', label: t('sidebar.games'), route: '/game' },
+];
 
   menuItems.forEach(item => {
     const menuItem = document.createElement('div');
@@ -104,10 +106,10 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
   const bottomContainer = document.createElement('div');
   bottomContainer.className = 'flex flex-col gap-2';
 
-  const bottomItems = [
-    { icon: '/assets/side-bar/aboutUs.png', label: 'About us', route: '/about' },
-    { icon: '/assets/side-bar/logout.png', label: 'Log out', route: '/' },
-  ];
+const bottomItems = [
+  { icon: '/assets/side-bar/aboutUs.png', label: t('sidebar.about'), route: '/about' },
+  { icon: '/assets/side-bar/logout.png', label: t('sidebar.logout'), route: '/' },
+];
 
   bottomItems.forEach(item => {
     const menuItem = document.createElement('div');

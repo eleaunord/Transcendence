@@ -1,5 +1,6 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
+import { t } from '../utils/translator';
 
 export function createModeMemoryPage(navigate: (path: string) => void): HTMLElement {
     const container = document.createElement('div');

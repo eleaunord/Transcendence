@@ -1,3 +1,4 @@
+import { setLanguage, t } from "../utils/translator";
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
 
@@ -50,7 +51,7 @@ export function createExportDataPage(navigate: (path: string) => void): HTMLElem
   exportButton.addEventListener('click', async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      alert("Vous devez être connecté.");
+      alert(t('auth.must_be_logged_in'));
       return;
     }
 
@@ -62,7 +63,7 @@ export function createExportDataPage(navigate: (path: string) => void): HTMLElem
       });
 
       if (!res.ok) {
-        alert("Erreur lors du téléchargement des données.");
+        alert(t('error.download_failed'));
         return;
       }
 
@@ -75,7 +76,7 @@ export function createExportDataPage(navigate: (path: string) => void): HTMLElem
       URL.revokeObjectURL(url);
     } catch (err) {
       console.error(err);
-      alert("Une erreur est survenue lors de l'export.");
+      alert(t('error.export_failed'));
     }
   });
 

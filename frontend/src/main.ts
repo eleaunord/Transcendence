@@ -26,6 +26,7 @@ import { createModeMemoryPage } from './pages/ModeMemoryPage';
 import { createMemoryVersusPage } from './pages/MemoryVersusPage';
 import { createGameCustomizationPage } from './pages/GameCustomizationPage';
 import { createMemoryCustomizationPage } from './pages/MemoryCustomizationPage';
+import { setLanguage, applyTranslations } from './utils/translator'
 import { createMemoryOpponentPage } from './pages/MemoryOpponentPage';
 import { createMemoryFriendPage } from './pages/MemoryFriendPage';
 import { createBracketPage } from './pages/BracketPage';
@@ -83,6 +84,7 @@ const routes = {
 
 }
 
+<<<<<<< HEAD
 navigate = initRouter(routes, 'team')!;
 
 // const path = window.location.pathname;
@@ -94,3 +96,17 @@ navigate = initRouter(routes, 'team')!;
 // }
 
 console.log('🏁 Router chargé');
+=======
+navigate = initRouter(routes)!;
+console.log('🏁 Router chargé');
+
+// // === INTERNATIONALISATION ===
+window.addEventListener('DOMContentLoaded', () => {
+  applyTranslations();
+});
+
+(window as any).switchLang = (lang: string) => {
+    setLanguage(lang as 'en' | 'fr' | 'ko');
+  applyTranslations();
+};
+>>>>>>> 2105_translation

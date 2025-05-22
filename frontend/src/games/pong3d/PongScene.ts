@@ -1,3 +1,5 @@
+import { t } from "../../utils/translator";
+
 import {
   Engine,
   Scene,
@@ -304,13 +306,13 @@ export async function createPongScene(
   function countdownBeforeServe(callback: () => void) {
   if (gameOver) return;
   let count = 5;
-  announce!.textContent = `Reprise dans ${count}...`;
+  announce!.textContent = t('pong.resume_in', { seconds: count });
   announce!.style.display = "block";
 
   const interval = setInterval(() => {
     count--;
     if (count > 0) {
-      announce!.textContent = `Reprise dans ${count}...`;
+      announce!.textContent = t('pong.resume_in', { seconds: count });
     } else {
       clearInterval(interval);
       announce!.style.display = "none";
@@ -380,7 +382,7 @@ export async function createPongScene(
 
     }
 
-    announce!.textContent = `${winnerName} won!`;
+    announce!.textContent = t('pong.winner', { name: winnerName });
     announce!.style.display = "block";
     returnButton.style.display = "block";
 

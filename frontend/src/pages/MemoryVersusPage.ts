@@ -1,6 +1,7 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from '../utils/theme';
 import { loadMemorySettings } from '../utils/memorySettings';
+import { t } from '../utils/translator';
 
 export function createMemoryVersusPage(navigate: (path: string) => void): HTMLElement {
   let moves = 0;
@@ -60,7 +61,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   const turnIndicator = document.createElement('div');
   const timerDisplay = document.createElement('div');
 
-  player1Status.textContent = player1Status.textContent = `👤 Vous : 0`;
+  player1Status.textContent = player1Status.textContent = `👤 ${t('memory.versus.you')}: 0`;
   player2Status.textContent = `🎮 ${opponentName} : 0`;
   turnIndicator.textContent = '👉 Votre tour';
   timerDisplay.textContent = '';
@@ -104,8 +105,8 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
         clearTurnTimer();
         currentPlayer = currentPlayer === 1 ? 2 : 1;
         turnIndicator.textContent = currentPlayer === 1
-          ? '👉 Votre tour'
-          : `👉 Tour de ${opponentName}`;
+          ? `👉 ${t('memory.versus.your_turn')}`
+          : `👉 ${t('memory.versus.opponent_turn', { name: opponentName })}`;
         startTurnTimer();
       }
     }, 1000);
@@ -148,7 +149,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   }
 
   function updateScoreDisplay() {
-    player1Status.textContent = `👤 Vous : ${scores[1]}`;
+    player1Status.textContent = `👤 ${t('memory.versus.you')}: ${scores[1]}`;
     player2Status.textContent = `🎮 ${opponentName} : ${scores[2]}`;
   }
 
@@ -191,8 +192,8 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
 
         currentPlayer = currentPlayer === 1 ? 2 : 1;
         turnIndicator.textContent = currentPlayer === 1
-          ? '👉 Votre tour'
-          : `👉 Tour de ${opponentName}`;
+          ? `👉 ${t('memory.versus.your_turn')}`
+          : `👉 ${t('memory.versus.opponent_turn', { name: opponentName })}`;
         startTurnTimer();
       }, 500);
     }
@@ -252,7 +253,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
     const overlay = document.createElement('div');
     overlay.className = 'absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
 
-    const winner = scores[1] > scores[2] ? 'Vous' : scores[2] > scores[1] ? opponentName : 'Égalité';
+    const winner = scores[1] > scores[2] ? t('memory.versus.you') : scores[2] > scores[1] ? opponentName : t('memory.versus.draw');
     const victoryText = document.createElement('div');
     if (winner === 'Égalité') {
       victoryText.textContent = '🤝 Égalité !';
@@ -284,7 +285,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   layout.appendChild(gameArea);
 
   const backBtn = document.createElement('button');
-  backBtn.textContent = 'Retour aux modes de jeu';
+  backBtn.textContent = t('memory.back_to_modes');
   backBtn.className = 'fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg';
   backBtn.onclick = () => navigate('/memory-mode');
 

@@ -1,5 +1,6 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
+import { t } from '../utils/translator';
 
 type Friend = {
   id: string;
@@ -24,7 +25,7 @@ export function createMemoryFriendPage(navigate: (path: string) => void): HTMLEl
   mainArea.className = 'flex-1 flex flex-col items-center justify-center gap-8 z-10 relative';
 
   const title = document.createElement('h2');
-  title.textContent = 'Choisissez un ami pour jouer à Memory';
+  title.textContent = t('memory.friend.title');
   title.className = 'text-3xl font-bold text-white';
 
   const friendList = document.createElement('div');
@@ -66,7 +67,7 @@ export function createMemoryFriendPage(navigate: (path: string) => void): HTMLEl
       })
       .catch(error => {
         const errorMsg = document.createElement('p');
-        errorMsg.textContent = "Impossible de charger les amis.";
+        errorMsg.textContent = t('memory.friend.error');
         errorMsg.className = 'text-red-500';
         mainArea.appendChild(errorMsg);
         console.error('Erreur lors du chargement des amis :', error);

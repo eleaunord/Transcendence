@@ -5,7 +5,7 @@ export type RouteMap = { [path: string]: (navigate: (path: string) => void) => H
  */
 export function protectedRoute(
   page: (navigate: (path: string) => void) => HTMLElement,
-  message: string = 'Please log in to proceed.'
+  message: string = t('protected.login_required')
 ): (navigate: (path: string) => void) => HTMLElement {
   return (navigate) => {
     const token = localStorage.getItem('token');
@@ -13,7 +13,7 @@ export function protectedRoute(
     if (!token) {
       console.log('[ProtectedRoute] User not logged in → redirecting to home...');
       const placeholder = document.createElement('div');
-      placeholder.textContent = 'Redirecting to home...';
+      placeholder.textContent = t('protected.redirecting');
       placeholder.className = 'text-white text-center mt-40 text-xl';
       localStorage.setItem('protected_route_notice', message);
       setTimeout(() => {

@@ -1,6 +1,7 @@
 import { createPongScene } from '../games/pong3d/PongScene';
 import { createSidebar } from "../utils/sidebar"; 
 import { applyUserTheme } from '../utils/theme';
+import { t } from '../utils/translator'; 
 
 export function createGamePage(navigate: (path: string) => void): HTMLElement {
 

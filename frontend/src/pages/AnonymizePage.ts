@@ -1,6 +1,7 @@
 // frontend/pages/AnonymizePage.ts
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
+import { t } from "../utils/translator";
 
 export function createAnonymizePage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
@@ -33,20 +34,20 @@ export function createAnonymizePage(navigate: (path: string) => void): HTMLEleme
   `.replace(/\s+/g, ' ').trim();
 
   const title = document.createElement('h1');
-  title.textContent = 'Anonymize Your Account';
+  title.textContent = t('anonymize.title');
   title.className = 'text-2xl font-bold text-yellow-400';
 
   const description = document.createElement('p');
-  description.textContent = '이 작업은 되돌릴 수 없습니다. 이메일, 비밀번호, Google ID 등 개인 정보는 삭제되며, 게임 기록만 익명으로 남습니다.';
+  description.textContent = t('anonymize.warning');
   description.className = 'text-yellow-300 text-center';
 
   const confirm = document.createElement('p');
-  confirm.textContent = '익명화를 진행하려면 "anonymous"라고 입력하세요.';
+  confirm.textContent = t('anonymize.confirm_instruction');
   confirm.className = 'text-white';
 
   const input = document.createElement('input');
   input.type = 'text';
-  input.placeholder = 'Type anonymous to confirm';
+  input.placeholder = t('anonymize.placeholder');
   input.className = `
     p-2 rounded bg-gray-900 border border-gray-600 text-white text-center
     focus:outline-none focus:ring-2 focus:ring-yellow-500
@@ -56,7 +57,7 @@ export function createAnonymizePage(navigate: (path: string) => void): HTMLEleme
   buttonGroup.className = 'flex gap-4 mt-2';
 
   const anonymizeButton = document.createElement('button');
-  anonymizeButton.textContent = 'Anonymize My Account';
+  anonymizeButton.textContent = t('anonymize.button');
   anonymizeButton.disabled = true;
   anonymizeButton.className = `
     p-2 px-4 bg-yellow-600 text-white rounded hover:bg-yellow-700
@@ -64,7 +65,7 @@ export function createAnonymizePage(navigate: (path: string) => void): HTMLEleme
   `.replace(/\s+/g, ' ').trim();
 
   const cancelButton = document.createElement('button');
-  cancelButton.textContent = 'Cancel';
+  cancelButton.textContent = t('cancel');
   cancelButton.className = `
     p-2 px-4 bg-gray-600 text-white rounded hover:bg-gray-700
   `.replace(/\s+/g, ' ').trim();
@@ -77,7 +78,7 @@ export function createAnonymizePage(navigate: (path: string) => void): HTMLEleme
   anonymizeButton.addEventListener('click', async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('You are not logged in.');
+      alert(t('anonymize.not_logged_in'));
       return;
     }
 
@@ -88,17 +89,17 @@ export function createAnonymizePage(navigate: (path: string) => void): HTMLEleme
       });
 
       if (res.ok) {
-        alert('Your account has been anonymized. You will now be logged out.');
+        alert(t('anonymize.success'));
         sessionStorage.clear();
         localStorage.clear();
         navigate('/');
       } else {
         const data = await res.json();
-        alert(data.error || 'Anonymization failed.');
+        alert(t(data.error) || t('anonymize.failed'));
       }
     } catch (err) {
       console.error('Anonymization error:', err);
-      alert('Server error');
+      alert(t('server_error'));
     }
   });
 

@@ -1,6 +1,7 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
 import { savePongSettings } from "../utils/pongSettings";
+import { t } from '../utils/translator'; 
 
 export function createGameCustomizationPage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
@@ -64,32 +65,32 @@ export function createGameCustomizationPage(navigate: (path: string) => void): H
     return selected ? Number(selected.dataset.value) : 0;
   }
 
-  const speedGroup = createButtonGroup("Vitesse de la balle", [
-    { label: "Normale", value: 5 },
-    { label: "Rapide", value: 8 },
-    { label: "Très rapide", value: 11 },
+  const speedGroup = createButtonGroup(t('custom.speed'), [
+    { label: t('custom.speed.normal'), value: 5 },
+    { label: t('custom.speed.fast'), value: 8 },
+    { label: t('custom.speed.very_fast'), value: 11 },
   ], 5);
 
-  const scoreGroup = createButtonGroup("Score pour gagner", [
+  const scoreGroup = createButtonGroup(t('custom.score'), [
     { label: "3", value: 3 },
     { label: "5", value: 5 },
     { label: "10", value: 10 },
   ], 5);
 
-  const sizeGroup = createButtonGroup("Taille des raquettes", [
-    { label: "Normale", value: 1 },
-    { label: "Petite", value: 0.75 },
-    { label: "Très petite", value: 0.5 },
+  const sizeGroup = createButtonGroup(t('custom.size'), [
+    { label: t('custom.size.normal'), value: 1 },
+    { label: t('custom.size.small'), value: 0.75 },
+    { label: t('custom.size.very_small'), value: 0.5 },
   ], 1);
 
-  const themeGroup = createButtonGroup("Thème visuel", [
-  { label: "Classique", value: 0 },
-  { label: "Énergie", value: 1 },
-  { label: "Nébuleuse", value: 2 },
-], 0);
+  const themeGroup = createButtonGroup(t('custom.theme'), [
+    { label: t('custom.theme.classic'), value: 0 },
+    { label: t('custom.theme.energy'), value: 1 },
+    { label: t('custom.theme.nebula'), value: 2 },
+  ], 0);
 
   const startButton = document.createElement('button');
-  startButton.textContent = "Lancer le match";
+  startButton.textContent = t('custom.start');
   startButton.className = "mt-4 bg-green-600 hover:bg-green-700 text-white text-2xl font-bold py-2 px-6 rounded transition";
   startButton.onclick = () => {
     const speed = getSelectedValue(speedGroup);
