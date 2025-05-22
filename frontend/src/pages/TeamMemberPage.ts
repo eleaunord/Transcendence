@@ -52,7 +52,7 @@ export function createTeamMemberPage(navigate: (path: string) => void, name: str
 
 
   const title = document.createElement('h2');
-  title.textContent = fullNameMap[name.toLowerCase()] || 'Member';
+  title.textContent = fullNameMap[name.toLowerCase()] || '404 not found';
   title.className = 'text-4xl font-bold mb-10 text-white text-center';
   mainSection.appendChild(title);
 
@@ -72,7 +72,7 @@ bioWrapper.className = `
   bio.className = 'text-lg text-gray-300 text-justify max-w-4xl leading-relaxed';
 
   
-  bio.innerHTML = bioMap[name.toLowerCase()] || "This team member is an important part of our team...";
+  bio.innerHTML = bioMap[name.toLowerCase()] || "This member is not part of our team... sorry!";
 
 
 
