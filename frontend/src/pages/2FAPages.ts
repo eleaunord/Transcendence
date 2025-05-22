@@ -86,72 +86,89 @@ export function create2FAPage(
 	  form.appendChild(skipBtn);
 	}
   
-	if (mode === 'input') {
-	  const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-	//   const email = sessionStorage.getItem('userEmail');
+if (mode === 'input') {
+  const token = sessionStorage.getItem('token') || localStorage.getItem('token');
 
-	  if (token) {
-		fetch('/api/enable-2fa', {
-		  method: 'POST',
-		  headers: {
-			Authorization: `Bearer ${token}`,
-		  },
-		})
-		  .then((res) => {
-			if (!res.ok) throw new Error('Failed to send 2FA code');
-			console.log('[2FA] Code sent automatically for verification');
-		  })
-		  .catch((err) => {
-			console.warn('[2FA] Auto-send error:', err);
-		  });
-	  }
+  if (token) {
+    fetch('/api/enable-2fa', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((res) => {
+      if (!res.ok) throw new Error('Failed to send 2FA code');
+      console.log('[2FA] Code sent automatically for verification');
+    })
+    .catch((err) => {
+      console.warn('[2FA] Auto-send error:', err);
+    });
+  }
+
+  const infoMessage = document.createElement('p');
+  infoMessage.className = 'mb-4 text-sm text-gray-300';
+  infoMessage.textContent = t('2fa.input_message');
+  form.appendChild(infoMessage);
+
+  const input = document.createElement('input');
+  input.placeholder = t('2fa.input_placeholder');
+  input.className = 'w-full mb-4 p-2 text-black rounded';
+  input.maxLength = 6;
+
+  const verifyBtn = document.createElement('button');
+  verifyBtn.type = 'button';
+  verifyBtn.textContent = t('2fa.verify_button');
+  verifyBtn.className = 'w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg';
+
+  verifyBtn.onclick = async () => {
+    const code = input.value;
+    if (!token || !code) {
+      alert(t('2fa.missing_info'));
+      return;
+    }
+
+    const res = await fetch('/api/verify-2fa', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      sessionStorage.setItem('token', data.token);
+      sessionStorage.setItem('2fa_verified', 'true');
+      alert(t('2fa.verified'));
+      navigate('/profile-creation');
+    } else {
+      alert(t(data.error) || t('auth.default_error'));
+    }
+  };
+
+  form.appendChild(input);
+  form.appendChild(verifyBtn);
+
+  // ⬇️ Your new "Back to home" button
+  const backToHomeBtn = document.createElement('button');
+  backToHomeBtn.type = 'button';
+  backToHomeBtn.textContent = 'Back to home';
+  //backToHomeBtn.className = 'w-full mt-4 py-2 bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded-lg';
+  backToHomeBtn.className = 'block w-full mt-4 py-2 bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded-lg';
+
+backToHomeBtn.onclick = () => {
+  navigate('/');
+};
+
 	
-	  // msg 출력 부분
-	  const infoMessage = document.createElement('p');
-	  infoMessage.className = 'mb-4 text-sm text-gray-300';
-	  infoMessage.textContent = t('2fa.input_message');
-	  form.appendChild(infoMessage);
+// 	backToHomeBtn.onclick = () => {
+//     window.location.href = 'https://localhost:8443/';
+//   };
 
-	  const input = document.createElement('input');
-	  input.placeholder = t('2fa.input_placeholder');
-	  input.className = 'w-full mb-4 p-2 text-black rounded';
-	  input.maxLength = 6;
-  
-	  const verifyBtn = document.createElement('button');
-	  verifyBtn.type = 'button';
-	  verifyBtn.textContent = t('2fa.verify_button');
-	  verifyBtn.className = 'w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg';
-  
-	  verifyBtn.onclick = async () => {
-		const code = input.value;
-		if (!token || !code) {
-		  alert(t('2fa.missing_info'));
-		  return;
-		}
-  
-		const res = await fetch('/api/verify-2fa', {
-		  method: 'POST',
-		  headers: {
-			Authorization: `Bearer ${token}`,
-			'Content-Type': 'application/json',
-		  },
-		  body: JSON.stringify({ code }),
-		});
-  
-		const data = await res.json();
-		if (res.ok) {
-		  sessionStorage.setItem('token', data.token);
-		  sessionStorage.setItem('2fa_verified', 'true');
-		  alert(t('2fa.verified'));
-		  navigate('/profile-creation');
-		} else {
-		  alert(t(data.error) || t('auth.default_error'));
-		}
-	  };
-  
-	  form.appendChild(input);
-	  form.appendChild(verifyBtn);
-	}
+  form.appendChild(backToHomeBtn);
+}
+
   
 	container.appendChild(form);
 	return container;
