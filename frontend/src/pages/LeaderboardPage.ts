@@ -28,7 +28,7 @@ export function createLeaderboardPage(navigate: (path: string) => void): HTMLEle
   leaderboardSection.className = 'relative mt-24 flex flex-col items-center z-30';
 
   const title = document.createElement('h2');
-  title.textfContent = t('leaderboard.title');
+  title.textContent = t('leaderboard.title');
   title.className = 'text-4xl font-bold mb-8 text-white';
   leaderboardSection.appendChild(title);
 
