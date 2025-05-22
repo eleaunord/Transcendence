@@ -17,7 +17,7 @@ import {
 } from "@babylonjs/core";
 
 export type PongOptions = {
-  mode: 'local' | 'ai';
+  mode: 'local' | 'ai' | 'tournament';
   speed: number;
   scoreToWin: number;
   paddleSize: number;
@@ -42,26 +42,45 @@ export type PongOptions = {
 
 
 // 2205 추가
-// 🧠 게스트 ID를 고유한 음수로 변환하기 위한 Map과 인덱스
-const guestIdMap = new Map<string, number>();
 
-// ✅ 가장 간단한 방법: 브라우저 전역 객체에 guestIndex 저장
+//  가장 간단한 방법: 브라우저 전역 객체에 guestIndex 저장
 if (!(window as any).guestIndex) {
   (window as any).guestIndex = 0;
 }
 
+//  1. sessionStorage에서 복원
+const storedMap = sessionStorage.getItem("guestIdMap");
+const guestIdMap = storedMap
+  ? new Map<string, number>(JSON.parse(storedMap))
+  : new Map<string, number>();
+
+//  2. guestIndex는 맵의 크기로부터 유도
+let guestIndex = guestIdMap.size;
+
 function getGuestNumericId(guestStringId: string | number): number {
-  guestStringId = String(guestStringId); // ✅ 혹시라도 숫자로 들어오면 문자열로 강제 변환
+  const rawId = guestStringId;
+  guestStringId = String(guestStringId);
 
   if (!guestIdMap.has(guestStringId)) {
-    console.log('[GUEST ID MAP] New guest:', guestStringId);
-    guestIdMap.set(guestStringId, -10000 - (window as any).guestIndex++);
+    console.log(`[DEBUG] Mapping new guest:`, {
+      rawId,
+      typeofRawId: typeof rawId,
+      stringId: guestStringId,
+      guestIndex
+    });
+
+    const id = -10000 - guestIndex++;
+    guestIdMap.set(guestStringId, id);
+    
+    //  3. 매핑 결과를 sessionStorage에 다시 저장
+    sessionStorage.setItem("guestIdMap", JSON.stringify(Array.from(guestIdMap.entries())));
   } else {
     console.log('[GUEST ID MAP] Existing guest:', guestStringId);
   }
 
-  return guestIdMap.get(guestStringId)!
+  return guestIdMap.get(guestStringId)!;
 }
+
 
 export async function createPongScene(
   canvas: HTMLCanvasElement,
@@ -69,6 +88,8 @@ export async function createPongScene(
   returnButton: HTMLButtonElement, // bouton reçu depuis l'extérieur
 ): Promise<any> {
   const isAI = options.mode === 'ai';
+  const isTournament = options.mode === 'tournament';
+  const isLocal = options.mode === 'local';
 
   // 🎨 Définir les styles selon le thème choisi
   let paddleColor1 = new Color3(0.6, 0.2, 0.8);
@@ -100,18 +121,26 @@ export async function createPongScene(
       break;
   }
 
-  // const isTournament = options.mode === 'tournament';
+
   let tournamentContext = options.tournamentContext;
 
   // 🔁 Si on ne reçoit pas via options, on vérifie dans sessionStorage (fallback)
-  if (!tournamentContext) 
-  {
+  if (!tournamentContext && isTournament) {
     const matchData = sessionStorage.getItem("currentMatch");
     if (matchData) {
       try {
         tournamentContext = JSON.parse(matchData);
+  
+        // TypeScript-friendly 방식
+        if (tournamentContext?.p1) {
+          tournamentContext.p1.id = String(tournamentContext.p1.id);
+        }
+        if (tournamentContext?.p2) {
+          tournamentContext.p2.id = String(tournamentContext.p2.id);
+        }
+  
       } catch (e) {
-        console.warn(" Erreur parsing currentMatch:", e);
+        console.warn("Erreur parsing currentMatch:", e);
       }
     }
   }
@@ -128,7 +157,7 @@ export async function createPongScene(
   scene.clearColor = new Color4(0, 0, 0, 1.0);
 
   // 2205 추가
-  // 🎮 현재 경기 ID
+  // 현재 경기 ID
   let gameId: number | null = null;
 
   async function startMatch() {
@@ -141,15 +170,23 @@ export async function createPongScene(
       const p1 = tournamentContext.p1;
       const p2 = tournamentContext.p2;
 
-      // 🧑‍💻 user_id 결정
-      user_id = p1.source === 'friend'
-        ? Number(p1.id)
-        : getGuestNumericId(String(p1.id)); // guest일 경우 고유 음수 ID 부여
+      console.log("[TYPE CHECK] p1.id =", p1.id, typeof p1.id); // 
 
-      // 🤖 opponent_id 결정
-      opponent_id = p2.source === 'friend'
-        ? Number(p2.id)
-        : getGuestNumericId(String(p2.id));
+      // user_id 결정
+      // user_id = p1.source === 'friend'
+      //   ? Number(p1.id)
+      //   : getGuestNumericId(String(p1.id)); // guest일 경우 고유 음수 ID 부여
+
+     // guest일 때만 getGuestNumericId 적용
+      user_id = p1.source === 'guest'
+      ? getGuestNumericId(p1.id)
+      : Number(p1.id);
+
+      // opponent_id 결정
+      opponent_id = p2.source === 'guest'
+        ? getGuestNumericId(p2.id)
+        : Number(p2.id);
+
     } else {
       // 일반 모드 (1vs1, AI)
       user_id = Number(sessionStorage.getItem("userId"));
@@ -164,15 +201,19 @@ export async function createPongScene(
     console.log("[START MATCH] opponent_id:", opponent_id);
 
     try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        ...(user_id !== undefined && user_id >= 0 && token
+          ? { Authorization: `Bearer ${token}` }
+          : {})
+      };
+    
       const response = await fetch("/api/match/start", {
         method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
+        headers,
         body: JSON.stringify(body)
       });
-
+    
       const data = await response.json();
       gameId = data.gameId;
       console.log("[MATCH STARTED]", { gameId, user_id, opponent_id });
@@ -191,14 +232,14 @@ export async function createPongScene(
   //     const p1 = tournamentContext.p1;
   //     const p2 = tournamentContext.p2;
   
-  //     // ✅ user_id: 로그인 유저 또는 guest
+  //     //  user_id: 로그인 유저 또는 guest
   //     if (p1.source === 'friend') {
   //       user_id = Number(p1.id);
   //     } else {
   //       user_id = getGuestNumericId(p1.id, 0); // 첫 번째 게스트는 -10000
   //     }
   
-  //     // ✅ opponent_id: 친구 또는 guest
+  //     //  opponent_id: 친구 또는 guest
   //     if (p2.source === 'friend') {
   //       opponent_id = Number(p2.id);
   //     } else {
@@ -462,7 +503,7 @@ export async function createPongScene(
       if (gameId !== null) {
         const token = sessionStorage.getItem("token");
   
-        // ✅ 수정됨: user_id도 함께 계산
+        //  수정됨: user_id도 함께 계산
         let user_id: number | undefined;
         let opponent_id: number;
   
@@ -472,7 +513,7 @@ export async function createPongScene(
   
           user_id = p1.source === 'friend'
             ? Number(p1.id)
-            : getGuestNumericId(String(p1.id)); // ✅ 문자열 강제 변환
+            : getGuestNumericId(String(p1.id)); //  문자열 강제 변환
   
           opponent_id = p2.source === 'friend'
             ? Number(p2.id)
@@ -482,7 +523,7 @@ export async function createPongScene(
           opponent_id = isAI ? 2 : 3;
         }
   
-        // ✅ 수정됨: 게스트 vs 게스트인 경우 Authorization 제거
+        //  수정됨: 게스트 vs 게스트인 경우 Authorization 제거
         const isGuestVsGuest = user_id < 0 && opponent_id < 0;
   
         const headers: Record<string, string> = {
@@ -491,6 +532,20 @@ export async function createPongScene(
         if (!isGuestVsGuest && token) {
           headers["Authorization"] = `Bearer ${token}`;
         }
+
+        
+        // 디버그 용 추가//
+        const body = {
+          gameId,
+          user_id,
+          opponent_id,
+          score1: scorePlayer,
+          score2: scoreIA
+        };
+      
+        console.log("[/!\ MATCH END BODY /!\]", body);
+        // 디버그 땜에 추가 후에 삭제!!
+
   
         try {
           const res = await fetch("/api/match/end", {
@@ -498,7 +553,7 @@ export async function createPongScene(
             headers,
             body: JSON.stringify({
               gameId,
-              user_id,           // ✅ 수정됨: user_id 포함
+              user_id,           //  수정됨: user_id 포함
               opponent_id,
               score1: scorePlayer,
               score2: scoreIA
@@ -517,7 +572,10 @@ export async function createPongScene(
         const winner = isWin ? tournamentContext.p1 : tournamentContext.p2;
   
         sessionStorage.setItem("matchWinner", JSON.stringify({
-          winner,
+          winner: {
+            ...winner,
+            id: String(winner.id) //  이 줄 추가
+          },
           nextPhase: tournamentContext.nextPhase,
           tournamentId: tournamentContext.tournamentId
         }));

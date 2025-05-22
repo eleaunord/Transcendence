@@ -48,24 +48,14 @@ export default async function tournaments(fastify: FastifyInstance) {
       `);
         // let guestIDCounter = 4;
         // Avant la boucle sur les joueurs :
-        let guestIdCounter = 4;
-
+        
         players.forEach(player => {
-        let playerId: number;
+        let playerId: string;
 
-        if (player.source === 'guest') 
-        {
-            if (guestIdCounter > 6) {
-            throw new Error("Trop de joueurs guest (limite entre 4 et 6 atteinte)");
-            }
-            playerId = guestIdCounter++;
-        } 
-        else 
-        {
-            playerId = parseInt(player.id, 10);
-            if (isNaN(playerId)) {
-            throw new Error(`ID invalide pour le joueur : ${player.name} (id: ${player.id})`);
-            }
+        if (player.source === 'guest') {
+          playerId = player.id; // ✅ 고유 문자열 그대로 저장
+        } else {
+          playerId = String(player.id);
         }
 
         insertPlayer.run(tournamentId, playerId, player.source, player.avatar || null, player.name || null);

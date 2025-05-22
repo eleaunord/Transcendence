@@ -346,10 +346,15 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
       clearInterval(interval);
       console.log(`[MATCH ANNONCE] saving match res for next phase:` , { p1, p2, nextPhase });
       sessionStorage.removeItem("matchWinner"); // 여기 추가
-      sessionStorage.setItem('currentMatch', JSON.stringify({ p1, p2, nextPhase, tournamentId }));
+      
+      sessionStorage.setItem('currentMatch', JSON.stringify({
+        p1: { ...p1, id: String(p1.id) },
+        p2: { ...p2, id: String(p2.id) },
+        nextPhase,
+        tournamentId
+      }));
       overlay.remove();
       launchBracketGame(container);
-
     }
   }, 1000);
 }
@@ -404,16 +409,25 @@ layout!.className = 'flex flex-1 justify-center items-center'; // ensure it's ce
 
   layout!.appendChild(frame);
 
+  const matchData = sessionStorage.getItem("currentMatch");
+  if (!matchData) {
+    console.error("❌ currentMatch not found in sessionStorage");
+    return;
+  }
+
+  const parsed = JSON.parse(matchData);
+
 
   const settings = loadPongSettings();
   createPongScene(
     canvas,
     {
-      mode: 'local',
+      mode: 'tournament',
       speed: settings.speed,
       scoreToWin: settings.scoreToWin,
       paddleSize: settings.paddleSize,
-      theme: settings.theme
+      theme: settings.theme,
+      tournamentContext: parsed
     },
     btnReturn
   );

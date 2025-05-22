@@ -264,6 +264,11 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
   startBtn.addEventListener('click', async () => {
     const selectedPlayers = playerSlots.filter(p => p !== null && p !== 'loading') as Player[];
     console.log('Joueurs sélectionnés :', selectedPlayers);
+
+    selectedPlayers.forEach(p => {
+      console.log('[PLAYER ID TYPE CHECK]', p.id, typeof p.id);
+    });
+
     try {
       sessionStorage.removeItem('semiFinalists'); //2105 추가
 

@@ -173,7 +173,7 @@ async function migrate() {
     CREATE TABLE IF NOT EXISTS tournament_players (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       tournament_id INTEGER NOT NULL,
-      player_id INTEGER NOT NULL,
+      player_id TEXT NOT NULL,
       source TEXT NOT NULL,
       avatar TEXT,
       FOREIGN KEY (tournament_id) REFERENCES tournaments(id)
