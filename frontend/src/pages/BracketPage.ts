@@ -3,6 +3,7 @@ import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from '../utils/theme';
 import { createPongScene } from '../games/pong3d/PongScene';
 import { loadPongSettings } from '../utils/pongSettings';
+import { t } from '../utils/translator'; // ou chemin correct
 
 type Player = {
   id: string;
@@ -34,7 +35,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
   gameFrame.className = 'w-3/4 h-3/4 border-4 border-white relative overflow-hidden bg-black flex flex-col items-center p-8 gap-6';
 
   const title = document.createElement('h1');
-  title.textContent = `Tournoi #${id || 'N/A'}`;
+  title.textContent = t('bracket.title', { id: id || 'N/A' });
   title.className = 'text-3xl font-bold mb-6 text-center';
   gameFrame.appendChild(title);
 
@@ -120,7 +121,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     });
 
     const playBtn = document.createElement('button');
-    playBtn.textContent = 'play';
+    playBtn.textContent = t('bracket.play');
     playBtn.className = 'mt-2 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm';
     playBtn.addEventListener('click', () => {
       const nextPhase = semiFinalists.includes(null) ? 'semiFinal' : 'final';
@@ -158,7 +159,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     semiFinalists.forEach((player) => {
       const slot = document.createElement('div');
       slot.className = 'p-2 border rounded bg-gray-700 w-48 text-center';
-      slot.textContent = player ? player.username : 'En attente';
+      slot.textContent = player ? player.username : t('bracket.waiting');
       semiFinal.appendChild(slot);
     });
 
@@ -183,7 +184,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     final.innerHTML = '';
     const winnerDiv = document.createElement('div');
     winnerDiv.className = 'p-4 border-2 border-yellow-500 bg-gray-700 w-48 text-center font-bold animate-pulse';
-    winnerDiv.textContent = '🏆 Winner : ' + finalist?.username;
+    winnerDiv.textContent = `🏆 ${t('bracket.winner')}: ${finalist?.username}`;
     final.appendChild(winnerDiv);
     updateLines();
   };
@@ -262,7 +263,7 @@ if (matchWinnerStr) {
   matchBox.className = 'bg-gray-800 text-white rounded-2xl border-4 border-yellow-400 p-12 flex flex-col items-center gap-6';
 
   const title = document.createElement('div');
-  title.textContent = 'Match à venir';
+  title.textContent = t('bracket.next_match');
   title.className = 'text-3xl font-bold text-yellow-400';
   matchBox.appendChild(title);
 
@@ -296,6 +297,7 @@ if (matchWinnerStr) {
   document.body.appendChild(overlay);
 
   let timeLeft = 4;
+  countdown.textContent = t('bracket.countdown', { timeLeft });
   countdown.textContent = `Début dans ${timeLeft}...`;
 
   const interval = setInterval(() => {
@@ -338,7 +340,7 @@ function launchBracketGame(container: HTMLElement) {
   announce.className = "absolute top-16 left-1/2 transform -translate-x-1/2 text-yellow-300 text-xl font-semibold";
 
   const btnReturn = document.createElement("button");
-  btnReturn.textContent = "Retour";
+  btnReturn.textContent = t('bracket.return');
   btnReturn.className = `
     absolute bottom-8 left-1/2 transform -translate-x-1/2 
     bg-yellow-400 hover:bg-yellow-500 text-black font-bold 

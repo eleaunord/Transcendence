@@ -1,11 +1,13 @@
-export type RouteMap = { [path: string]: (navigate: (path: string) => void) => HTMLElement };
+import { t } from '../utils/translator';
+
+type RouteMap = { [path: string]: (navigate: (path: string) => void) => HTMLElement };
 
 /**
  * Permet de protéger une route : redirige vers /auth si aucun token n'est présent.
  */
 export function protectedRoute(
   page: (navigate: (path: string) => void) => HTMLElement,
-  message: string = 'Please log in to proceed.'
+  message: string = t('protected.login_required')
 ): (navigate: (path: string) => void) => HTMLElement {
   return (navigate) => {
     const token = localStorage.getItem('token');
@@ -13,7 +15,7 @@ export function protectedRoute(
     if (!token) {
       console.log('[ProtectedRoute] User not logged in → redirecting to home...');
       const placeholder = document.createElement('div');
-      placeholder.textContent = 'Redirecting to home...';
+      placeholder.textContent = t('protected.redirecting');
       placeholder.className = 'text-white text-center mt-40 text-xl';
       localStorage.setItem('protected_route_notice', message);
       setTimeout(() => {
@@ -52,6 +54,14 @@ export function initRouter(routes: RouteMap, teamPrefix = '', rootId = 'app') {
     renderRoute(path);
   }
 
+  // function renderRoute(path: string) {
+  //   const pathOnly = path.split('?')[0]; // DONT REMOVE THIS LINE: c'est pour enlève la query string (ex: ?mode=input) pour matcher uniquement la route de base (ex: /2fa)
+  //   const page = routes[pathOnly];
+  //   if (page && root) {
+  //     root.innerHTML = '';
+  //     root.appendChild(page(navigate));
+  //   }
+  // }
   function renderRoute(path: string) {
     if (!root) return; // Extra safety check
 
@@ -65,10 +75,19 @@ export function initRouter(routes: RouteMap, teamPrefix = '', rootId = 'app') {
       return;
     }
     
-    const page = routes[pathOnly];
-    if (page) {
+    // const page = routes[pathOnly];
+    // if (page) {
+    // const pathOnly = path.split('?')[0];
+    const page = routes[pathOnly] || routes['/404']; // ✅ fallback ici
+
+    if (page && root) {
       root.innerHTML = '';
       root.appendChild(page(navigate));
+      
+      // (Optionnel) Mettre l’URL à /404 si la route n’existe pas
+      if (!routes[pathOnly]) {
+        window.history.replaceState({}, '', '/404');
+      }
     }
   }
 

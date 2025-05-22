@@ -1,6 +1,7 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from '../utils/theme';
 import { loadMemorySettings } from '../utils/memorySettings';
+import { t } from '../utils/translator';
 
 export function createMemoryVersusPage(navigate: (path: string) => void): HTMLElement {
   let moves = 0;
@@ -60,7 +61,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   const turnIndicator = document.createElement('div');
   const timerDisplay = document.createElement('div');
 
-  player1Status.textContent = player1Status.textContent = `👤 Vous : 0`;
+  player1Status.textContent = player1Status.textContent = `👤 ${t('memory.versus.you')}: 0`;
   player2Status.textContent = `🎮 ${opponentName} : 0`;
   turnIndicator.textContent = '👉 Votre tour';
   timerDisplay.textContent = '';
@@ -104,8 +105,8 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
         clearTurnTimer();
         currentPlayer = currentPlayer === 1 ? 2 : 1;
         turnIndicator.textContent = currentPlayer === 1
-          ? '👉 Votre tour'
-          : `👉 Tour de ${opponentName}`;
+          ? `👉 ${t('memory.versus.your_turn')}`
+          : `👉 ${t('memory.versus.opponent_turn', { name: opponentName })}`;
         startTurnTimer();
       }
     }, 1000);
@@ -148,7 +149,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   }
 
   function updateScoreDisplay() {
-    player1Status.textContent = `👤 Vous : ${scores[1]}`;
+    player1Status.textContent = `👤 ${t('memory.versus.you')}: ${scores[1]}`;
     player2Status.textContent = `🎮 ${opponentName} : ${scores[2]}`;
   }
 
@@ -191,8 +192,8 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
 
         currentPlayer = currentPlayer === 1 ? 2 : 1;
         turnIndicator.textContent = currentPlayer === 1
-          ? '👉 Votre tour'
-          : `👉 Tour de ${opponentName}`;
+          ? `👉 ${t('memory.versus.your_turn')}`
+          : `👉 ${t('memory.versus.opponent_turn', { name: opponentName })}`;
         startTurnTimer();
       }, 500);
     }
