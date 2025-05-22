@@ -78,24 +78,24 @@ export function createMemoryFriendPage(navigate: (path: string) => void): HTMLEl
   mainArea.appendChild(friendList);
   container.appendChild(mainArea);
 
-  // Animation sidebar
-  sidebar.addEventListener('mouseenter', () => {
-    document.querySelectorAll('.sidebar-label').forEach(label => {
-      (label as HTMLElement).classList.remove('opacity-0');
-      (label as HTMLElement).classList.add('opacity-100');
-    });
-    backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-    mainArea.classList.add('ml-44');
-  });
+  // // Animation sidebar
+  // sidebar.addEventListener('mouseenter', () => {
+  //   document.querySelectorAll('.sidebar-label').forEach(label => {
+  //     (label as HTMLElement).classList.remove('opacity-0');
+  //     (label as HTMLElement).classList.add('opacity-100');
+  //   });
+  //   backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+  //   mainArea.classList.add('ml-44');
+  // });
 
-  sidebar.addEventListener('mouseleave', () => {
-    document.querySelectorAll('.sidebar-label').forEach(label => {
-      (label as HTMLElement).classList.add('opacity-0');
-      (label as HTMLElement).classList.remove('opacity-100');
-    });
-    backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-    mainArea.classList.remove('ml-44');
-  });
+  // sidebar.addEventListener('mouseleave', () => {
+  //   document.querySelectorAll('.sidebar-label').forEach(label => {
+  //     (label as HTMLElement).classList.add('opacity-0');
+  //     (label as HTMLElement).classList.remove('opacity-100');
+  //   });
+  //   backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+  //   mainArea.classList.remove('ml-44');
+  // });
 
   return container;
 }

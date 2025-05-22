@@ -254,27 +254,27 @@ function showVictoryAnimation() {
   // backBtn.onclick = () => navigate('/memory-mode');
   // container.appendChild(backBtn);
 
-  sidebar.addEventListener('mouseenter', () => {
-    document.querySelectorAll('.sidebar-label').forEach(label => {
-      (label as HTMLElement).classList.remove('opacity-0');
-      (label as HTMLElement).classList.add('opacity-100');
-    });
-    const bg = document.getElementById('backgroundImage');
-    if (bg) bg.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-    const layoutEl = document.getElementById('game-layout');
-    if (layoutEl) layoutEl.classList.add('ml-44');
-  });
+  // sidebar.addEventListener('mouseenter', () => {
+  //   document.querySelectorAll('.sidebar-label').forEach(label => {
+  //     (label as HTMLElement).classList.remove('opacity-0');
+  //     (label as HTMLElement).classList.add('opacity-100');
+  //   });
+  //   const bg = document.getElementById('backgroundImage');
+  //   if (bg) bg.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+  //   const layoutEl = document.getElementById('game-layout');
+  //   if (layoutEl) layoutEl.classList.add('ml-44');
+  // });
 
-  sidebar.addEventListener('mouseleave', () => {
-    document.querySelectorAll('.sidebar-label').forEach(label => {
-      (label as HTMLElement).classList.add('opacity-0');
-      (label as HTMLElement).classList.remove('opacity-100');
-    });
-    const bg = document.getElementById('backgroundImage');
-    if (bg) bg.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-    const layoutEl = document.getElementById('game-layout');
-    if (layoutEl) layoutEl.classList.remove('ml-44');
-  });
+  // sidebar.addEventListener('mouseleave', () => {
+  //   document.querySelectorAll('.sidebar-label').forEach(label => {
+  //     (label as HTMLElement).classList.add('opacity-0');
+  //     (label as HTMLElement).classList.remove('opacity-100');
+  //   });
+  //   const bg = document.getElementById('backgroundImage');
+  //   if (bg) bg.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+  //   const layoutEl = document.getElementById('game-layout');
+  //   if (layoutEl) layoutEl.classList.remove('ml-44');
+  // });
 
   return container;
 }
