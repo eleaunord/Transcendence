@@ -1,3 +1,5 @@
+import { t } from '../utils/translator';
+
 export function createSettingsPanel(navigate: (path: string) => void): HTMLElement {
   const settingsSection = document.createElement('div');
   settingsSection.className = `
@@ -15,7 +17,7 @@ export function createSettingsPanel(navigate: (path: string) => void): HTMLEleme
   `.replace(/\s+/g, ' ').trim();
 
   const settingsTitle = document.createElement('h3');
-  settingsTitle.textContent = 'Settings';
+  settingsTitle.textContent = t('settings.title');
   settingsTitle.className = 'text-xl font-semibold mb-4';
   settingsContainer.appendChild(settingsTitle);
 
@@ -45,7 +47,7 @@ export function createSettingsPanel(navigate: (path: string) => void): HTMLEleme
 
   twoFAButton.addEventListener('click', async () => {
     const token = localStorage.getItem('token');
-    if (!token) return alert('Not authenticated.');
+   if (!token) return alert(t('settings.auth.required'));
 
     twoFAButton.disabled = true;
 
@@ -75,7 +77,7 @@ export function createSettingsPanel(navigate: (path: string) => void): HTMLEleme
       }
     } catch (err) {
       console.error('2FA toggle error:', err);
-      alert('Error toggling 2FA');
+      alert(t('settings.2fa.error'));
     } finally {
       twoFAButton.disabled = false;
     }
@@ -89,12 +91,13 @@ export function createSettingsPanel(navigate: (path: string) => void): HTMLEleme
   exportContainer.className = 'flex flex-col items-center text-center w-56';
 
   const exportDataButton = document.createElement('button');
-  exportDataButton.textContent = 'Export my data';
+  exportDataButton.textContent = t('settings.export.button');
   exportDataButton.className = `${commonButtonClass} bg-purple-500 hover:bg-purple-600`;
 
   const exportDescription = document.createElement('p');
   exportDescription.className = 'mt-2 text-sm text-gray-300 italic';
-  exportDescription.textContent = 'Clicking Export my data will download a copy of your account information.';
+  exportDescription.textContent = t('settings.export.description');
+
 
   exportDataButton.addEventListener('click', () => {
     navigate('/export-data');
@@ -108,13 +111,12 @@ export function createSettingsPanel(navigate: (path: string) => void): HTMLEleme
   anonymizeContainer.className = 'flex flex-col items-center text-center w-56';
 
   const anonymizeButton = document.createElement('button');
-  anonymizeButton.textContent = 'Anonymize my account';
+  anonymizeButton.textContent = t('settings.anonymize.button');
   anonymizeButton.className = `${commonButtonClass} bg-yellow-500 hover:bg-yellow-600`;
 
   const anonymizeDescription = document.createElement('p');
   anonymizeDescription.className = 'mt-2 text-sm text-gray-300 italic';
-  anonymizeDescription.textContent = "Click here to anonymize your account — you'll appear as anonymous_something on the leaderboard instead of your username.";
-
+  anonymizeDescription.textContent = t('settings.anonymize.description');
   anonymizeButton.addEventListener('click', () => {
     navigate('/anonymize');
   });
@@ -127,12 +129,12 @@ export function createSettingsPanel(navigate: (path: string) => void): HTMLEleme
   deleteContainer.className = 'flex flex-col items-center text-center w-56';
 
   const deleteButton = document.createElement('button');
-  deleteButton.textContent = 'Delete account';
+  deleteButton.textContent = t('settings.delete.button');
   deleteButton.className = `${commonButtonClass} bg-red-600 hover:bg-red-700`;
 
   const deleteDescription = document.createElement('p');
   deleteDescription.className = 'mt-2 text-sm text-gray-300 italic';
-  deleteDescription.textContent = 'Clicking Delete my account will permanently remove your account.';
+  deleteDescription.textContent = t('settings.delete.description');
 
   deleteButton.addEventListener('click', () => {
     navigate('/delete-account');

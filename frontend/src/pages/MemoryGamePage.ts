@@ -1,6 +1,7 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from '../utils/theme';
 import { loadMemorySettings } from '../utils/memorySettings';
+import { t } from '../utils/translator';
 
 export function createMemoryGamePage(navigate: (path: string) => void): HTMLElement {
   const { pairCount, theme, timerMode } = loadMemorySettings();
@@ -54,10 +55,10 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
   gameHeader.className = 'flex justify-center items-center gap-8 text-xl font-semibold py-4 bg-black bg-opacity-60 shadow-md z-10';
 
   const movesDisplay = document.createElement('div');
-  movesDisplay.textContent = `🔢 Coups : 0`;
+  movesDisplay.textContent = `🔢 ${t('memory.moves')}: 0`;
 
   const timerDisplay = document.createElement('div');
-  timerDisplay.textContent = timerMode !== 'none' ? `⏱ Temps : ${timeLeft}s` : '';
+  timerDisplay.textContent = timerMode !== 'none' ? `⏱ ${t('memory.timer')}: ${timeLeft}s` : '';
   timerDisplay.className = 'text-white';
 
   gameHeader.appendChild(movesDisplay);
@@ -109,7 +110,7 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
   }
 
   function updateTimerDisplay() {
-    if (timerMode !== 'none') timerDisplay.textContent = `⏱ Temps : ${timeLeft}s`;
+    if (timerMode !== 'none') timerDisplay.textContent = `⏱ ${t('memory.timer')}: ${timeLeft}s`;
   }
 
   function startTimer() {
@@ -155,7 +156,11 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
     const overlay = document.createElement('div');
     overlay.className = 'absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
 
-    overlay.innerHTML = `<div>🎉 Bravo ! 🎉</div><div class="text-2xl mt-4">Tu as terminé en ${moves} coups !</div>`;
+    //overlay.innerHTML = `<div>🎉 Bravo ! 🎉</div><div class="text-2xl mt-4">Tu as terminé en ${moves} coups !</div>`;
+    overlay.innerHTML = `
+      <div>🎉 ${t('memory.victory.solo')}</div>
+      <div class="text-2xl mt-4">${t('memory.victory.moves', { count: moves })}</div>
+    `;
     gameFrame.appendChild(overlay);
   }
 
@@ -163,7 +168,11 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
     const overlay = document.createElement('div');
     overlay.className = 'absolute inset-0 bg-black bg-opacity-80 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
 
-    overlay.innerHTML = `<div>💀 Temps écoulé !</div><div class="text-2xl mt-4">Tu as perdu...</div>`;
+    //overlay.innerHTML = `<div>💀 Temps écoulé !</div><div class="text-2xl mt-4">Tu as perdu...</div>`;
+    overlay.innerHTML = `
+      <div>💀 ${t('memory.defeat.timeout')}</div>
+      <div class="text-2xl mt-4">${t('memory.defeat.message')}</div>
+    `;
     gameFrame.appendChild(overlay);
   }
 
@@ -177,7 +186,7 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
       innerCard.style.transform = 'rotateY(180deg)';
       flippedCards.push({ card, inner: innerCard, icon });
       moves++;
-      movesDisplay.textContent = `🔢 Coups : ${moves}`;
+      movesDisplay.textContent = `🔢 ${t('memory.moves')}: ${moves}`;
 
       if (flippedCards.length === 2) {
         lockBoard = true;
@@ -197,7 +206,7 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
 
   const backBtn = document.createElement('button');
   backBtn.className = 'fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg';
-  backBtn.textContent = 'Retour aux modes de jeu';
+  backBtn.textContent = t('memory.backToModes');
   backBtn.onclick = () => navigate('/memory-mode');
   container.appendChild(backBtn);
 

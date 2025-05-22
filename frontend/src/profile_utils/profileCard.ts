@@ -1,3 +1,5 @@
+import { t } from '../utils/translator';
+
 export function createProfileCard(): HTMLElement {
   const profileCard = document.createElement('div');
   profileCard.id = 'profileCard';
@@ -57,7 +59,7 @@ export function createProfileCard(): HTMLElement {
         const file = target.files[0];
 
         if (file.size > 2 * 1024 * 1024) {
-          alert("Image trop volumineuse. Choisissez une image de moins de 2 Mo.");
+          alert(t('profile.avatar.tooLarge'));
           return;
         }
 
@@ -78,7 +80,7 @@ export function createProfileCard(): HTMLElement {
               body: JSON.stringify({ image: result })
             }).catch(err => {
               console.error('Erreur mise à jour avatar :', err);
-              alert('Erreur lors de la sauvegarde de la photo');
+              alert(t('profile.avatar.saveError'));
             });
           }
 
@@ -104,7 +106,7 @@ export function createProfileCard(): HTMLElement {
   const username = document.createElement('h2');
   username.id = 'usernameValue';
   username.className = 'text-xl font-semibold text-white';
-  username.textContent = 'Username';
+  username.textContent = t('profile.username.default');
 
   profileCard.appendChild(username);
 

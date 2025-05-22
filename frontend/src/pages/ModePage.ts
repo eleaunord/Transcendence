@@ -1,5 +1,6 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
+import { t } from '../utils/translator';
 
 export function createModePage(navigate: (path: string) => void): HTMLElement {
     const container = document.createElement('div');
@@ -41,7 +42,7 @@ export function createModePage(navigate: (path: string) => void): HTMLElement {
 
     // Mode Versus
     const versusBtn = document.createElement('button');
-    versusBtn.textContent = 'Mode Versus';
+    versusBtn.textContent = t('memory.mode.versus');
     versusBtn.className = 'bg-blue-600/80 hover:bg-blue-700/50 ' + btnStyle;
     versusBtn.addEventListener('click', () => {
       navigate('/customization-game');
@@ -49,7 +50,7 @@ export function createModePage(navigate: (path: string) => void): HTMLElement {
 
     // Mode Tournoi
     const tournamentBtn = document.createElement('button');
-    tournamentBtn.textContent = 'Mode Tournoi';
+    tournamentBtn.textContent = t('mode.tournament');
     tournamentBtn.className = 'bg-purple-800 hover:bg-purple-800/50 ' + btnStyle;
     tournamentBtn.addEventListener('click', () => {
       navigate('/tournament');
@@ -60,13 +61,13 @@ export function createModePage(navigate: (path: string) => void): HTMLElement {
     duoWrapper.className = 'relative animate-fade-in';
 
     const duoBtn = document.createElement('button');
-    duoBtn.textContent = 'Mode Duo';
+    duoBtn.textContent = t('mode.duo');
     duoBtn.className = 'bg-gray-700 text-white opacity-50 cursor-not-allowed ' + btnStyle;
     duoBtn.disabled = true;
-    duoBtn.title = 'Fonctionnalité bientôt disponible !';
+    duoBtn.title = t('mode.comingSoon');
 
     const duoBadge = document.createElement('span');
-    duoBadge.textContent = 'À venir';
+    duoBadge.textContent = t('mode.badge');
     duoBadge.className =
       'absolute top-0 right-0 -mt-3 -mr-3 bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded-full shadow';
 

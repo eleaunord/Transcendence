@@ -1,3 +1,5 @@
+import { t } from '../utils/translator';
+
 export function initSidebarHoverEffects(): void {
   const sidebar = document.querySelector('.sidebar');
   if (!sidebar) return;

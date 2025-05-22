@@ -1,3 +1,5 @@
+import { t } from '../utils/translator';
+
 export type RouteMap = { [path: string]: (navigate: (path: string) => void) => HTMLElement };
 
 /**

@@ -1,3 +1,5 @@
+import { t } from '../utils/translator';
+
 export function createProfileForm(): HTMLElement {
   const formContainer = document.createElement('div');
   formContainer.className = `
@@ -7,17 +9,17 @@ export function createProfileForm(): HTMLElement {
   const emailRow = document.createElement('div');
   emailRow.className = 'flex justify-between items-center';
   const emailLabel = document.createElement('span');
-  emailLabel.textContent = 'Email:';
+  emailLabel.textContent = t('profile.email.label');
   const emailValue = document.createElement('span');
   emailValue.id = 'emailValue';
-  emailValue.textContent = 'Loading...';
+  emailValue.textContent = t('profile.email.loading');
   emailRow.appendChild(emailLabel);
   emailRow.appendChild(emailValue);
 
   const passwordRow = document.createElement('div');
   passwordRow.className = 'flex justify-between items-center';
   const passwordLabel = document.createElement('span');
-  passwordLabel.textContent = 'Password:';
+  passwordLabel.textContent = t('profile.password.label');
   const passwordValue = document.createElement('span');
   passwordValue.textContent = '********';
   passwordRow.appendChild(passwordLabel);
@@ -25,33 +27,33 @@ export function createProfileForm(): HTMLElement {
 
   const usernameInput = document.createElement('input');
   usernameInput.type = 'text';
-  usernameInput.placeholder = 'New username';
+  usernameInput.placeholder = t('profile.username.placeholder');
   usernameInput.className = `
     mt-4 p-2 rounded-lg bg-gray-900 text-white placeholder-gray-400
     border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500
   `.replace(/\s+/g, ' ').trim();
 
   const updateButton = document.createElement('button');
-  updateButton.textContent = 'Update Username';
+  updateButton.textContent = t('profile.username.update');
   updateButton.className = `
     mt-2 p-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-semibold
     transition-colors duration-300
   `.replace(/\s+/g, ' ').trim();
 
   const successMessage = document.createElement('p');
-  successMessage.textContent = '✅ Profile updated successfully!';
+  successMessage.textContent = t('profile.update.success');
   successMessage.className = 'text-green-400 font-semibold mt-4 hidden';
 
   updateButton.addEventListener('click', async () => {
     const newUsername = usernameInput.value.trim();
     if (newUsername.length === 0) {
-      alert('Username cannot be empty!');
+      alert(t('profile.username.empty'));
       return;
     }
 
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('You must be logged in.');
+      alert(t('profile.auth.required'));
       return;
     }
 
@@ -79,11 +81,11 @@ export function createProfileForm(): HTMLElement {
         setTimeout(() => successMessage.classList.add('hidden'), 3000);
       } else {
         const data = await res.json();
-        alert(data.error || 'Failed to update.');
+        alert(t(data.error) || t('profile.update.failed'));
       }
     } catch (err) {
       console.error('Update error:', err);
-      alert('Server error');
+      alert(t('profile.update.serverError'));
     } finally {
       updateButton.disabled = false;
     }

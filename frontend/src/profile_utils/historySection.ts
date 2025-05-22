@@ -1,3 +1,5 @@
+import { t } from '../utils/translator';
+
 export function createHistorySection(token: string): HTMLElement {
   const historyWrapper = document.createElement('div');
   historyWrapper.className = `
@@ -69,7 +71,7 @@ export function createHistorySection(token: string): HTMLElement {
 
         pageItems.forEach(game => {
           const p = document.createElement('p');
-          p.textContent = `${icon} ${game.score1} - ${game.score2} contre ${game.opponent} • ${new Date(game.timestamp).toLocaleString()}`;
+          p.textContent = `${icon} ${game.score1} - ${game.score2} ${t('history.against')} ${game.opponent} • ${new Date(game.timestamp).toLocaleString()}`;
           list.appendChild(p);
         });
 
@@ -102,14 +104,14 @@ export function createHistorySection(token: string): HTMLElement {
       .then(games => {
         if (!Array.isArray(games)) {
           const errorMsg = document.createElement('p');
-          errorMsg.textContent = 'Impossible de charger l’historique des parties.';
+          errorMsg.textContent = t('history.loadError');
           list.appendChild(errorMsg);
           return;
         }
 
         if (games.length === 0) {
           const emptyMsg = document.createElement('p');
-          emptyMsg.textContent = 'Aucune partie jouée récemment.';
+          emptyMsg.textContent = t('history.empty');
           list.appendChild(emptyMsg);
           return;
         }
@@ -120,15 +122,15 @@ export function createHistorySection(token: string): HTMLElement {
       .catch(err => {
         console.error(`Erreur lors du chargement de ${titleText.toLowerCase()}:`, err);
         const errorMsg = document.createElement('p');
-        errorMsg.textContent = 'Erreur lors du chargement de l’historique.';
+        errorMsg.textContent = t('history.error');
         list.appendChild(errorMsg);
       });
 
     return section;
   }
 
-  const pongSection = createPaginatedHistorySection('Parties de Pong', '/api/me/pong-games', '🏓');
-  const memorySection = createPaginatedHistorySection('Parties de Memory', '/api/me/memory-games', '🃏');
+  const pongSection = createPaginatedHistorySection(t('history.pong'), '/api/me/pong-games', '🏓');
+  const memorySection = createPaginatedHistorySection(t('history.memory'), '/api/me/memory-games', '🃏');
 
   historyWrapper.appendChild(pongSection);
   historyWrapper.appendChild(memorySection);

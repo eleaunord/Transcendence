@@ -84,7 +84,6 @@ const routes = {
 
 }
 
-<<<<<<< HEAD
 navigate = initRouter(routes, 'team')!;
 
 // const path = window.location.pathname;
@@ -96,9 +95,6 @@ navigate = initRouter(routes, 'team')!;
 // }
 
 console.log('🏁 Router chargé');
-=======
-navigate = initRouter(routes)!;
-console.log('🏁 Router chargé');
 
 // // === INTERNATIONALISATION ===
 window.addEventListener('DOMContentLoaded', () => {
@@ -109,4 +105,3 @@ window.addEventListener('DOMContentLoaded', () => {
     setLanguage(lang as 'en' | 'fr' | 'ko');
   applyTranslations();
 };
->>>>>>> 2105_translation

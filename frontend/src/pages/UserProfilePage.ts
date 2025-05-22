@@ -8,12 +8,36 @@ import { createHistorySection } from "../profile_utils/historySection";
 
 import { loadUserData } from "../profile_events/loadUserData";
 import { initSidebarHoverEffects } from "../profile_events/initSidebarHoverEffects";
+import { setLanguage, t,applyTranslations } from '../utils/translator'
 
 export function createUserProfilePage(navigate: (path: string) => void): HTMLElement {
   const token: string | null = localStorage.getItem('token');
 
   const container = document.createElement('div');
   container.className = 'relative min-h-screen bg-gray-900 text-white overflow-hidden';
+
+  // Ajout des boutons de langue
+  const langSelector = document.createElement('div');
+  langSelector.className = 'absolute top-4 right-4 flex gap-2 z-20';
+
+  ['en', 'fr', 'ko'].forEach((langCode) => {
+    const btn = document.createElement('button');
+    btn.className = 'px-2 py-1 border rounded text-sm bg-white text-black';
+    btn.textContent = langCode.toUpperCase();
+
+    btn.addEventListener('click', () => {
+      setLanguage(langCode as 'en' | 'fr' | 'ko');
+      const root = document.getElementById('app');
+      if (root) {
+        root.innerHTML = '';
+        root.appendChild(createUserProfilePage(navigate));
+      }
+    });
+
+    langSelector.appendChild(btn);
+  });
+
+  container.appendChild(langSelector);
 
   const sidebar = createSidebar(navigate);
   sidebar.classList.add('sidebar'); // nécessaire pour les effets de hover
@@ -444,7 +468,9 @@ export function createUserProfilePage(navigate: (path: string) => void): HTMLEle
     navigate('/anonymize');
   });
 
-  anonymizeContainer.appendChild(anonymizeButton);
+  anonymizeContainer.appendChild(anonymizeButton);Explorer les GPT
+  
+  
   anonymizeContainer.appendChild(anonymizeDescription);
 
   // ------- Delete Account Button and description -------

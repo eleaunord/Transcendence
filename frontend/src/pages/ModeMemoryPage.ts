@@ -1,5 +1,6 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
+import { t } from '../utils/translator';
 
 export function createModeMemoryPage(navigate: (path: string) => void): HTMLElement {
     const container = document.createElement('div');
@@ -41,12 +42,12 @@ export function createModeMemoryPage(navigate: (path: string) => void): HTMLElem
     
     // boutons de sélection du mode
     const versusBtn = document.createElement('button');
-    versusBtn.textContent = 'Mode Versus';
+    versusBtn.textContent = t('memory.mode.versus');
     versusBtn.className =
       'bg-blue-600/80 hover:bg-blue-700/50 ' + btnStyle;
 
     const soloBtn = document.createElement('button');
-    soloBtn.textContent = 'Mode Solo';
+    soloBtn.textContent = t('memory.mode.solo');
     soloBtn.className =
       'bg-purple-800 hover:bg-purple-800/50 ' + btnStyle;
 
@@ -55,15 +56,16 @@ export function createModeMemoryPage(navigate: (path: string) => void): HTMLElem
     survivalWrapper.className = 'relative animate-fade-in';
 
     const survivalBtn = document.createElement('button');
-    survivalBtn.textContent = 'Mode Survie';
+    survivalBtn.textContent = t('memory.mode.survival');
     survivalBtn.className =
       'bg-gray-700 text-white opacity-50 cursor-not-allowed ' + btnStyle;
     survivalBtn.disabled = true;
-    survivalBtn.title = 'Fonctionnalité bientôt disponible !';
+    survivalBtn.title = t('memory.mode.comingSoon');
 
     // Badge "À venir"
     const comingSoonBadge = document.createElement('span');
-    comingSoonBadge.textContent = 'À venir';
+    comingSoonBadge.textContent = t('memory.mode.badge');
+
     comingSoonBadge.className =
       'absolute top-0 right-0 -mt-3 -mr-3 bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded-full shadow';
 

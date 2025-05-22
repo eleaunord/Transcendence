@@ -61,7 +61,7 @@ langSelector.className = 'absolute top-4 right-4 flex gap-2 z-20'; // z-20 pour 
 });
 
 // Ajout du sélecteur de langue dans le conteneur principal
-container.appendChild(langSelector);
+  container.appendChild(langSelector);
   container.appendChild(langSelector);
 
   const background = document.createElement('div');
