@@ -115,11 +115,9 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
 
     let opponentCard: HTMLElement;
     if (mode === 'local') {
-      const player2Image = sessionStorage.getItem("profilePicture") || "/assets/profile-pictures/default.jpg";
-      const player2Name = "Guest";
-      opponentCard = createPlayerCard(player2Image, player2Name);
+      opponentCard = createPlayerCard("/assets/guest-avatars/moon.jpg", "Guest");
     } else {
-      opponentCard = createPlayerCard("/assets/profile-pictures/default.jpg", "AI");
+      opponentCard = createPlayerCard("/assets/guest-avatars/bigstar.jpg", "AI");
     }
 
     const vsLabel = document.createElement("div");
@@ -173,7 +171,7 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
     announce.innerText = "";
 
     const btnReturn = document.createElement("button");
-    btnReturn.textContent = "Rejouer";
+    btnReturn.textContent = "Retour aux modes de jeu";
     btnReturn.className = `
       absolute bottom-8 left-1/2 transform -translate-x-1/2 
       bg-yellow-400 hover:bg-yellow-500 text-black font-bold 

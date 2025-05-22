@@ -329,7 +329,144 @@ export async function createPongScene(
     scoreBoard!.textContent = `${scorePlayer} - ${scoreIA}`;
     announce!.style.display = "none";
     returnButton.style.display = "none";
+    
+    // Remove any existing winner overlay
+    const existingOverlay = canvas.parentElement?.querySelector('.winner-overlay');
+    if (existingOverlay) {
+      existingOverlay.remove();
+    }
+    
     resetBall();
+  }
+
+  // Function to create and show the winner screen overlay
+  function showWinnerScreen(winnerName: string) {
+    // Find the canvas container (should be the parent element)
+    const canvasContainer = canvas.parentElement;
+    if (!canvasContainer) {
+      // Fallback to the old method if container not found
+      announce!.textContent = `🎉 ${winnerName} won! 🎉`;
+      announce!.style.display = "block";
+      returnButton.style.display = "block";
+      return;
+    }
+
+    // Create the overlay similar to memory game
+    const overlay = document.createElement('div');
+    overlay.className = 'winner-overlay';
+    overlay.style.cssText = `
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-weight: bold;
+      z-index: 1000;
+    `;
+    
+    // Create winner announcement content
+  const winnerText = document.createElement('div');
+  winnerText.textContent = `🎉 ${winnerName} won! 🎉`;
+  winnerText.style.cssText = `
+    font-size: 48px;
+    font-weight: bold;
+    text-align: center;
+    color: white;
+    margin-bottom: 10px;
+  `;
+
+  const scoreText = document.createElement('div');
+  scoreText.textContent = `Final Score: ${scorePlayer} - ${scoreIA}`;
+  scoreText.style.cssText = `
+    font-size: 24px;
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+  `;
+
+
+    // Create return button for the overlay
+    const overlayReturnButton = document.createElement('button');
+    overlayReturnButton.textContent = 'Retour aux modes de jeu';
+    overlayReturnButton.style.cssText = `
+      background-color: #dc2626;
+      color: white;
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.2s;
+    `;
+    
+    // Add hover effect
+    overlayReturnButton.onmouseover = () => {
+      overlayReturnButton.style.backgroundColor = '#b91c1c';
+    };
+    overlayReturnButton.onmouseout = () => {
+      overlayReturnButton.style.backgroundColor = '#dc2626';
+    };
+    
+    // Store the original button's event listeners
+    const originalButton = returnButton;
+    
+    // FIXED: Get all event listeners and the onclick handler
+    overlayReturnButton.onclick = (e) => {
+      console.log('Overlay button clicked');
+      
+      // Clean up the overlay first
+      overlay.remove();
+      
+      // Try multiple approaches to trigger the original button
+      try {
+        // Method 1: Direct onclick call
+        if (originalButton.onclick) {
+          console.log('Calling original onclick');
+          originalButton.onclick.call(originalButton, e as any);
+          return;
+        }
+        
+        // Method 2: Dispatch click event
+        console.log('Dispatching click event');
+        const clickEvent = new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          view: window
+        });
+        originalButton.dispatchEvent(clickEvent);
+        
+        // Method 3: Direct click() call
+        originalButton.click();
+        
+      } catch (error) {
+        console.error('Error triggering return button:', error);
+        // Fallback: try to navigate manually if we know the URL
+        console.log('Attempting fallback navigation');
+        if (window.location.pathname.includes('/pong')) {
+          window.location.href = '/game-modes';
+        }
+      }
+    };
+
+    overlay.appendChild(winnerText);
+    overlay.appendChild(scoreText);
+    overlay.appendChild(overlayReturnButton);
+
+    // Add the overlay to the canvas container
+    canvasContainer.style.position = 'relative'; // Make sure container is positioned
+    canvasContainer.appendChild(overlay);
+
+    // Hide the original return button and announce
+    returnButton.style.display = "none";
+    announce!.style.display = "none";
   }
 
   //1705 추가
@@ -351,38 +488,24 @@ export async function createPongScene(
       );
     } else {
       const userId = Number(sessionStorage.getItem("userId"));
+      const opponentId = isAI ? 2 : 3;
+      const winnerId = isWin ? userId : opponentId;
 
-      if (currentMatchData) {
-        const { p1, p2, nextPhase } = JSON.parse(currentMatchData);
-        winnerName = isWin ? p1.username : p2.username;
-
-        sessionStorage.setItem(
-          "matchWinner",
-          JSON.stringify({ winner: isWin ? p1 : p2, nextPhase })
-        );
+      if (winnerId === 2) {
+        winnerName = "AI";
+      } else if (winnerId === 3) {
+        winnerName = "Guest";
       } else {
-        const opponentId = isAI ? 2 : 3;
-        const winnerId = isWin ? userId : opponentId;
-
-        if (winnerId === 2) {
-          winnerName = "AI";
-        } else if (winnerId === 3) {
-          winnerName = "Guest";
-        } else {
-          winnerName = isWin
-            ? sessionStorage.getItem("username") || "Player 1"
-            : opponentId === 3
-              ? "Guest"
-              : "Unknown";
-        }
+        winnerName = isWin
+          ? sessionStorage.getItem("username") || "Player 1"
+          : opponentId === 3
+            ? "Guest"
+            : "Unknown";
       }
-      
-
     }
 
-    announce!.textContent = `${winnerName} won!`;
-    announce!.style.display = "block";
-    returnButton.style.display = "block";
+    // Show the centered winner screen instead of canvas announcement
+    showWinnerScreen(winnerName);
 
     if (isAI) {
       const scoreDiff = scorePlayer - scoreIA;
@@ -416,6 +539,7 @@ export async function createPongScene(
       } catch (err) {
         console.error("[DEBUG GAME/PONG SCENE] Error ending match:", err);
       }
+      
       if (tournamentContext) {
         const winner = isWin ? tournamentContext.p1 : tournamentContext.p2;
       
@@ -469,7 +593,7 @@ export async function createPongScene(
       if (iaNextReactionIn <= 0) {
         const hesitateChance = 0.05; // 5% de chance de ne pas réagir du tout
         if (Math.random() < hesitateChance && Math.abs(ball.position.x) > 2) {
-          iaNextReactionIn = 6; // fait "perdre du temps" à l’IA
+          iaNextReactionIn = 6; // fait "perdre du temps" à l'IA
           return;
         }
         // IA réagit maintenant
