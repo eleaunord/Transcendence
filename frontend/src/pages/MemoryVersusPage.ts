@@ -249,31 +249,96 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
     }
   }
 
+  // function showVictoryAnimation() {
+  //   const overlay = document.createElement('div');
+  //   overlay.className = 'absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
+
+  //   const winner = scores[1] > scores[2] ? 'Vous' : scores[2] > scores[1] ? opponentName : 'Égalité';
+  //   const victoryText = document.createElement('div');
+  //   if (winner === 'Égalité') {
+  //     victoryText.textContent = t('memory.victory.draw');
+  //   } else if (winner === 'Vous') {
+  //     victoryText.textContent = t('memory.victory.you');
+  //   } else {
+  //     victoryText.textContent =  t('memory.victory.opponent', { opponent: winner });
+  //   }
+  //   const scoreText = document.createElement('div');
+  //   scoreText.className = 'text-2xl mt-4 text-center leading-relaxed';
+  //   scoreText.innerHTML = `
+  //     <div class="text-3xl font-semibold underline mb-2">${t('memory.victory.scores')}</div>
+  //     <div class="text-center">${t('memory.score.you')} : ${scores[1]}</div>
+  //     <div class="text-center">${opponentName} : ${scores[2]}</div>
+  //   `;
+
+  //   overlay.append(victoryText, scoreText);
+  //   saveMemoryGameResult();
+  //   gameFrame.appendChild(overlay);
+  // }
+
   function showVictoryAnimation() {
-    const overlay = document.createElement('div');
-    overlay.className = 'absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
+  const overlay = document.createElement('div');
+  overlay.className = 'absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
 
-    const winner = scores[1] > scores[2] ? 'Vous' : scores[2] > scores[1] ? opponentName : 'Égalité';
-    const victoryText = document.createElement('div');
-    if (winner === 'Égalité') {
-      victoryText.textContent = t('memory.victory.draw');
-    } else if (winner === 'Vous') {
-      victoryText.textContent = t('memory.victory.you');
-    } else {
-      victoryText.textContent =  t('memory.victory.opponent', { opponent: winner });
-    }
-    const scoreText = document.createElement('div');
-    scoreText.className = 'text-2xl mt-4 text-center leading-relaxed';
-    scoreText.innerHTML = `
-      <div class="text-3xl font-semibold underline mb-2">${t('memory.victory.scores')}</div>
-      <div class="text-center">${t('memory.score.you')} : ${scores[1]}</div>
-      <div class="text-center">${opponentName} : ${scores[2]}</div>
-    `;
+  const winner = scores[1] > scores[2] ? 'Vous' : scores[2] > scores[1] ? opponentName : 'Égalité';
 
-    overlay.append(victoryText, scoreText);
-    saveMemoryGameResult();
-    gameFrame.appendChild(overlay);
-  }
+  // Title
+  const bravoText = document.createElement('div');
+  bravoText.textContent = winner === 'Égalité'
+    ? '🤝 Match nul !'
+    : winner === 'Vous'
+    ? '🎉 Bravo ! 🎉'
+    : `🎮 ${opponentName} a gagné ! 🎉`;
+  bravoText.style.cssText = `
+    font-size: 48px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+  `;
+
+  // Score summary
+  const scoreText = document.createElement('div');
+  scoreText.innerHTML = `
+    <div class="text-3xl font-semibold underline mb-2">${t('memory.victory.scores')}</div>
+    <div class="text-xl text-center">${t('memory.score.you')} : ${scores[1]}</div>
+    <div class="text-xl text-center">${opponentName} : ${scores[2]}</div>
+  `;
+  scoreText.style.cssText = `
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 30px;
+  `;
+
+  // Return button
+  const returnBtn = document.createElement('button');
+  returnBtn.textContent = t('memory.backToModes');
+  returnBtn.style.cssText = `
+    background-color: #d97706;
+    color: white;
+    font-weight: 700;
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s;
+  `;
+  returnBtn.onmouseover = () => {
+    returnBtn.style.backgroundColor = '#facc15';
+  };
+  returnBtn.onmouseout = () => {
+    returnBtn.style.backgroundColor = '#fbbf24';
+  };
+  returnBtn.onclick = () => navigate('/memory-mode');
+
+  overlay.appendChild(bravoText);
+  overlay.appendChild(scoreText);
+  overlay.appendChild(returnBtn);
+
+  saveMemoryGameResult();
+  gameFrame.appendChild(overlay);
+}
+
 
   gameFrame.appendChild(cardsContainer);
   gameArea.appendChild(gameFrame);
@@ -284,13 +349,13 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   layout.appendChild(gameHeader);
   layout.appendChild(gameArea);
 
-  const backBtn = document.createElement('button');
-  backBtn.textContent = t('memory.backToModes');
-  backBtn.className = 'fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg';
-  backBtn.onclick = () => navigate('/memory-mode');
+  // const backBtn = document.createElement('button');
+  // backBtn.textContent = t('memory.backToModes');
+  // backBtn.className = 'fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg';
+  // backBtn.onclick = () => navigate('/memory-mode');
 
   container.append(layout)
-  container.appendChild(backBtn);
+  // container.appendChild(backBtn);
 
   // Adaptation layout/sidebar (effet fluide)
   sidebar.addEventListener('mouseenter', () => {

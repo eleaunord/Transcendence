@@ -22,14 +22,18 @@ export function createMemoryFriendPage(navigate: (path: string) => void): HTMLEl
   applyUserTheme(backgroundImage);
 
   const mainArea = document.createElement('div');
-  mainArea.className = 'flex-1 flex flex-col items-center justify-center gap-8 z-10 relative';
+  mainArea.className = 'flex-1 flex flex-col items-center justify-center gap-10 z-10 relative mt-10';
 
   const title = document.createElement('h2');
   title.textContent = t('memory.friend.title');
-  title.className = 'text-3xl font-bold text-white';
+  title.className = 'text-4xl font-bold text-white';
+  mainArea.appendChild(title);
 
-  const friendList = document.createElement('div');
-  friendList.className = 'grid grid-cols-3 gap-6 max-w-5xl';
+  const topRow = document.createElement('div');
+  topRow.className = 'flex justify-center gap-24';
+
+  const bottomRow = document.createElement('div');
+  bottomRow.className = 'flex justify-center gap-44';
 
   const token = localStorage.getItem('token');
 
@@ -39,31 +43,45 @@ export function createMemoryFriendPage(navigate: (path: string) => void): HTMLEl
       .then(data => {
         const friends: Friend[] = data.friends;
 
-        friends.forEach(friend => {
-          const card = document.createElement('div');
-          card.className = 'bg-gray-800 p-4 rounded-lg flex flex-col items-center gap-2 hover:bg-gray-700 transition cursor-pointer';
-          
+        const createFriendCard = (friend: Friend): HTMLElement => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'flex flex-col items-center';
+
+          const button = document.createElement('button');
+          button.className = `
+            w-44 h-44 md:w-52 md:h-52
+            rounded-full overflow-hidden
+            border-4 border-white shadow-xl
+            transform transition-transform duration-300 hover:scale-110
+            focus:outline-none
+          `.trim();
+
           const img = document.createElement('img');
           img.src = friend.profile_picture || '/assets/profile-pictures/default.jpg';
           img.alt = friend.username;
-          img.className = 'w-24 h-24 rounded-full border-2 border-white';
+          img.className = 'w-full h-full object-cover';
+          button.appendChild(img);
 
-          const name = document.createElement('div');
-          name.textContent = friend.username;
-          name.className = 'text-lg font-semibold';
-
-          card.appendChild(img);
-          card.appendChild(name);
-
-          card.addEventListener('click', () => {
+          button.addEventListener('click', () => {
             localStorage.setItem('memory-opponent', 'friend');
             localStorage.setItem('opponent-id', friend.id);
             localStorage.setItem('opponent-name', friend.username);
             navigate('/customization-memory');
           });
 
-          friendList.appendChild(card);
-        });
+          const label = document.createElement('span');
+          label.textContent = friend.username;
+          label.className = `
+            mt-3 text-xl font-semibold text-white bg-black/60
+            px-4 py-1 rounded-full shadow-md text-center min-w-[9rem]
+          `.trim();
+
+          wrapper.append(button, label);
+          return wrapper;
+        };
+
+        friends.slice(0, 3).forEach(friend => topRow.appendChild(createFriendCard(friend)));
+        friends.slice(3, 5).forEach(friend => bottomRow.appendChild(createFriendCard(friend)));
       })
       .catch(error => {
         const errorMsg = document.createElement('p');
@@ -74,28 +92,9 @@ export function createMemoryFriendPage(navigate: (path: string) => void): HTMLEl
       });
   }
 
-  mainArea.appendChild(title);
-  mainArea.appendChild(friendList);
+  mainArea.appendChild(topRow);
+  mainArea.appendChild(bottomRow);
   container.appendChild(mainArea);
-
-  // // Animation sidebar
-  // sidebar.addEventListener('mouseenter', () => {
-  //   document.querySelectorAll('.sidebar-label').forEach(label => {
-  //     (label as HTMLElement).classList.remove('opacity-0');
-  //     (label as HTMLElement).classList.add('opacity-100');
-  //   });
-  //   backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-  //   mainArea.classList.add('ml-44');
-  // });
-
-  // sidebar.addEventListener('mouseleave', () => {
-  //   document.querySelectorAll('.sidebar-label').forEach(label => {
-  //     (label as HTMLElement).classList.add('opacity-0');
-  //     (label as HTMLElement).classList.remove('opacity-100');
-  //   });
-  //   backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-  //   mainArea.classList.remove('ml-44');
-  // });
 
   return container;
 }
