@@ -225,8 +225,13 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
       opponent: opponentName,
       score1: scores[1],
       score2: scores[2],
-      winner: scores[1] > scores[2] ? 'Joueur' : scores[2] > scores[1] ? opponentName : 'Égalité',
-      pairCount,
+      //winner: scores[1] > scores[2] ? 'Joueur' : scores[2] > scores[1] ? opponentName : 'Égalité',
+      winner: scores[1] > scores[2]
+      ? t('memory.score.you')
+      : scores[2] > scores[1]
+      ? opponentName
+      : t('memory.victory.draw'),
+          pairCount,
       turnTime,
       timestamp: new Date().toISOString(),
     };
