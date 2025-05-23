@@ -158,7 +158,7 @@ function showVictoryAnimation() {
 
   // Title
   const bravoText = document.createElement('div');
-  bravoText.textContent = '🎉 Bravo ! 🎉';
+  bravoText.textContent = t('memory.victory.solo');
   bravoText.style.cssText = `
     font-size: 48px;
     font-weight: bold;
@@ -177,7 +177,7 @@ function showVictoryAnimation() {
 
   // Styled return button
   const returnBtn = document.createElement('button');
-  returnBtn.textContent = 'Retour aux modes de jeu';
+  returnBtn.textContent = t('memory.backToModes');
   returnBtn.style.cssText = `
     background-color: #d97706; /* Darker amber for contrast */
     color: white;

@@ -53,6 +53,27 @@
   "auth.2fa_verification_failed": "2FA verification failed",
   "auth.default_error": "An unknown error occurred",
 
+  "me.error.missing_token": "Missing token",
+  "me.error.invalid_token": "Invalid or expired token",
+  "me.error.unauthorized": "Unauthorized",
+  "me.error.user_not_found": "User not found",
+  "me.error.invalid_username": "Invalid username. Use 3-20 letters, numbers or underscores.",
+  "me.updated.username": "Username updated successfully",
+  "me.updated.image": "Profile image updated successfully",
+  "me.updated.theme": "Theme updated successfully",
+  "me.updated.2fa": "2FA status updated",
+  "me.updated.seen2fa": "2FA prompt marked as seen",
+  "me.export.success": "Export completed successfully",
+  "me.export.failed": "Failed to export data",
+  "me.anonymized.success": "User anonymized successfully",
+  "me.anonymized.failed": "Failed to anonymize user",
+  "me.deleted.success": "User deleted successfully",
+  "me.deleted.failed": "Failed to delete user",
+  "me.games.recent.error": "Error fetching recent games",
+  "me.games.recent.unknown": "You played a game against Unknown",
+  "me.games.recent.ai": "You played a game against AI",
+  "me.games.recent.guest": "You played a game against Guest",
+
   "auth.title": "Sign in",
   "auth.username": "Username",
   "auth.password": "Password",
@@ -252,7 +273,7 @@
 
   "memory.moves": "Moves",
   "memory.timer": "Time",
-  "memory.victory.solo": "🎉 Well done!",
+  "memory.victory.solo": "🎉 Well done! 🎉",
   "memory.victory.moves": "You finished in {{count}} moves!",
   "memory.defeat.timeout": "💀 Time's up!",
   "memory.defeat.message": "You lost...",
@@ -283,10 +304,11 @@
 
   "versus.countdown": "Game starts in {{seconds}}...",
   "versus.retry": "Play again",
+  "versus.backToModes": "Back to game modes",
 
   "pong.resume_in": "Resuming in {{seconds}}...",
-  "pong.winner": "{{name}} won!",
-  "pong.score": "Score"
+  "pong.winner": "🎉 {{name}} won! 🎉",
+  "pong.score": "Final Score: {{you}} - {{opponent}}"
 
 
 

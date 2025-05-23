@@ -53,6 +53,27 @@
   "auth.2fa_verification_failed": "2FA 인증에 실패했습니다",
   "auth.default_error": "알 수 없는 오류가 발생했습니다",
 
+  "me.error.missing_token": "토큰이 없습니다",
+  "me.error.invalid_token": "유효하지 않거나 만료된 토큰입니다",
+  "me.error.unauthorized": "인증되지 않았습니다",
+  "me.error.user_not_found": "사용자를 찾을 수 없습니다",
+  "me.error.invalid_username": "유효하지 않은 사용자 이름입니다. 3~20자의 영문, 숫자 또는 밑줄을 사용하세요.",
+  "me.updated.username": "사용자 이름이 성공적으로 변경되었습니다",
+  "me.updated.image": "프로필 이미지가 성공적으로 업데이트되었습니다",
+  "me.updated.theme": "테마가 성공적으로 업데이트되었습니다",
+  "me.updated.2fa": "2FA 상태가 업데이트되었습니다",
+  "me.updated.seen2fa": "2FA 프롬프트 확인됨",
+  "me.export.success": "내보내기가 완료되었습니다",
+  "me.export.failed": "데이터 내보내기에 실패했습니다",
+  "me.anonymized.success": "계정이 성공적으로 익명화되었습니다",
+  "me.anonymized.failed": "익명화에 실패했습니다",
+  "me.deleted.success": "계정이 성공적으로 삭제되었습니다",
+  "me.deleted.failed": "계정 삭제에 실패했습니다",
+  "me.games.recent.error": "최근 게임을 불러오는 중 오류가 발생했습니다",
+  "me.games.recent.unknown": "알 수 없는 상대와 게임을 했습니다",
+  "me.games.recent.ai": "AI와 게임을 했습니다",
+  "me.games.recent.guest": "게스트와 게임을 했습니다",
+
   "auth.title": "로그인",
   "auth.username": "사용자 이름",
   "auth.password": "비밀번호",
@@ -252,7 +273,7 @@
 
   "memory.moves": "이동 수",
   "memory.timer": "시간",
-  "memory.victory.solo": "🎉 잘했어요!",
+  "memory.victory.solo": "🎉 잘했어요! 🎉",
   "memory.victory.moves": "{{count}}번의 시도로 완료했습니다!",
   "memory.defeat.timeout": "💀 시간이 초과되었습니다!",
   "memory.defeat.message": "당신은 졌습니다...",
@@ -283,10 +304,10 @@
 
   "versus.countdown": "{{seconds}}초 후 시작",
   "versus.retry": "다시 하기",
+  "versus.backToModes": "게임 모드로 돌아가기",
 
   "pong.resume_in": "{{seconds}}초 후 재시작...",
-  "pong.winner": "{{name}} 승리!",
-  "pong.score": "점수"
-
+  "pong.winner": "🎉 {{name}} 님이 승리했습니다! 🎉",
+  "pong.score": "최종 점수: {{you}} - {{opponent}}"
 
 }

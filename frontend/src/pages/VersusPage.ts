@@ -172,7 +172,7 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
     announce.innerText = "";
 
     const btnReturn = document.createElement("button");
-    btnReturn.textContent = "Retour aux modes de jeu";
+    btnReturn.textContent = t('versus.backToModes');
     btnReturn.className = `
       fixed bottom-8 left-1/2 transform -translate-x-1/2
       bg-amber-600 hover:bg-amber-500 text-white font-bold

@@ -441,7 +441,7 @@ canvasContainer.appendChild(opponentBox);
     const canvasContainer = canvas.parentElement;
     if (!canvasContainer) {
       // Fallback to the old method if container not found
-      announce!.textContent = `🎉 ${winnerName} won! 🎉`;
+      announce!.textContent = t('pong.winner', { name: winnerName });
       announce!.style.display = "block";
       returnButton.style.display = "block";
       return;
@@ -468,7 +468,7 @@ canvasContainer.appendChild(opponentBox);
     
     // Create winner announcement content
   const winnerText = document.createElement('div');
-  winnerText.textContent = `🎉 ${winnerName} won! 🎉`;
+  winnerText.textContent = t('pong.winner', { name: winnerName });
   winnerText.style.cssText = `
     font-size: 48px;
     font-weight: bold;
@@ -478,7 +478,7 @@ canvasContainer.appendChild(opponentBox);
   `;
 
   const scoreText = document.createElement('div');
-  scoreText.textContent = `Final Score: ${scorePlayer} - ${scoreIA}`;
+  scoreText.textContent = t('pong.score', { you: scorePlayer, opponent: scoreIA });
   scoreText.style.cssText = `
     font-size: 24px;
     text-align: center;
@@ -489,7 +489,7 @@ canvasContainer.appendChild(opponentBox);
 
     // Create return button for the overlay
     const overlayReturnButton = document.createElement('button');
-    overlayReturnButton.textContent = 'Retour aux modes de jeu';
+    overlayReturnButton.textContent = t('versus.backToModes');
     overlayReturnButton.style.cssText = `
       background-color: #d97706; /* Darker amber for contrast */
       color: white;

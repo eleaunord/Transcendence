@@ -53,6 +53,27 @@
   "auth.2fa_verification_failed": "Échec de la vérification 2FA",
   "auth.default_error": "Une erreur inconnue est survenue",
 
+    "me.error.missing_token": "Jeton manquant",
+  "me.error.invalid_token": "Jeton invalide ou expiré",
+  "me.error.unauthorized": "Non autorisé",
+  "me.error.user_not_found": "Utilisateur non trouvé",
+  "me.error.invalid_username": "Nom d'utilisateur invalide. Utilisez 3 à 20 lettres, chiffres ou tirets bas.",
+  "me.updated.username": "Nom d'utilisateur mis à jour avec succès",
+  "me.updated.image": "Photo de profil mise à jour avec succès",
+  "me.updated.theme": "Thème mis à jour avec succès",
+  "me.updated.2fa": "Statut 2FA mis à jour",
+  "me.updated.seen2fa": "2FA marqué comme vu",
+  "me.export.success": "Exportation réussie",
+  "me.export.failed": "Échec de l'exportation",
+  "me.anonymized.success": "Utilisateur anonymisé avec succès",
+  "me.anonymized.failed": "Échec de l'anonymisation",
+  "me.deleted.success": "Utilisateur supprimé avec succès",
+  "me.deleted.failed": "Échec de la suppression de l'utilisateur",
+  "me.games.recent.error": "Erreur lors du chargement des parties récentes",
+  "me.games.recent.unknown": "Vous avez joué contre un adversaire inconnu",
+  "me.games.recent.ai": "Vous avez joué contre l'IA",
+  "me.games.recent.guest": "Vous avez joué contre un invité",
+
   "auth.title": "Connexion",
   "auth.username": "Nom d'utilisateur",
   "auth.password": "Mot de passe",
@@ -252,7 +273,7 @@
 
   "memory.moves": "Coups",
   "memory.timer": "Temps",
-  "memory.victory.solo": "🎉 Bravo !",
+  "memory.victory.solo": "🎉 Bravo ! 🎉",
   "memory.victory.moves": "Tu as terminé en {{count}} coups !",
   "memory.defeat.timeout": "💀 Temps écoulé !",
   "memory.defeat.message": "Tu as perdu...",
@@ -283,10 +304,11 @@
 
   "versus.countdown": "Début dans {{seconds}}...",
   "versus.retry": "Rejouer",
+  "versus.backToModes": "Retour aux modes de jeu",
 
   "pong.resume_in": "Reprise dans {{seconds}}...",
-  "pong.winner": "{{name}} a gagné !",
-  "pong.score": "Score"
+  "pong.winner": "🎉 {{name}} a gagné ! 🎉",
+  "pong.score": "Score final : {{you}} - {{opponent}}"
 
 }
 

@@ -6,6 +6,7 @@ import { authenticateToken } from './authMiddleware';
 import { generateAnonymousUsername } from '../utils/anonymize';
 import { RecentGame } from '../types';
 
+
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET!;
@@ -15,14 +16,14 @@ export async function meRoutes(app: FastifyInstance) {
 
   app.get('/me', async (req, reply) => {
     const userId = req.user?.id;
-    if (!userId) return reply.code(401).send({ error: 'Unauthorized' });
+    if (!userId) return reply.code(401).send({ error: 'me.error.unauthorized' });
 
     const user = db.prepare(`
       SELECT id, username, email, image, theme, is_2fa_enabled, seen_2fa_prompt
       FROM users WHERE id = ?
     `).get(userId);
 
-    if (!user) return reply.code(404).send({ error: 'User not found' });
+    if (!user) return reply.code(404).send({ error: 'me.error.user_not_found' });
     
     const friends = db.prepare(`
       SELECT pf.id, pf.username, pf.status, pf.profile_picture
@@ -92,7 +93,7 @@ export async function meRoutes(app: FastifyInstance) {
    // Mise à jour du username
   app.patch('/me', async (req, reply) => {
    const auth = req.headers.authorization;
-   if (!auth) return reply.code(401).send({ error: 'Missing token' });
+   if (!auth) return reply.code(401).send({ error: 'me.error.missing_token' });
    try {
      const token = auth.split(' ')[1];
      const payload = jwt.verify(token, JWT_SECRET) as any;
@@ -104,7 +105,7 @@ export async function meRoutes(app: FastifyInstance) {
       const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
       if (!username || typeof username !== 'string' || !usernameRegex.test(username)) {
       return reply.code(400).send({
-        error: 'Invalid username. Use 3-20 letters, numbers or underscores.'
+        error: 'me.error.invalid_username'
       });
       }
       // Mise à jour en base de données
@@ -115,27 +116,27 @@ export async function meRoutes(app: FastifyInstance) {
       reply.send(updatedUser);
 
     } catch (err) {
-      reply.code(401).send({ error: 'Invalid or expired token' });
+      reply.code(401).send({ error: 'me.error.missing_token' });
     }
   });
 
   app.post('/me/seen-2fa', async (req, reply) => {
     const auth = req.headers.authorization;
-    if (!auth) return reply.code(401).send({ error: 'Missing token' });
+    if (!auth) return reply.code(401).send({ error: 'me.error.missing_token' });
   
     try {
       const token = auth.split(' ')[1];
       const payload = jwt.verify(token, JWT_SECRET) as { userId: number };
       db.prepare('UPDATE users SET seen_2fa_prompt = 1 WHERE id = ?').run(payload.userId);
-      reply.send({ message: 'seen_2fa_prompt updated' });
+      reply.send({ message: 'me.updated.seen2fa' });
     } catch (err) {
-      reply.code(401).send({ error: 'Invalid token' });
+      reply.code(401).send({ error: 'me.error.invalid_token' });
     }
   });
 
   app.patch('/me/image', async (req, reply) => {
     const auth = req.headers.authorization;
-    if (!auth) return reply.code(401).send({ error: 'Missing token' });
+    if (!auth) return reply.code(401).send({ error: 'me.error.missing_token' });
   
     try {
       const token = auth.split(' ')[1];
@@ -152,14 +153,14 @@ export async function meRoutes(app: FastifyInstance) {
       const updatedUser = db.prepare('SELECT id, username, email, image FROM users WHERE id = ?').get(userId);
       reply.send(updatedUser);
     } catch (err) {
-      reply.code(401).send({ error: 'Invalid or expired token' });
+      reply.code(401).send({ error: 'me.error.invalid_token' });
     }
   });
 
 
   app.patch('/me/theme', async (req, reply) => {
     const auth = req.headers.authorization;
-    if (!auth) return reply.code(401).send({ error: 'Missing token' });
+    if (!auth) return reply.code(401).send({ error: 'me.error.missing_token' });
   
     try {
       const token = auth.split(' ')[1];
@@ -176,14 +177,14 @@ export async function meRoutes(app: FastifyInstance) {
       const updatedUser = db.prepare('SELECT id, username, email, image, theme FROM users WHERE id = ?').get(userId);
       reply.send(updatedUser);
     } catch (err) {
-      reply.code(401).send({ error: 'Invalid or expired token' });
+      reply.code(401).send({ error: 'me.error.invalid_token' });
     }
   });
 
   //test 1705 
   app.get('/me/export', async (req, reply) => {
     const authHeader = req.headers.authorization;
-    if (!authHeader) return reply.status(401).send({ error: 'Token manquant' });
+    if (!authHeader) return reply.status(401).send({ error: 'me.error.missing_token' });
   
     const token = authHeader.split(' ')[1];
     let payload: any;
@@ -191,7 +192,7 @@ export async function meRoutes(app: FastifyInstance) {
     try {
       payload = jwt.verify(token, JWT_SECRET);
     } catch (err) {
-      return reply.status(401).send({ error: 'Token invalide' });
+      return reply.status(401).send({ error: 'me.error.invalid_token' });
     }
   
     const userId = payload.userId;
@@ -244,7 +245,7 @@ export async function meRoutes(app: FastifyInstance) {
   app.patch('/me/2fa', async (req, reply) => {
     const userId = req.user?.id;
     if (!userId)
-        return reply.code(401).send({ error: 'Unauthorized' });
+        return reply.code(401).send({ error: 'me.error.unauthorized' });
 
     const { enable } = req.body as { enable: boolean };
 
@@ -260,7 +261,7 @@ export async function meRoutes(app: FastifyInstance) {
   
   app.delete('/me/anonymize', async (req, reply) => {
     const auth = req.headers.authorization;
-    if (!auth) return reply.code(401).send({ error: 'Missing token' });
+    if (!auth) return reply.code(401).send({ error: 'me.error.missing_token' });
 
     try {
       const token = auth.split(' ')[1];
@@ -284,16 +285,16 @@ export async function meRoutes(app: FastifyInstance) {
       `);
       stmt.run(anonymizedName, userId);
 
-      return reply.code(200).send({ message: 'User anonymized successfully' });
+      return reply.code(200).send({ message: 'me.anonymized.success' });
     } catch (err: any) {
-      console.error('Anonymization error:', err);
+      console.error('me.anonymized.failed:', err);
       return reply.code(500).send({ error: 'Internal Server Error' });
     }
   });
 
   app.delete('/me', async (req, reply) => {
     const auth = req.headers.authorization;
-    if (!auth) return reply.code(401).send({ error: 'Missing token' });
+    if (!auth) return reply.code(401).send({ error: 'me.error.missing_token' });
   
     try {
       const token = auth.split(' ')[1];
@@ -304,13 +305,13 @@ export async function meRoutes(app: FastifyInstance) {
       const result = db.prepare('DELETE FROM users WHERE id = ?').run(userId);
   
       if (result.changes > 0) {
-        reply.send({ message: 'User deleted successfully' });
+        reply.send({ message: 'me.deleted.success' });
       } else {
-        reply.code(404).send({ error: 'User not found' });
+        reply.code(404).send({ error: 'me.error.user_not_found' });
       }
     } catch (err) {
       console.error('Delete error:', err);
-      reply.code(401).send({ error: 'Invalid or expired token' });
+      reply.code(401).send({ error: 'me.error.invalid_token' });
     }
   });
 }
