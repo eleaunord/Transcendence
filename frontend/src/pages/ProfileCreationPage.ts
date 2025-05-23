@@ -163,6 +163,7 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
         //affiche l'image de profil stocke en base de donnees
         if (user.image) {
           selectedImage = user.image;
+          picturePreview.referrerPolicy = 'no-referrer'; //2305
           picturePreview.src = user.image;
         }
         // ✅ Réactive les boutons uniquement quand tout est prêt

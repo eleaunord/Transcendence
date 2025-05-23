@@ -433,8 +433,8 @@ canvasContainer.appendChild(opponentBox);
   paddle2.position.set(4.6, 0.2, 0);
   paddle2.material = paddleMat2;
 
-  paddle1.scaling.y = options.paddleSize;
-  paddle2.scaling.y = options.paddleSize;
+  paddle1.scaling.z = options.paddleSize;
+  paddle2.scaling.z = options.paddleSize;
 
   const ball = MeshBuilder.CreateSphere("ball", { diameter: 0.3 }, scene);
   ball.position.set(0, 0.2, 0);
@@ -515,6 +515,36 @@ canvasContainer.appendChild(opponentBox);
   let iaVelocity = 0;
 
   const paddleSpeed = options.speed * 0.045;
+  type KeyPressInfo = {
+  isDown: boolean;
+  timestamp: number;
+};
+  //2305 Gestion des touches
+  const keyState: { [key: string]: KeyPressInfo } = {};
+
+  window.addEventListener("keydown", (e) => {
+    const key = e.key.toLowerCase();
+    if (!keyState[key]?.isDown) {
+      keyState[key] = { isDown: true, timestamp: Date.now() };
+    }
+  });
+
+  window.addEventListener("keyup", (e) => {
+    const key = e.key.toLowerCase();
+    keyState[key] = { isDown: false, timestamp: 0 };
+  });
+
+  function getDynamicSpeed(key: string, baseSpeed: number): number {
+    const state = keyState[key];
+    if (!state || !state.isDown) return 0;
+
+    const heldTime = Date.now() - state.timestamp;
+
+    if (heldTime > 700) return baseSpeed * 1.6;
+    if (heldTime > 300) return baseSpeed * 1.3;
+    return baseSpeed;
+  }
+
 
   function clamp(value: number, min: number, max: number): number {
     return Math.max(min, Math.min(max, value));
@@ -544,7 +574,7 @@ canvasContainer.appendChild(opponentBox);
 
   function countdownBeforeServe(callback: () => void) {
   if (gameOver) return;
-  let count = 5;
+  let count = 2;
   announce!.textContent = t('pong.resume_in', { seconds: count });
   announce!.style.display = "block";
 
@@ -824,25 +854,40 @@ async function checkGameOver() {
 
   resetBall();
 
-  window.addEventListener("keydown", (e) => {
-    if (e.key.toLowerCase() === "r" && gameOver) {
-      resetGame();
-      return;
-    }
+  // window.addEventListener("keydown", (e) => {
+  //   if (e.key.toLowerCase() === "r" && gameOver) {
+  //     resetGame();
+  //     return;
+  //   }
 
-    if (gameOver) return;
+  //   if (gameOver) return;
 
-    if (e.key === "s" && paddle1.position.z > -2.4) paddle1.position.z -= paddleSpeed;
-    if (e.key === "w" && paddle1.position.z < 2.4) paddle1.position.z += paddleSpeed;
+  //   if (e.key === "s" && paddle1.position.z > -2.4) paddle1.position.z -= paddleSpeed;
+  //   if (e.key === "w" && paddle1.position.z < 2.4) paddle1.position.z += paddleSpeed;
 
-    if (!isAI) {
-      if (e.key === "ArrowDown" && paddle2.position.z > -2.4) paddle2.position.z -= paddleSpeed;
-      if (e.key === "ArrowUp" && paddle2.position.z < 2.4) paddle2.position.z += paddleSpeed;
-    }
-  });
+  //   if (!isAI) {
+  //     if (e.key === "ArrowDown" && paddle2.position.z > -2.4) paddle2.position.z -= paddleSpeed;
+  //     if (e.key === "ArrowUp" && paddle2.position.z < 2.4) paddle2.position.z += paddleSpeed;
+  //   }
+  // });
 
   scene.onBeforeRenderObservable.add(() => {
     if (gameOver) return;
+    if (!gameOver) 
+    {
+      const p1Up = getDynamicSpeed("w", paddleSpeed);
+      const p1Down = getDynamicSpeed("s", paddleSpeed);
+      const p2Up = getDynamicSpeed("arrowup", paddleSpeed);
+      const p2Down = getDynamicSpeed("arrowdown", paddleSpeed);
+
+      if (p1Down && paddle1.position.z > -2.4) paddle1.position.z -= p1Down;
+      if (p1Up && paddle1.position.z < 2.4) paddle1.position.z += p1Up;
+
+      if (!isAI) {
+        if (p2Down && paddle2.position.z > -2.4) paddle2.position.z -= p2Down;
+        if (p2Up && paddle2.position.z < 2.4) paddle2.position.z += p2Up;
+      }
+    }
 
     if (isAI) {
       const diff = scoreIA - scorePlayer;
@@ -902,7 +947,7 @@ async function checkGameOver() {
       const normalizedZ = clamp(dz / (paddle.scaling.y * 0.5), -1, 1);
 
       const speed = ballDir.length();
-      const angleFactor = 0.6; // plus élevé = plus d'effet
+      const angleFactor = 0.8; // plus élevé = plus d'effet
 
       const newAngle = normalizedZ * angleFactor;
       const directionX = isLeft ? 1 : -1;
