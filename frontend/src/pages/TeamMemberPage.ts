@@ -3,31 +3,31 @@ import { applyUserTheme } from "../utils/theme";
 import { t } from '../utils/translator';
 
 // Map route names to full display names
-const fullNameMap: Record<string, string> = {
-  shinhye: "Shinhye YUN",
-  alix: "Alix CERALINE",
-  gnouma: "Gnouma DUKURAY",
-  rime: "Rime YOUNSSI",
-  eléonore: "Eléonore ROTY",
-};
+// const fullNameMap: Record<string, string> = {
+//   shinhye: "Shinhye YUN",
+//   alix: "Alix CERALINE",
+//   gnouma: "Gnouma DUKURAY",
+//   rime: "Rime YOUNSSI",
+//   eléonore: "Eléonore ROTY",
+// };
 
-const bioMap: Record<string, string> = {
-  shinhye: `Shinhye YUN is a multidisciplinary creator passionate about design and user experience. With a background in visual arts, she brings aesthetic finesse to every project, transforming ideas into immersive digital experiences.`,
+// const bioMap: Record<string, string> = {
+//   shinhye: `Shinhye YUN is a multidisciplinary creator passionate about design and user experience. With a background in visual arts, she brings aesthetic finesse to every project, transforming ideas into immersive digital experiences.`,
   
-  alix: `Alix CERALINE is a technology enthusiast with a keen eye for detail. She excels at turning complex problems into elegant solutions and believes that collaboration is the cornerstone of innovation.`,
+//   alix: `Alix CERALINE is a technology enthusiast with a keen eye for detail. She excels at turning complex problems into elegant solutions and believes that collaboration is the cornerstone of innovation.`,
   
-  gnouma: `Gnouma DUKURAY is known for her strong analytical skills and her empathetic leadership. She enjoys working across disciplines to drive impactful results and foster inclusive teamwork.`,
+//   gnouma: `Gnouma DUKURAY is known for her strong analytical skills and her empathetic leadership. She enjoys working across disciplines to drive impactful results and foster inclusive teamwork.`,
   
-  rime: `Rime YOUNSSI is a strategist at heart with a flair for storytelling. Her work bridges creativity and logic, bringing a unique voice to every challenge she tackles.`,
+//   rime: `Rime YOUNSSI is a strategist at heart with a flair for storytelling. Her work bridges creativity and logic, bringing a unique voice to every challenge she tackles.`,
   
- eléonore: `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Étudiante en Master 2 Management de la Technologie et de l’Innovation à Paris-Dauphine, et en formation à l’école 42, j'ai un profil hybride entre stratégie, innovation et développement informatique. Mon profil hybride témoigne de ma curiosité et de mon envie d’apprendre, de comprendre, et de transformer ces connaissances en projets concrets.<br/>
-<br/>
-C’est à 42 que j’ai découvert une passion pour le développement et pour le débogage — comprendre un problème en profondeur, le démonter pièce par pièce, puis le résoudre est devenu une vraie source de satisfaction. L’école est pour moi un terrain d’expérimentation stimulant, qui a nourri une curiosité grandissante pour les nouvelles technologies, comme le machine learning et ses applications concrètes, ou encore le développement de jeux.<br/>
-<br/>
-J’ai rejoint le projet Transcendance en cours de route, mais l’intégration s’est faite très naturellement grâce à la dynamique de l’équipe. J’ai principalement travaillé sur le frontend, mais l’organisation en mode collaboratif — où chacun prenait en charge les besoins du moment une fois sa partie terminée — m’a permis d’intervenir sur une grande variété de problèmes. Une posture polyvalente, presque de couteau suisse du développement. Ce projet a été à la fois formateur et stimulant : voir des lignes de code prendre forme à l’écran, jusqu’à devenir une interface fluide, interactive et visuellement soignée, a rendu l’expérience particulièrement motivante.<br/>
-<br/>
-Transcendance a été une expérience très enrichissante qui m’a donné envie d’aller plus loin dans le développement. Et c’est aussi une super aventure humaine, qui m’a fait grandir à tous les niveaux.`,
-};
+//  eléonore: `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Étudiante en Master 2 Management de la Technologie et de l’Innovation à Paris-Dauphine, et en formation à l’école 42, j'ai un profil hybride entre stratégie, innovation et développement informatique. Mon profil hybride témoigne de ma curiosité et de mon envie d’apprendre, de comprendre, et de transformer ces connaissances en projets concrets.<br/>
+// <br/>
+// C’est à 42 que j’ai découvert une passion pour le développement et pour le débogage — comprendre un problème en profondeur, le démonter pièce par pièce, puis le résoudre est devenu une vraie source de satisfaction. L’école est pour moi un terrain d’expérimentation stimulant, qui a nourri une curiosité grandissante pour les nouvelles technologies, comme le machine learning et ses applications concrètes, ou encore le développement de jeux.<br/>
+// <br/>
+// J’ai rejoint le projet Transcendance en cours de route, mais l’intégration s’est faite très naturellement grâce à la dynamique de l’équipe. J’ai principalement travaillé sur le frontend, mais l’organisation en mode collaboratif — où chacun prenait en charge les besoins du moment une fois sa partie terminée — m’a permis d’intervenir sur une grande variété de problèmes. Une posture polyvalente, presque de couteau suisse du développement. Ce projet a été à la fois formateur et stimulant : voir des lignes de code prendre forme à l’écran, jusqu’à devenir une interface fluide, interactive et visuellement soignée, a rendu l’expérience particulièrement motivante.<br/>
+// <br/>
+// Transcendance a été une expérience très enrichissante qui m’a donné envie d’aller plus loin dans le développement. Et c’est aussi une super aventure humaine, qui m’a fait grandir à tous les niveaux.`,
+// };
 
 
 export function createTeamMemberPage(navigate: (path: string) => void, name: string): HTMLElement {
@@ -53,7 +53,7 @@ export function createTeamMemberPage(navigate: (path: string) => void, name: str
 
 
   const title = document.createElement('h2');
-  title.textContent = fullNameMap[name.toLowerCase()] || '404 not found';
+  title.textContent = t(`team.name.${name.toLowerCase()}`)  || '404 not found';
   title.className = 'text-4xl font-bold mb-10 text-white text-center';
   mainSection.appendChild(title);
 
@@ -73,7 +73,7 @@ bioWrapper.className = `
   bio.className = 'text-lg text-gray-300 text-justify max-w-4xl leading-relaxed';
 
   
-  bio.innerHTML = bioMap[name.toLowerCase()] || "This member is not part of our team... sorry!";
+  bio.innerHTML = t(`team.bio.${name.toLowerCase()}`) || "This member is not part of our team... sorry!";
 
 
 

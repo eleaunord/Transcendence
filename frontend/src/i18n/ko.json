@@ -308,6 +308,19 @@
 
   "pong.resume_in": "{{seconds}}초 후 재시작...",
   "pong.winner": "🎉 {{name}} 님이 승리했습니다! 🎉",
-  "pong.score": "최종 점수: {{you}} - {{opponent}}"
+  "pong.score": "최종 점수: {{you}} - {{opponent}}",
+
+  "team.name.shinhye": "Shinhye YUN",
+  "team.name.alix": "Alix CERALINE",
+  "team.name.gnouma": "Gnouma DUKURAY",
+  "team.name.rime": "Rime YOUNSSI",
+  "team.name.eléonore": "Eléonore ROTY",
+
+  "team.bio.shinhye": "Shinhye YUN is a multidisciplinary creator passionate about design and user experience. With a background in visual arts, she brings aesthetic finesse to every project, transforming ideas into immersive digital experiences.",
+  "team.bio.alix": "Alix CERALINE is a technology enthusiast with a keen eye for detail. She excels at turning complex problems into elegant solutions and believes that collaboration is the cornerstone of innovation.",
+  "team.bio.gnouma": "Gnouma DUKURAY is known for her strong analytical skills and her empathetic leadership. She enjoys working across disciplines to drive impactful results and foster inclusive teamwork.",
+  "team.bio.eléonore": "현재 파리 도핀대학교에서 기술 및 혁신 경영 석사과정을 이수 중이며, 동시에 42 학교에서 개발을 배우고 있습니다. 저는 전략, 혁신, 그리고 소프트웨어 개발을 아우르는 하이브리드한 배경을 가지고 있으며, 이는 배우고, 이해하고, 지식을 실제 프로젝트로 전환하려는 제 호기심과 열정을 보여줍니다.<br/><br/>42에서 저는 코딩과 디버깅에 대한 열정을 발견했습니다. 문제를 깊이 있게 이해하고, 그것을 하나하나 분해한 뒤 해결해 나가는 과정에서 큰 만족감을 느낍니다. 이 학교는 저에게 실험의 장이었고, 머신러닝이나 게임 개발 같은 신기술에 대한 관심을 더욱 키워주었습니다.<br/><br/>Transcendance 프로젝트에는 중간에 합류했지만, 팀의 협업적인 분위기 덕분에 자연스럽게 적응할 수 있었습니다. 프론트엔드 작업을 주로 담당했지만, 유연한 협업 덕분에 다양한 문제 해결에도 참여할 수 있었고, 일종의 ‘개발 만능도구’로서 활동할 수 있었습니다. 코드가 화면에 점점 생동감 있게 구현되어 가는 과정을 보는 것은 매우 보람찬 일이었습니다.<br/><br/>Transcendance는 저에게 매우 값진 경험이었고, 개발을 더 깊이 있게 탐구하고 싶은 열정을 심어주었으며, 인간적으로도 큰 성장을 할 수 있는 계기가 되었습니다."
+
+
 
 }

@@ -308,8 +308,17 @@
 
   "pong.resume_in": "Resuming in {{seconds}}...",
   "pong.winner": "🎉 {{name}} won! 🎉",
-  "pong.score": "Final Score: {{you}} - {{opponent}}"
+  "pong.score": "Final Score: {{you}} - {{opponent}}",
 
+  "team.name.shinhye": "Shinhye YUN",
+  "team.name.alix": "Alix CERALINE",
+  "team.name.gnouma": "Gnouma DUKURAY",
+  "team.name.rime": "Rime YOUNSSI",
+  "team.name.eléonore": "Eléonore ROTY",
 
+  "team.bio.shinhye": "Shinhye YUN is a multidisciplinary creator passionate about design and user experience. With a background in visual arts, she brings aesthetic finesse to every project, transforming ideas into immersive digital experiences.",
+  "team.bio.alix": "Alix CERALINE is a technology enthusiast with a keen eye for detail. She excels at turning complex problems into elegant solutions and believes that collaboration is the cornerstone of innovation.",
+  "team.bio.gnouma": "Gnouma DUKURAY is known for her strong analytical skills and her empathetic leadership. She enjoys working across disciplines to drive impactful results and foster inclusive teamwork.",
+  "team.bio.eléonore": "Currently a Master's student in Technology and Innovation Management at Paris-Dauphine and also enrolled at 42, I have a hybrid background combining strategy, innovation, and software development. This dual profile reflects my curiosity and desire to learn, understand, and turn knowledge into concrete projects.<br/><br/>It was at 42 that I discovered a passion for coding and debugging — understanding a problem deeply, dissecting it piece by piece, and solving it brings me real satisfaction. The school is a playground for experimentation, which fueled a growing interest in technologies like machine learning and game development.<br/><br/>I joined the Transcendance project along the way, but quickly found my place thanks to the team’s collaborative spirit. I mainly contributed to the frontend, but the flexible, shared responsibility approach let me work on a variety of issues. This ‘Swiss Army knife’ developer role was both challenging and rewarding. Watching lines of code transform into a smooth, interactive, and polished interface made the experience all the more satisfying.<br/><br/>Transcendance was a valuable journey that made me want to go further in development — and also a great human adventure that helped me grow on many levels."
 
 }

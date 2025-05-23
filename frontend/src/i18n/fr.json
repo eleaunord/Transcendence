@@ -46,7 +46,7 @@
   "auth.unauthorized": "Non autorisé",
   "auth.2fa_enable_failed": "Échec de l'activation de l'authentification à deux facteurs",
   "auth.2fa_code_sent": "Code 2FA envoyé",
-  "auth.2fa_code_not_sent": "Échec de l’envoi du code 2FA",
+  "auth.2fa_code_not_sent": "Échec de l'envoi du code 2FA",
   "auth.2fa_not_initiated": "2FA non initialisé ou déjà vérifié",
   "auth.2fa_expired": "Le code 2FA a expiré",
   "auth.2fa_invalid": "Code 2FA invalide",
@@ -308,7 +308,19 @@
 
   "pong.resume_in": "Reprise dans {{seconds}}...",
   "pong.winner": "🎉 {{name}} a gagné ! 🎉",
-  "pong.score": "Score final : {{you}} - {{opponent}}"
+  "pong.score": "Score final : {{you}} - {{opponent}}",
+
+  "team.name.shinhye": "Shinhye YUN",
+  "team.name.alix": "Alix CERALINE",
+  "team.name.gnouma": "Gnouma DUKURAY",
+  "team.name.rime": "Rime YOUNSSI",
+  "team.name.eléonore": "Eléonore ROTY",
+
+  "team.bio.shinhye": "Shinhye YUN est une créatrice multidisciplinaire passionnée par le design et l'expérience utilisateur. Avec une formation en arts visuels, elle apporte une finesse esthétique à chaque projet, transformant les idées en expériences numériques immersives.",
+  "team.bio.alix": "Alix CERALINE est passionnée par la technologie et attentive aux détails. Elle excelle à transformer des problèmes complexes en solutions élégantes, convaincue que la collaboration est la clé de l'innovation.",
+  "team.bio.gnouma": "Gnouma DUKURAY est reconnue pour ses compétences analytiques solides et son leadership empathique. Elle aime travailler de manière interdisciplinaire pour obtenir des résultats concrets et encourager un travail d'équipe inclusif.",
+  "team.bio.rime": "Rime YOUNSSI est une stratège dans l'âme avec un talent pour le storytelling. Elle allie créativité et logique, apportant une touche unique à chaque défi qu'elle relève.",
+  "team.bio.eléonore": "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Étudiante en Master 2 Management de la Technologie et de l'Innovation à Paris-Dauphine, et en formation à l'école 42, j'ai un profil hybride entre stratégie, innovation et développement informatique. Mon profil hybride témoigne de ma curiosité et de mon envie d'apprendre, de comprendre, et de transformer ces connaissances en projets concrets.<br/><br/>C'est à 42 que j'ai découvert une passion pour le développement et pour le débogage — comprendre un problème en profondeur, le démonter pièce par pièce, puis le résoudre est devenu une vraie source de satisfaction. L'école est pour moi un terrain d'expérimentation stimulant, qui a nourri une curiosité grandissante pour les nouvelles technologies, comme le machine learning et ses applications concrètes, ou encore le développement de jeux.<br/><br/>J'ai rejoint le projet Transcendance en cours de route, mais l'intégration s'est faite très naturellement grâce à la dynamique de l'équipe. J'ai principalement travaillé sur le frontend, mais l'organisation en mode collaboratif — où chacun prenait en charge les besoins du moment une fois sa partie terminée — m'a permis d'intervenir sur une grande variété de problèmes. Une posture polyvalente, presque de couteau suisse du développement. Ce projet a été à la fois formateur et stimulant : voir des lignes de code prendre forme à l'écran, jusqu'à devenir une interface fluide, interactive et visuellement soignée, a rendu l'expérience particulièrement motivante.<br/><br/>Transcendance a été une expérience très enrichissante qui m'a donné envie d'aller plus loin dans le développement. Et c'est aussi une super aventure humaine, qui m'a fait grandir à tous les niveaux."
 
 }
 
