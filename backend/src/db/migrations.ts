@@ -141,7 +141,7 @@ async function migrate() {
     { id: 7, username: 'Gnouma', status: 'online', profile_picture: '/assets/profile-pictures/avatar5.png' },
     { id: 8, username: 'Rime', status: 'online', profile_picture: '/assets/profile-pictures/avatar3.png' },
     { id: 9, username: 'Shinhye', status: 'online', profile_picture: '/assets/profile-pictures/avatar2.png' },
-    { id: 10, username: 'Eleonore', status: 'online', profile_picture: '/assets/profile-pictures/Avatar4.png' }
+    { id: 10, username: 'Eléonore', status: 'online', profile_picture: '/assets/profile-pictures/Avatar4.png' }
   ];
 
   const insertFriend = db.prepare(`

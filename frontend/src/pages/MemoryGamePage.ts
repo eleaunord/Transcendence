@@ -3,6 +3,7 @@ import { applyUserTheme } from '../utils/theme';
 import { loadMemorySettings } from '../utils/memorySettings';
 import { t } from '../utils/translator';
 
+
 export function createMemoryGamePage(navigate: (path: string) => void): HTMLElement {
   const { pairCount, theme, timerMode } = loadMemorySettings();
 
@@ -58,10 +59,10 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
   movesDisplay.textContent = `🔢 ${t('memory.moves')}: 0`;
 
   const timerDisplay = document.createElement('div');
-  timerDisplay.textContent = timerMode !== 'none' ? `⏱ ${t('memory.timer')}: ${timeLeft}s` : '';
+  timerDisplay.textContent = timerMode !== 'none' ? `⏱ ${t('memory.time')}: ${timeLeft}s` : '';
   timerDisplay.className = 'text-white';
 
-  gameHeader.appendChild(movesDisplay);
+  gameHeader.appendChild(movesDisplay);timerDisplay.textContent = timerMode !== 'none' ? `⏱ ${t('memory.time')}: ${timeLeft}s` : '';
   if (timerMode !== 'none') gameHeader.appendChild(timerDisplay);
   layout.appendChild(gameHeader);
 
@@ -110,7 +111,7 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
   }
 
   function updateTimerDisplay() {
-    if (timerMode !== 'none') timerDisplay.textContent = `⏱ ${t('memory.timer')}: ${timeLeft}s`;
+    if (timerMode !== 'none') timerDisplay.textContent = `⏱ ${t('memory.time')}: ${timeLeft}s`;
   }
 
   function startTimer() {
@@ -158,7 +159,7 @@ function showVictoryAnimation() {
 
   // Title
   const bravoText = document.createElement('div');
-  bravoText.textContent = t('memory.victory.solo');
+  bravoText.textContent = '🎉 Bravo ! 🎉';
   bravoText.style.cssText = `
     font-size: 48px;
     font-weight: bold;
@@ -177,7 +178,7 @@ function showVictoryAnimation() {
 
   // Styled return button
   const returnBtn = document.createElement('button');
-  returnBtn.textContent = t('memory.backToModes');
+  returnBtn.textContent = 'Retour aux modes de jeu';
   returnBtn.style.cssText = `
     background-color: #d97706; /* Darker amber for contrast */
     color: white;
@@ -215,11 +216,7 @@ function showVictoryAnimation() {
     const overlay = document.createElement('div');
     overlay.className = 'absolute inset-0 bg-black bg-opacity-80 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
 
-    //overlay.innerHTML = `<div>💀 Temps écoulé !</div><div class="text-2xl mt-4">Tu as perdu...</div>`;
-    overlay.innerHTML = `
-      <div>💀 ${t('memory.defeat.timeout')}</div>
-      <div class="text-2xl mt-4">${t('memory.defeat.message')}</div>
-    `;
+    overlay.innerHTML = `<div>💀 Temps écoulé !</div><div class="text-2xl mt-4">Tu as perdu...</div>`;
     gameFrame.appendChild(overlay);
   }
 
