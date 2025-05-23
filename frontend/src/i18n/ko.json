@@ -280,6 +280,7 @@
 
   "memory.opponent.friend": "친구와 대전",
   "memory.opponent.guest": "게스트와 대전",
+  "opponent.guest": "게스트",
 
   "memory.score.you": "당신",
   "memory.turn.you": "👉 당신의 차례",

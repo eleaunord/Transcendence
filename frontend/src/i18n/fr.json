@@ -280,6 +280,7 @@
 
   "memory.opponent.friend": "Contre un ami",
   "memory.opponent.guest": "Contre un invité",
+  "opponent.guest": "Invité",
 
   "memory.score.you": "Vous",
   "memory.turn.you": "👉 Votre tour",

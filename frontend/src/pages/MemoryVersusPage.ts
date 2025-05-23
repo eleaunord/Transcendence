@@ -12,7 +12,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   }
   let currentPlayer = 1;
   const opponentType = localStorage.getItem('memory-opponent') || 'guest';
-  const opponentName = localStorage.getItem('opponent-name') || 'Invité';
+  const opponentName = localStorage.getItem('opponent-name') || t('opponent.guest');
   const scores: Record<number, number> = { 1: 0, 2: 0 };
   const { pairCount, theme, turnTime } = loadMemorySettings();
 
@@ -285,11 +285,12 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
 
   // Title
   const bravoText = document.createElement('div');
-  bravoText.textContent = winner === 'Égalité'
-    ? '🤝 Match nul !'
+  bravoText.textContent =
+  winner === 'Égalité'
+    ? t('memory.victory.draw')
     : winner === 'Vous'
-    ? '🎉 Bravo ! 🎉'
-    : `🎮 ${opponentName} a gagné ! 🎉`;
+    ? t('memory.victory.you')
+    : t('memory.victory.opponent', { opponent: opponentName });
   bravoText.style.cssText = `
     font-size: 48px;
     font-weight: bold;

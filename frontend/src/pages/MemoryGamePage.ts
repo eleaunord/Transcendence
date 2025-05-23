@@ -159,7 +159,7 @@ function showVictoryAnimation() {
 
   // Title
   const bravoText = document.createElement('div');
-  bravoText.textContent = '🎉 Bravo ! 🎉';
+  bravoText.textContent = t('memory.victory.solo');
   bravoText.style.cssText = `
     font-size: 48px;
     font-weight: bold;
@@ -178,7 +178,7 @@ function showVictoryAnimation() {
 
   // Styled return button
   const returnBtn = document.createElement('button');
-  returnBtn.textContent = 'Retour aux modes de jeu';
+  returnBtn.textContent = t('memory.backToModes');
   returnBtn.style.cssText = `
     background-color: #d97706; /* Darker amber for contrast */
     color: white;
@@ -212,13 +212,31 @@ function showVictoryAnimation() {
 }
 
 
-  function showGameOver() {
-    const overlay = document.createElement('div');
-    overlay.className = 'absolute inset-0 bg-black bg-opacity-80 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
+  // function showGameOver() {
+  //   const overlay = document.createElement('div');
+  //   overlay.className = 'absolute inset-0 bg-black bg-opacity-80 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
 
-    overlay.innerHTML = `<div>💀 Temps écoulé !</div><div class="text-2xl mt-4">Tu as perdu...</div>`;
-    gameFrame.appendChild(overlay);
-  }
+  //   overlay.innerHTML = `<div>💀 Temps écoulé !</div><div class="text-2xl mt-4">Tu as perdu...</div>`;
+  //   gameFrame.appendChild(overlay);
+  // }
+
+  function showGameOver() {
+  const overlay = document.createElement('div');
+  overlay.className = 'absolute inset-0 bg-black bg-opacity-80 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
+
+  const title = document.createElement('div');
+  title.textContent = t('memory.defeat.timeout');
+
+  const subtitle = document.createElement('div');
+  subtitle.textContent = t('memory.defeat.message');
+  subtitle.className = 'text-2xl mt-4';
+
+  overlay.innerHTML = ''; // efface le innerHTML brut
+  overlay.appendChild(title);
+  overlay.appendChild(subtitle);
+
+  gameFrame.appendChild(overlay);
+}
 
   cards.forEach(icon => {
     const card = createMemoryCard(icon, selectedTheme.folder);
