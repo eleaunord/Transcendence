@@ -231,7 +231,7 @@
   "bracket.title": "토너먼트 #{{id}}",
   "bracket.play": "시작",
   "bracket.waiting": "대기 중",
-  "bracket.winner": "우승자",
+  "bracket.winner": "🏆 우승자: {{name}}",
   "bracket.next_match": "다음 경기",
   "bracket.countdown": "{{timeLeft}}초 후 시작",
   "bracket.return": "돌아가기",
@@ -309,6 +309,20 @@
   "pong.resume_in": "{{seconds}}초 후 재시작...",
   "pong.winner": "🎉 {{name}} 님이 승리했습니다! 🎉",
   "pong.score": "최종 점수: {{you}} - {{opponent}}",
+  "player.guest": "게스트",
+
+  "loading": "로딩 중...",
+  "tournament.friend": "친구",
+  "tournament.guest": "게스트",
+  "tournament.remove_player": "플레이어 제거",
+  "tournament.slot_empty": "{{num}}번 슬롯: 비어 있음",
+  "tournament.select_friend": "친구 선택",
+  "tournament.add_friend": "친구 추가",
+  "tournament.guest_name_placeholder": "게스트 이름",
+  "tournament.add_guest": "게스트 추가",
+  "tournament.start": "토너먼트 시작",
+  "tournament.local_name": "로컬 토너먼트",
+  "tournament.creation_error": "토너먼트를 생성할 수 없습니다",
 
   "team.name.shinhye": "Shinhye YUN",
   "team.name.alix": "Alix CERALINE",
@@ -317,10 +331,8 @@
   "team.name.eléonore": "Eléonore ROTY",
 
   "team.bio.shinhye": "Shinhye YUN is a multidisciplinary creator passionate about design and user experience. With a background in visual arts, she brings aesthetic finesse to every project, transforming ideas into immersive digital experiences.",
-  "team.bio.alix": "Alix CERALINE is a technology enthusiast with a keen eye for detail. She excels at turning complex problems into elegant solutions and believes that collaboration is the cornerstone of innovation.",
-  "team.bio.gnouma": "Gnouma DUKURAY is known for her strong analytical skills and her empathetic leadership. She enjoys working across disciplines to drive impactful results and foster inclusive teamwork.",
+  "team.bio.alix": "저는 사람 중심의 직업에서 출발했습니다. 심리운동치료사로서 사람들의 필요를 듣고 이해하며, 그에 맞는 맞춤형 경로를 설계하는 것이 저의 일이었습니다. 웹 개발로 전향하면서 저는 같은 본질적인 논리를 발견했습니다. 이제는 인터페이스, 로직, 사용자 경험을 통해 표현하고 있습니다. 유의미한 코드를 작성하는 것은 저에게 또 다른 형태의 돌봄입니다. Transcendance 프로젝트에서는 팀 조정과 개발을 함께 맡는 다방면의 역할을 자연스럽게 수행했습니다. 데일리 미팅, Notion을 활용한 작업 관리, Figma로 제작한 프로토타입을 통해 애자일 방식의 프로세스를 구축했습니다. 저의 목표는 체계적인 흐름을 유지하면서 팀의 결속력을 높이는 것이었습니다. 무엇보다 훌륭한 팀원들과 함께 일할 수 있었던 것은 큰 행운이었습니다. 서로 신뢰하고 소통하며 자연스럽게 협력한 덕분에, 우리는 목표를 달성하면서도 함께 성장할 수 있었습니다. 기술적으로는 Docker 기반 환경 설정, 인증 로직 구현, 기술 스택 선정에 참여했습니다. TypeScript와 TailwindCSS를 활용해 여러 프론트엔드 페이지를 개발했고, 가독성 높은 코드와 일관된 디자인에 집중했습니다. 백엔드 측면에서는 Node.js와 Fastify, SQLite를 사용해 인증 흐름을 구축했습니다. 제가 개발에서 가장 좋아하는 부분은 UX, 코드, 구조가 하나로 연결되는 지점입니다. 직관적이고 가볍고 사용자 중심적인 인터페이스를 설계하는 것. 기술이 눈에 띄지 않고 자연스럽게 경험을 뒷받침하는 그 순간이, 제가 매 프로젝트마다 추구하는 목표입니다.",
+  "team.bio.gnouma": "이 프로젝트 이전에 저는 Inception 프로젝트를 통해 Docker에 대한 첫 경험을 했지만, 완전한 웹 애플리케이션을 개발해본 적은 없었습니다. 이미 상당히 진행된 ft_transcendence 팀에 합류하는 것은 도전이었지만 매우 뜻깊은 경험이었습니다.\n저는 주로 백엔드 개발에 집중했으며, 특히 사용자 관리 기능을 맡았습니다. 프로필 생성 및 수정, 친구 관리, 사용자 상태와 정보를 표시하는 기능들을 구현했습니다. 또한 XSS와 SQL 삽입 공격으로부터 애플리케이션을 보호하고 HTTPS를 적용하며, 민감한 경로를 보호하기 위한 토큰 관리를 통해 백엔드 보안에도 기여했습니다.\n기능의 안정성과 신뢰성을 보장하기 위해 테스트에 참여했고, 다국어 모듈을 구현하여 사이트를 국제 사용자도 이용할 수 있도록 했습니다.\n현장 출석과 작업 속도에 차이가 있었지만, 좋은 소통과 지속적인 협력 덕분에 팀워크는 매우 잘 이루어졌습니다. 이 경험은 제가 전문적인 팀에 효과적으로 합류할 수 있다는 자신감을 심어주었습니다.",
+  "team.bio.rime": "Rime is a multidisciplinary creator passionate about design and user experience. With a background in visual arts, she brings aesthetic finesse to every project, transforming ideas into immersive digital experiences.",
   "team.bio.eléonore": "현재 파리 도핀대학교에서 기술 및 혁신 경영 석사과정을 이수 중이며, 동시에 42 학교에서 개발을 배우고 있습니다. 저는 전략, 혁신, 그리고 소프트웨어 개발을 아우르는 하이브리드한 배경을 가지고 있으며, 이는 배우고, 이해하고, 지식을 실제 프로젝트로 전환하려는 제 호기심과 열정을 보여줍니다.<br/><br/>42에서 저는 코딩과 디버깅에 대한 열정을 발견했습니다. 문제를 깊이 있게 이해하고, 그것을 하나하나 분해한 뒤 해결해 나가는 과정에서 큰 만족감을 느낍니다. 이 학교는 저에게 실험의 장이었고, 머신러닝이나 게임 개발 같은 신기술에 대한 관심을 더욱 키워주었습니다.<br/><br/>Transcendance 프로젝트에는 중간에 합류했지만, 팀의 협업적인 분위기 덕분에 자연스럽게 적응할 수 있었습니다. 프론트엔드 작업을 주로 담당했지만, 유연한 협업 덕분에 다양한 문제 해결에도 참여할 수 있었고, 일종의 ‘개발 만능도구’로서 활동할 수 있었습니다. 코드가 화면에 점점 생동감 있게 구현되어 가는 과정을 보는 것은 매우 보람찬 일이었습니다.<br/><br/>Transcendance는 저에게 매우 값진 경험이었고, 개발을 더 깊이 있게 탐구하고 싶은 열정을 심어주었으며, 인간적으로도 큰 성장을 할 수 있는 계기가 되었습니다."
-
-
-
 }

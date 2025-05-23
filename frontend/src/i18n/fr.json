@@ -53,7 +53,7 @@
   "auth.2fa_verification_failed": "Échec de la vérification 2FA",
   "auth.default_error": "Une erreur inconnue est survenue",
 
-    "me.error.missing_token": "Jeton manquant",
+  "me.error.missing_token": "Jeton manquant",
   "me.error.invalid_token": "Jeton invalide ou expiré",
   "me.error.unauthorized": "Non autorisé",
   "me.error.user_not_found": "Utilisateur non trouvé",
@@ -231,7 +231,7 @@
   "bracket.title": "Tournoi #{{id}}",
   "bracket.play": "Jouer",
   "bracket.waiting": "En attente",
-  "bracket.winner": "Vainqueur",
+  "bracket.winner": "🏆 Gagnant : {{name}}",
   "bracket.next_match": "Match à venir",
   "bracket.countdown": "Début dans {{timeLeft}}...",
   "bracket.return": "Retour",
@@ -309,6 +309,20 @@
   "pong.resume_in": "Reprise dans {{seconds}}...",
   "pong.winner": "🎉 {{name}} a gagné ! 🎉",
   "pong.score": "Score final : {{you}} - {{opponent}}",
+  "player.guest": "Invité",
+
+  "loading": "Chargement...",
+  "tournament.friend": "Ami",
+  "tournament.guest": "Invité",
+  "tournament.remove_player": "Supprimer ce joueur",
+  "tournament.slot_empty": "Joueur {{num}} : vide",
+  "tournament.select_friend": "Choisir un ami",
+  "tournament.add_friend": "Ajouter ami",
+  "tournament.guest_name_placeholder": "Nom de l'invité",
+  "tournament.add_guest": "Ajouter invité",
+  "tournament.start": "Lancer le tournoi",
+  "tournament.local_name": "Tournoi Local",
+  "tournament.creation_error": "Erreur lors de la création du tournoi",
 
   "team.name.shinhye": "Shinhye YUN",
   "team.name.alix": "Alix CERALINE",
@@ -317,11 +331,10 @@
   "team.name.eléonore": "Eléonore ROTY",
 
   "team.bio.shinhye": "Shinhye YUN est une créatrice multidisciplinaire passionnée par le design et l'expérience utilisateur. Avec une formation en arts visuels, elle apporte une finesse esthétique à chaque projet, transformant les idées en expériences numériques immersives.",
-  "team.bio.alix": "Alix CERALINE est passionnée par la technologie et attentive aux détails. Elle excelle à transformer des problèmes complexes en solutions élégantes, convaincue que la collaboration est la clé de l'innovation.",
-  "team.bio.gnouma": "Gnouma DUKURAY est reconnue pour ses compétences analytiques solides et son leadership empathique. Elle aime travailler de manière interdisciplinaire pour obtenir des résultats concrets et encourager un travail d'équipe inclusif.",
+  "team.bio.alix": "Je viens d'un métier profondément humain : la psychomotricité. Mon travail consistait à écouter, comprendre des besoins, et concevoir des parcours adaptés. En me reconvertissant dans le développement web, j'ai retrouvé cette même logique, cette envie de construire avec justesse, à travers des interfaces, de la logique métier et de l'expérience utilisateur. Créer du code utile, c'est à mes yeux une autre manière de prendre soin. Dans le projet Transcendance, j'ai occupé un rôle transversal mêlant coordination d'équipe et développement actif. J'ai mis en place une organisation agile avec des réunions quotidiennes, un suivi clair sur Notion, et des maquettes fonctionnelles sur Figma. Mon objectif : garantir une progression structurée tout en favorisant la cohésion du groupe. J'ai eu la chance d'évoluer au sein d'une équipe engagée, avec laquelle la communication et l'entraide ont été naturelles. Grâce à cette belle dynamique collective, nous avons pu atteindre nos objectifs tout en apprenant les uns des autres. Sur le plan technique, j'ai participé à la configuration de notre environnement avec Docker, à la mise en place de l'authentification, et au choix des technologies adaptées à notre stack. J'ai développé plusieurs pages front-end en TypeScript avec TailwindCSS, en m'attachant à la lisibilité du code et à la cohérence visuelle. Côté back-end, j'ai contribué à la logique d'authentification via Node.js et Fastify, avec une base de données SQLite. Ce que je préfère dans le développement ? L'endroit où tout se rejoint : l'UX, le code, la structure. Concevoir une interface qui parle d'elle-même, fluide, légère, pensée pour l'utilisateur. Ce moment où la technique s'efface au profit de l'expérience, c'est ce que je cherche à atteindre dans chaque projet.",
+  "team.bio.gnouma": "Avant ce projet, j'avais déjà eu une première expérience avec Docker à travers le projet Inception, mais je n'avais encore jamais participé à la création d'une application web complète. Rejoindre une équipe déjà bien avancée sur ft_transcendence a été un vrai défi, mais aussi une expérience extrêmement enrichissante.\nJe me suis impliquée principalement dans le développement backend, avec un focus sur la gestion des utilisateurs : création et mise à jour des profils, ajout et suivi des amis, affichage des statuts et des informations liées aux utilisateurs. J'ai également contribué à la cybersécurité du backend, en participant à la sécurisation de l'application contre les failles XSS, les injections SQL, à la mise en place du HTTPS, ainsi qu'à la gestion des tokens pour protéger les routes sensibles.\nJ'ai pris part aux tests afin de garantir la stabilité et la fiabilité des fonctionnalités, et j'ai mis en œuvre le module multilingue pour rendre le site accessible à un public international.\nMalgré des différences de rythme et de disponibilité sur place, le travail d'équipe s'est très bien passé grâce à une bonne communication et une entraide constante. Cette expérience m'a donné confiance en ma capacité à m'intégrer efficacement dans une équipe professionnelle.",
   "team.bio.rime": "Rime YOUNSSI est une stratège dans l'âme avec un talent pour le storytelling. Elle allie créativité et logique, apportant une touche unique à chaque défi qu'elle relève.",
   "team.bio.eléonore": "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Étudiante en Master 2 Management de la Technologie et de l'Innovation à Paris-Dauphine, et en formation à l'école 42, j'ai un profil hybride entre stratégie, innovation et développement informatique. Mon profil hybride témoigne de ma curiosité et de mon envie d'apprendre, de comprendre, et de transformer ces connaissances en projets concrets.<br/><br/>C'est à 42 que j'ai découvert une passion pour le développement et pour le débogage — comprendre un problème en profondeur, le démonter pièce par pièce, puis le résoudre est devenu une vraie source de satisfaction. L'école est pour moi un terrain d'expérimentation stimulant, qui a nourri une curiosité grandissante pour les nouvelles technologies, comme le machine learning et ses applications concrètes, ou encore le développement de jeux.<br/><br/>J'ai rejoint le projet Transcendance en cours de route, mais l'intégration s'est faite très naturellement grâce à la dynamique de l'équipe. J'ai principalement travaillé sur le frontend, mais l'organisation en mode collaboratif — où chacun prenait en charge les besoins du moment une fois sa partie terminée — m'a permis d'intervenir sur une grande variété de problèmes. Une posture polyvalente, presque de couteau suisse du développement. Ce projet a été à la fois formateur et stimulant : voir des lignes de code prendre forme à l'écran, jusqu'à devenir une interface fluide, interactive et visuellement soignée, a rendu l'expérience particulièrement motivante.<br/><br/>Transcendance a été une expérience très enrichissante qui m'a donné envie d'aller plus loin dans le développement. Et c'est aussi une super aventure humaine, qui m'a fait grandir à tous les niveaux."
-
 }
 
 

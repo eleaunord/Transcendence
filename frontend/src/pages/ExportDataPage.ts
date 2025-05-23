@@ -28,7 +28,7 @@ export function createExportDataPage(navigate: (path: string) => void): HTMLElem
 
   //페이지 제목
   const title = document.createElement('h2');
-  title.textContent = 'Export My Data';
+  title.textContent = t('settings.export.button');
   title.className = 'text-4xl font-bold mb-8 text-white';
   exportSection.appendChild(title);
 
@@ -38,13 +38,13 @@ export function createExportDataPage(navigate: (path: string) => void): HTMLElem
 
   //설명 문구
   const description = document.createElement('p');
-  description.textContent = "Vous pouvez télécharger une copie de vos données personnelles au format JSON.";
+  description.textContent = t('settings.export.description');
   description.className = 'mb-6 text-white';
   card.appendChild(description);
 
   //내보내기 버튼 생성
   const exportButton = document.createElement('button');
-  exportButton.textContent = 'Télécharger mes données';
+  exportButton.textContent = t('settings.export.button');;
   exportButton.className = 'bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded transition duration-300';
 
   //버튼 클릭 시: API 호출 후 JSON 다운로드

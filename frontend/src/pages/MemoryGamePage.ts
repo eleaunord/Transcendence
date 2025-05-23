@@ -168,7 +168,7 @@ function showVictoryAnimation() {
 
   // Subtitle
   const moveCountText = document.createElement('div');
-  moveCountText.textContent = `Tu as terminé en ${moves} coups !`;
+  moveCountText.textContent = t('memory.victory.moves', { count: moves });
   moveCountText.style.cssText = `
     font-size: 24px;
     text-align: center;
