@@ -66,6 +66,7 @@ export function createMemoryFriendPage(navigate: (path: string) => void): HTMLEl
             localStorage.setItem('memory-opponent', 'friend');
             localStorage.setItem('opponent-id', friend.id);
             localStorage.setItem('opponent-name', friend.username);
+            localStorage.setItem('opponent-picture', friend.profile_picture);
             navigate('/customization-memory');
           });
 
