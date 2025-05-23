@@ -109,6 +109,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
         turnIndicator.textContent = currentPlayer === 1
           ? t('memory.turn.you')
           : t('memory.turn.opponent', { opponent: opponentName });
+        updateAvatarHighlight();
         startTurnTimer();
       }
     }, 1000);
@@ -197,6 +198,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
           ? t('memory.turn.you')
           : t('memory.turn.opponent', { opponent: opponentName });
         startTurnTimer();
+        updateAvatarHighlight();
       }, 500);
     }
 
@@ -344,6 +346,57 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
 
   gameFrame.appendChild(gameHeader);
   gameFrame.appendChild(cardsContainer);
+
+  const avatarsOverlay = document.createElement('div');
+  avatarsOverlay.className = 'absolute bottom-6 w-full flex justify-center items-center gap-32 z-30';
+
+
+ const playerName = localStorage.getItem('username') || 'Vous';
+ const playerPicture =
+    sessionStorage.getItem('profilePicture') ||
+    localStorage.getItem('profile-picture') ||
+    '/assets/profile-pictures/default.jpg';
+
+  
+  const opponentPicture = opponentType === 'friend'
+    ? localStorage.getItem('opponent-picture') || '/assets/profile-pictures/default.jpg'
+    : '/assets/guest-avatars/moon.jpg'; // guest = moon
+
+
+  const createAvatar = (name: string, imgSrc: string): HTMLElement => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'flex flex-col items-center';
+
+    const img = document.createElement('img');
+    img.src = imgSrc;
+    img.alt = name;
+    img.className = 'w-20 h-20 rounded-full border-4 border-white shadow-md object-cover';
+
+    const label = document.createElement('div');
+    label.textContent = name;
+    label.className = 'mt-2 text-base font-semibold text-white bg-black/60 px-4 py-1 rounded-full';
+
+    wrapper.appendChild(img);
+    wrapper.appendChild(label);
+    return wrapper;
+  };
+
+  const playerAvatar = createAvatar(playerName, playerPicture);
+  const opponentAvatar = createAvatar(opponentName, opponentPicture);
+
+  const updateAvatarHighlight = () => {
+    playerAvatar.style.opacity = currentPlayer === 1 ? '1' : '0.3';
+    opponentAvatar.style.opacity = currentPlayer === 2 ? '1' : '0.3';
+  };
+
+  updateAvatarHighlight(); // initial highlight
+
+  avatarsOverlay.append(playerAvatar, opponentAvatar);
+  gameFrame.appendChild(avatarsOverlay);
+
+
+
+  
   gameArea.appendChild(gameFrame);
 
   const layout = document.createElement('div');
