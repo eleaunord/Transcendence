@@ -54,7 +54,8 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   applyUserTheme(backgroundImage);
 
   const gameHeader = document.createElement('div');
-  gameHeader.className = 'flex justify-center items-center gap-12 text-xl font-semibold py-4 bg-black bg-opacity-60 shadow-md z-10';
+  gameHeader.className = 'absolute top-0 left-0 right-0 flex justify-center items-center gap-12 text-xl font-semibold py-2 bg-black bg-opacity-70 z-20';
+
 
   const player1Status = document.createElement('div');
   const player2Status = document.createElement('div');
@@ -79,7 +80,8 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   gameFrame.style.backgroundPosition = 'center';
 
   const cardsContainer = document.createElement('div');
-  cardsContainer.className = 'grid grid-cols-6 gap-2';
+  cardsContainer.className = 'grid grid-cols-6 gap-2 pt-16';
+
 
   let flippedCards: { card: HTMLElement, inner: HTMLElement, icon: string }[] = [];
   let lockBoard = false;
@@ -340,13 +342,13 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
 }
 
 
+  gameFrame.appendChild(gameHeader);
   gameFrame.appendChild(cardsContainer);
   gameArea.appendChild(gameFrame);
 
   const layout = document.createElement('div');
   layout.className = 'flex flex-col flex-1 gap-2';
   layout.id = 'game-layout';
-  layout.appendChild(gameHeader);
   layout.appendChild(gameArea);
 
   // const backBtn = document.createElement('button');
