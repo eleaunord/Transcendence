@@ -80,7 +80,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   gameFrame.style.backgroundPosition = 'center';
 
   const cardsContainer = document.createElement('div');
-  cardsContainer.className = 'grid grid-cols-6 gap-2 pt-16';
+  cardsContainer.className = 'grid grid-cols-6 gap-2 pt-8';
 
 
   let flippedCards: { card: HTMLElement, inner: HTMLElement, icon: string }[] = [];
@@ -350,11 +350,9 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
 }
 
 
-  gameFrame.appendChild(gameHeader);
-  gameFrame.appendChild(cardsContainer);
-
   const avatarsOverlay = document.createElement('div');
-  avatarsOverlay.className = 'absolute bottom-6 w-full flex justify-center items-center gap-32 z-30';
+  //avatarsOverlay.className = 'w-full flex justify-center items-center gap-32 pt-2 pb-1 z-30';
+  avatarsOverlay.className = 'w-full flex justify-center items-center gap-32 pt-1 pb-4 z-30';
 
 
  const playerName = localStorage.getItem('username') || 'Vous';
@@ -376,7 +374,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
     const img = document.createElement('img');
     img.src = imgSrc;
     img.alt = name;
-    img.className = 'w-20 h-20 rounded-full border-4 border-white shadow-md object-cover';
+    img.className = 'w-20 h-20 rounded-full border-4 shadow-md object-cover';
 
     const label = document.createElement('div');
     label.textContent = name;
@@ -390,18 +388,38 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   const playerAvatar = createAvatar(playerName, playerPicture);
   const opponentAvatar = createAvatar(opponentName, opponentPicture);
 
-  const updateAvatarHighlight = () => {
-    playerAvatar.style.opacity = currentPlayer === 1 ? '1' : '0.3';
-    opponentAvatar.style.opacity = currentPlayer === 2 ? '1' : '0.3';
-  };
+  const playerImg = playerAvatar.querySelector('img') as HTMLImageElement;
+  const opponentImg = opponentAvatar.querySelector('img') as HTMLImageElement;
+
+
+const updateAvatarHighlight = () => {
+  if (currentPlayer === 1) {
+    // you’re up
+    playerImg.style.borderColor = 'limegreen';
+    playerImg.style.opacity = '1';
+
+    opponentImg.style.borderColor = 'rgba(255,0,0,0.5)';
+    opponentImg.style.opacity = '0.3';
+  } else {
+    // opponent’s up
+    opponentImg.style.borderColor = 'limegreen';
+    opponentImg.style.opacity = '1';
+
+    playerImg.style.borderColor = 'rgba(255,0,0,0.5)';
+    playerImg.style.opacity = '0.3';
+  }
+};
+
 
   updateAvatarHighlight(); // initial highlight
 
   avatarsOverlay.append(playerAvatar, opponentAvatar);
+
+  gameFrame.appendChild(gameHeader);
   gameFrame.appendChild(avatarsOverlay);
+  gameFrame.appendChild(cardsContainer);
 
-
-
+  //gameFrame.appendChild(avatarsOverlay);
   
   gameArea.appendChild(gameFrame);
 
