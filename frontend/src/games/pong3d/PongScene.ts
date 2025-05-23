@@ -206,7 +206,7 @@ const userName = sessionStorage.getItem("username") || "You";
 const opponentImage = isAI
   ? "/assets/guest-avatars/bigstar.jpg"
   : "/assets/guest-avatars/moon.jpg";
-const opponentName = isAI ? "AI" : "Guest";
+const opponentName = isAI ? "AI" : t('player.guest');
 
 // USER box (⟵ now on the LEFT)
 const playerBox = document.createElement('div');
@@ -769,7 +769,7 @@ async function checkGameOver() {
         const winnerId = isWin ? userId : opponentId;
 
         if (winnerId === 2) winnerName = "AI";
-        else if (winnerId === 3) winnerName = "Guest";
+        else if (winnerId === 3) winnerName = t('player.guest');
         else winnerName = sessionStorage.getItem("username") || "Player 1";
       }
     }

@@ -231,7 +231,7 @@
   "bracket.title": "Tournament #{{id}}",
   "bracket.play": "Play",
   "bracket.waiting": "Waiting",
-  "bracket.winner": "Winner",
+  "bracket.winner": "🏆 Winner: {{name}}",
   "bracket.next_match": "Upcoming Match",
   "bracket.countdown": "Starting in {{timeLeft}}...",
   "bracket.return": "Return",
@@ -280,6 +280,7 @@
 
   "memory.opponent.friend": "Versus Friend",
   "memory.opponent.guest": "Versus Guest",
+  "opponent.guest": "Guest",
 
   "memory.score.you": "You",
   "memory.turn.you": "👉 Your turn",
@@ -309,6 +310,20 @@
   "pong.resume_in": "Resuming in {{seconds}}...",
   "pong.winner": "🎉 {{name}} won! 🎉",
   "pong.score": "Final Score: {{you}} - {{opponent}}",
+  "player.guest": "Guest",
+
+  "loading": "Loading...",
+  "tournament.friend": "Friend",
+  "tournament.guest": "Guest",
+  "tournament.remove_player": "Remove this player",
+  "tournament.slot_empty": "Player {{num}}: empty",
+  "tournament.select_friend": "Choose a friend",
+  "tournament.add_friend": "Add friend",
+  "tournament.guest_name_placeholder": "Guest name",
+  "tournament.add_guest": "Add guest",
+  "tournament.start": "Start Tournament",
+  "tournament.local_name": "Local Tournament",
+  "tournament.creation_error": "Failed to create tournament",
 
   "team.name.shinhye": "Shinhye YUN",
   "team.name.alix": "Alix CERALINE",
@@ -317,8 +332,9 @@
   "team.name.eléonore": "Eléonore ROTY",
 
   "team.bio.shinhye": "Shinhye YUN is a multidisciplinary creator passionate about design and user experience. With a background in visual arts, she brings aesthetic finesse to every project, transforming ideas into immersive digital experiences.",
-  "team.bio.alix": "Alix CERALINE is a technology enthusiast with a keen eye for detail. She excels at turning complex problems into elegant solutions and believes that collaboration is the cornerstone of innovation.",
-  "team.bio.gnouma": "Gnouma DUKURAY is known for her strong analytical skills and her empathetic leadership. She enjoys working across disciplines to drive impactful results and foster inclusive teamwork.",
+  "team.bio.alix": "I come from a deeply human-centered profession: psychomotricity. My work used to focus on listening, understanding needs, and designing tailored support pathways. When I transitioned into web development, I found the same core logic, now expressed through interfaces, business logic, and user experience. Writing meaningful code, to me, is just another form of care. In the Transcendance project, I naturally took on a hybrid role that combined team coordination with active development. I implemented an agile structure with daily meetings, clear task tracking on Notion, and functional prototypes built in Figma. My goal was to foster a well-structured process while supporting strong team cohesion. I was lucky to work with a dedicated and supportive team. Thanks to open communication and mutual trust, we achieved our goals while continuously learning from one another. On the technical side, I helped set up our Docker-based environment, implemented authentication logic, and contributed to tech stack decisions. I developed several front-end pages using TypeScript and TailwindCSS, with a focus on readable code and consistent visual design. On the back-end, I worked on the authentication flow using Node.js and Fastify, with a SQLite database. What I love most about development is the intersection where UX, code, and structure meet. Designing interfaces that feel intuitive, lightweight, and user-focused, where the technology quietly serves the experience, is what I aim for in every project.",
+  "team.bio.gnouma": "Before this project, I had already gained some initial experience with Docker through the Inception project, but I had never taken part in building a complete web application. Joining a team that was already well into ft_transcendence was a real challenge, but also an incredibly rewarding experience.\nI focused mainly on backend development, especially user management: creating and updating profiles, managing friends, and displaying user statuses and information. I also contributed to backend security by helping protect the application from XSS and SQL injection attacks, implementing HTTPS, and managing tokens to secure sensitive routes.\nI took part in testing to ensure the reliability and stability of our features, and I implemented the multilingual module to make the site accessible to an international audience.\nDespite differences in pace and availability on site, teamwork went really well thanks to good communication and mutual support. This experience gave me confidence in my ability to integrate effectively into a professional team.",
+  "team.bio.rime": "Rime is a multidisciplinary creator passionate about design and user experience. With a background in visual arts, she brings aesthetic finesse to every project, transforming ideas into immersive digital experiences.",
   "team.bio.eléonore": "Currently a Master's student in Technology and Innovation Management at Paris-Dauphine and also enrolled at 42, I have a hybrid background combining strategy, innovation, and software development. This dual profile reflects my curiosity and desire to learn, understand, and turn knowledge into concrete projects.<br/><br/>It was at 42 that I discovered a passion for coding and debugging — understanding a problem deeply, dissecting it piece by piece, and solving it brings me real satisfaction. The school is a playground for experimentation, which fueled a growing interest in technologies like machine learning and game development.<br/><br/>I joined the Transcendance project along the way, but quickly found my place thanks to the team’s collaborative spirit. I mainly contributed to the frontend, but the flexible, shared responsibility approach let me work on a variety of issues. This ‘Swiss Army knife’ developer role was both challenging and rewarding. Watching lines of code transform into a smooth, interactive, and polished interface made the experience all the more satisfying.<br/><br/>Transcendance was a valuable journey that made me want to go further in development — and also a great human adventure that helped me grow on many levels."
 
 }

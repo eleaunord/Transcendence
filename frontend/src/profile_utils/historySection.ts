@@ -71,7 +71,10 @@ export function createHistorySection(token: string): HTMLElement {
 
         pageItems.forEach(game => {
           const p = document.createElement('p');
-          p.textContent = `${icon} ${game.score1} - ${game.score2} ${t('history.against')} ${game.opponent} • ${new Date(game.timestamp).toLocaleString()}`;
+          //p.textContent = `${icon} ${game.score1} - ${game.score2} ${t('history.against')} ${game.opponent} • ${new Date(game.timestamp).toLocaleString()}`;
+          const date = new Date(game.timestamp);
+          const dateOnly = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+          p.textContent = `${icon} ${game.score1} - ${game.score2} ${t('history.against')} ${game.opponent} • ${dateOnly}`;
           list.appendChild(p);
         });
 

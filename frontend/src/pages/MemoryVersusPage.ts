@@ -12,7 +12,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   }
   let currentPlayer = 1;
   const opponentType = localStorage.getItem('memory-opponent') || 'guest';
-  const opponentName = localStorage.getItem('opponent-name') || 'Invité';
+  const opponentName = localStorage.getItem('opponent-name') || t('opponent.guest');
   const scores: Record<number, number> = { 1: 0, 2: 0 };
   const { pairCount, theme, turnTime } = loadMemorySettings();
 
@@ -54,7 +54,8 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   applyUserTheme(backgroundImage);
 
   const gameHeader = document.createElement('div');
-  gameHeader.className = 'flex justify-center items-center gap-12 text-xl font-semibold py-4 bg-black bg-opacity-60 shadow-md z-10';
+  gameHeader.className = 'absolute top-0 left-0 right-0 flex justify-center items-center gap-12 text-xl font-semibold py-2 bg-black bg-opacity-70 z-20';
+
 
   const player1Status = document.createElement('div');
   const player2Status = document.createElement('div');
@@ -79,7 +80,8 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   gameFrame.style.backgroundPosition = 'center';
 
   const cardsContainer = document.createElement('div');
-  cardsContainer.className = 'grid grid-cols-6 gap-2';
+  cardsContainer.className = 'grid grid-cols-6 gap-2 pt-16';
+
 
   let flippedCards: { card: HTMLElement, inner: HTMLElement, icon: string }[] = [];
   let lockBoard = false;
@@ -107,6 +109,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
         turnIndicator.textContent = currentPlayer === 1
           ? t('memory.turn.you')
           : t('memory.turn.opponent', { opponent: opponentName });
+        updateAvatarHighlight();
         startTurnTimer();
       }
     }, 1000);
@@ -195,6 +198,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
           ? t('memory.turn.you')
           : t('memory.turn.opponent', { opponent: opponentName });
         startTurnTimer();
+        updateAvatarHighlight();
       }, 500);
     }
 
@@ -221,8 +225,13 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
       opponent: opponentName,
       score1: scores[1],
       score2: scores[2],
-      winner: scores[1] > scores[2] ? 'Joueur' : scores[2] > scores[1] ? opponentName : 'Égalité',
-      pairCount,
+      //winner: scores[1] > scores[2] ? 'Joueur' : scores[2] > scores[1] ? opponentName : 'Égalité',
+      winner: scores[1] > scores[2]
+      ? t('memory.score.you')
+      : scores[2] > scores[1]
+      ? opponentName
+      : t('memory.victory.draw'),
+          pairCount,
       turnTime,
       timestamp: new Date().toISOString(),
     };
@@ -249,48 +258,165 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
     }
   }
 
+  // function showVictoryAnimation() {
+  //   const overlay = document.createElement('div');
+  //   overlay.className = 'absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
+
+  //   const winner = scores[1] > scores[2] ? 'Vous' : scores[2] > scores[1] ? opponentName : 'Égalité';
+  //   const victoryText = document.createElement('div');
+  //   if (winner === 'Égalité') {
+  //     victoryText.textContent = t('memory.victory.draw');
+  //   } else if (winner === 'Vous') {
+  //     victoryText.textContent = t('memory.victory.you');
+  //   } else {
+  //     victoryText.textContent =  t('memory.victory.opponent', { opponent: winner });
+  //   }
+  //   const scoreText = document.createElement('div');
+  //   scoreText.className = 'text-2xl mt-4 text-center leading-relaxed';
+  //   scoreText.innerHTML = `
+  //     <div class="text-3xl font-semibold underline mb-2">${t('memory.victory.scores')}</div>
+  //     <div class="text-center">${t('memory.score.you')} : ${scores[1]}</div>
+  //     <div class="text-center">${opponentName} : ${scores[2]}</div>
+  //   `;
+
+  //   overlay.append(victoryText, scoreText);
+  //   saveMemoryGameResult();
+  //   gameFrame.appendChild(overlay);
+  // }
+
   function showVictoryAnimation() {
-    const overlay = document.createElement('div');
-    overlay.className = 'absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
+  const overlay = document.createElement('div');
+  overlay.className = 'absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white text-4xl font-bold z-50 space-y-6';
 
-    const winner = scores[1] > scores[2] ? 'Vous' : scores[2] > scores[1] ? opponentName : 'Égalité';
-    const victoryText = document.createElement('div');
-    if (winner === 'Égalité') {
-      victoryText.textContent = t('memory.victory.draw');
-    } else if (winner === 'Vous') {
-      victoryText.textContent = t('memory.victory.you');
-    } else {
-      victoryText.textContent =  t('memory.victory.opponent', { opponent: winner });
-    }
-    const scoreText = document.createElement('div');
-    scoreText.className = 'text-2xl mt-4 text-center leading-relaxed';
-    scoreText.innerHTML = `
-      <div class="text-3xl font-semibold underline mb-2">${t('memory.victory.scores')}</div>
-      <div class="text-center">${t('memory.score.you')} : ${scores[1]}</div>
-      <div class="text-center">${opponentName} : ${scores[2]}</div>
-    `;
+  const winner = scores[1] > scores[2] ? 'Vous' : scores[2] > scores[1] ? opponentName : 'Égalité';
 
-    overlay.append(victoryText, scoreText);
-    saveMemoryGameResult();
-    gameFrame.appendChild(overlay);
-  }
+  // Title
+  const bravoText = document.createElement('div');
+  bravoText.textContent =
+  winner === 'Égalité'
+    ? t('memory.victory.draw')
+    : winner === 'Vous'
+    ? t('memory.victory.you')
+    : t('memory.victory.opponent', { opponent: opponentName });
+  bravoText.style.cssText = `
+    font-size: 48px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+  `;
 
+  // Score summary
+  const scoreText = document.createElement('div');
+  scoreText.innerHTML = `
+    <div class="text-3xl font-semibold underline mb-2">${t('memory.victory.scores')}</div>
+    <div class="text-xl text-center">${t('memory.score.you')} : ${scores[1]}</div>
+    <div class="text-xl text-center">${opponentName} : ${scores[2]}</div>
+  `;
+  scoreText.style.cssText = `
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 30px;
+  `;
+
+  // Return button
+  const returnBtn = document.createElement('button');
+  returnBtn.textContent = t('memory.backToModes');
+  returnBtn.style.cssText = `
+    background-color: #d97706;
+    color: white;
+    font-weight: 700;
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s;
+  `;
+  returnBtn.onmouseover = () => {
+    returnBtn.style.backgroundColor = '#facc15';
+  };
+  returnBtn.onmouseout = () => {
+    returnBtn.style.backgroundColor = '#fbbf24';
+  };
+  returnBtn.onclick = () => navigate('/memory-mode');
+
+  overlay.appendChild(bravoText);
+  overlay.appendChild(scoreText);
+  overlay.appendChild(returnBtn);
+
+  saveMemoryGameResult();
+  gameFrame.appendChild(overlay);
+}
+
+
+  gameFrame.appendChild(gameHeader);
   gameFrame.appendChild(cardsContainer);
+
+  const avatarsOverlay = document.createElement('div');
+  avatarsOverlay.className = 'absolute bottom-6 w-full flex justify-center items-center gap-32 z-30';
+
+
+ const playerName = localStorage.getItem('username') || 'Vous';
+ const playerPicture =
+    sessionStorage.getItem('profilePicture') ||
+    localStorage.getItem('profile-picture') ||
+    '/assets/profile-pictures/default.jpg';
+
+  
+  const opponentPicture = opponentType === 'friend'
+    ? localStorage.getItem('opponent-picture') || '/assets/profile-pictures/default.jpg'
+    : '/assets/guest-avatars/moon.jpg'; // guest = moon
+
+
+  const createAvatar = (name: string, imgSrc: string): HTMLElement => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'flex flex-col items-center';
+
+    const img = document.createElement('img');
+    img.src = imgSrc;
+    img.alt = name;
+    img.className = 'w-20 h-20 rounded-full border-4 border-white shadow-md object-cover';
+
+    const label = document.createElement('div');
+    label.textContent = name;
+    label.className = 'mt-2 text-base font-semibold text-white bg-black/60 px-4 py-1 rounded-full';
+
+    wrapper.appendChild(img);
+    wrapper.appendChild(label);
+    return wrapper;
+  };
+
+  const playerAvatar = createAvatar(playerName, playerPicture);
+  const opponentAvatar = createAvatar(opponentName, opponentPicture);
+
+  const updateAvatarHighlight = () => {
+    playerAvatar.style.opacity = currentPlayer === 1 ? '1' : '0.3';
+    opponentAvatar.style.opacity = currentPlayer === 2 ? '1' : '0.3';
+  };
+
+  updateAvatarHighlight(); // initial highlight
+
+  avatarsOverlay.append(playerAvatar, opponentAvatar);
+  gameFrame.appendChild(avatarsOverlay);
+
+
+
+  
   gameArea.appendChild(gameFrame);
 
   const layout = document.createElement('div');
   layout.className = 'flex flex-col flex-1 gap-2';
   layout.id = 'game-layout';
-  layout.appendChild(gameHeader);
   layout.appendChild(gameArea);
 
-  const backBtn = document.createElement('button');
-  backBtn.textContent = t('memory.backToModes');
-  backBtn.className = 'fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg';
-  backBtn.onclick = () => navigate('/memory-mode');
+  // const backBtn = document.createElement('button');
+  // backBtn.textContent = t('memory.backToModes');
+  // backBtn.className = 'fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg';
+  // backBtn.onclick = () => navigate('/memory-mode');
 
   container.append(layout)
-  container.appendChild(backBtn);
+  // container.appendChild(backBtn);
 
   // Adaptation layout/sidebar (effet fluide)
   sidebar.addEventListener('mouseenter', () => {

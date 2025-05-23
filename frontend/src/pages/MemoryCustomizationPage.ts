@@ -83,8 +83,7 @@ export function createMemoryCustomizationPage(navigate: (path: string) => void):
   const mode = localStorage.getItem('memory-mode') || 'solo';
 
   // Détermination de l'adversaire
-  const opponentName = localStorage.getItem('opponent-name') || 'Invité';
-
+  const opponentName = localStorage.getItem('opponent-name') || t('opponent.guest');
   // Groupe de temps selon le mode
   let timerGroup: HTMLDivElement;
 

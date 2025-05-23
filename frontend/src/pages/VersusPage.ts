@@ -116,7 +116,7 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
 
     let opponentCard: HTMLElement;
     if (mode === 'local') {
-      opponentCard = createPlayerCard("/assets/guest-avatars/moon.jpg", "Guest");
+      opponentCard = createPlayerCard("/assets/guest-avatars/moon.jpg", t('player.guest'));
     } else {
       opponentCard = createPlayerCard("/assets/guest-avatars/bigstar.jpg", "AI");
     }
@@ -195,7 +195,7 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
     gameFrame.appendChild(btnReturn);
 
     const username = sessionStorage.getItem("username") || "Player 1";
-    const opponentName = mode === "ai" ? "AI" : "Guest";
+    const opponentName = mode === "ai" ? "AI" : t('player.guest');
 
     // const playerLabel = document.createElement("div");
     // playerLabel.textContent = username;

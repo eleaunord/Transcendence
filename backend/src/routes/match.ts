@@ -59,19 +59,21 @@ export async function matchRoutes(app: FastifyInstance) {
     }
   
     try {
-      const result = db.prepare(`
-        INSERT INTO games (user_id, opponent_id) VALUES (?, ?)
-      `).run(finalUserId ?? -9999, opponent_id); // ✅ guest 전용 -9999 fallback 사용
-      const gameId = result.lastInsertRowid as number;
+      // const result = db.prepare(`
+      //   INSERT INTO games (user_id, opponent_id) VALUES (?, ?)
+      // `).run(finalUserId ?? -9999, opponent_id); // ✅ guest 전용 -9999 fallback 사용
+      // const gameId = result.lastInsertRowid as number;
   
-      // 점수 초기화 (게임 시작 시)
-      const stmtScore = db.prepare(`
-        INSERT INTO scores (game_id, player_id, score) VALUES (?, ?, ?)
-      `);
-      stmtScore.run(gameId, finalUserId ?? -9999, 0); // -9999 사용시 이 값도 동일하게 적용
-      stmtScore.run(gameId, opponent_id, 0);
+      // // 점수 초기화 (게임 시작 시)
+      // const stmtScore = db.prepare(`
+      //   INSERT INTO scores (game_id, player_id, score) VALUES (?, ?, ?)
+      // `);
+      // stmtScore.run(gameId, finalUserId ?? -9999, 0); // -9999 사용시 이 값도 동일하게 적용
+      // stmtScore.run(gameId, opponent_id, 0);
   
-      reply.send({ status: 'created', gameId });
+      //reply.send({ status: 'created', gameId });
+      reply.send({ status: 'ready' });
+
     } catch (err) {
       console.error('❌ Erreur lors de la création du match :', err);
       reply.status(500).send({ error: 'Match creation failed' });
@@ -135,16 +137,31 @@ export async function matchRoutes(app: FastifyInstance) {
     console.log(`[DEBUG GAME DATA BACKEND] Winner determined: winner_id=${winner_id}`);
   
     // 점수 저장
-    db.prepare(`UPDATE scores SET score = ? WHERE game_id = ? AND player_id = ?`)
-      .run(score1, gameId, finalUserId!);
-    db.prepare(`UPDATE scores SET score = ? WHERE game_id = ? AND player_id = ?`)
-      .run(score2, gameId, opponent_id);
+    // db.prepare(`UPDATE scores SET score = ? WHERE game_id = ? AND player_id = ?`)
+    //   .run(score1, gameId, finalUserId!);
+    // db.prepare(`UPDATE scores SET score = ? WHERE game_id = ? AND player_id = ?`)
+    //   .run(score2, gameId, opponent_id);
   
-    // 승자 기록
-    db.prepare(`UPDATE games SET winner_id = ? WHERE id = ?`)
-      .run(winner_id, gameId);
+    // // 승자 기록
+    // db.prepare(`UPDATE games SET winner_id = ? WHERE id = ?`)
+    //   .run(winner_id, gameId);
+
+    // 1. Insert game row
+    const result = db.prepare(`
+      INSERT INTO games (user_id, opponent_id, winner_id) VALUES (?, ?, ?)
+    `).run(finalUserId ?? -9999, opponent_id, winner_id);
+
+    const insertedGameId = result.lastInsertRowid as number;
+
+    // 2. Insert scores
+    const stmtScore = db.prepare(`
+      INSERT INTO scores (game_id, player_id, score) VALUES (?, ?, ?)
+    `);
+    stmtScore.run(gameId, finalUserId ?? -9999, score1);
+    stmtScore.run(gameId, opponent_id, score2);
+
   
-    console.log('🎯 Match mis à jour', { gameId, score1, score2, winner_id });
+    console.log('🎯 Match mis à jour', { insertedGameId, score1, score2, winner_id });
   
     reply.send({ status: 'match updated', winner_id });
   });

@@ -72,7 +72,7 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
         skeleton.className = 'w-40 h-40 rounded-full bg-sky-600 animate-pulse ';
         const loadingText = document.createElement('span');
         loadingText.className = 'text-sm text-sky-400 animate-pulse';
-        loadingText.textContent = 'Chargement...';
+        loadingText.textContent = t('loading');
         slot.appendChild(skeleton);
         slot.appendChild(loadingText);
       } 
@@ -90,7 +90,7 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
         name.textContent =
           index === 0
             ? player.name
-            : `${player.name} (${player.source === 'friend' ? 'Ami' : 'Invité'})`;
+            : `${player.name} (${player.source === 'friend' ? t('tournament.friend') : t('tournament.guest')})`;
         name.className = 'text-lg font-semibold';
         slot.appendChild(name);
 
@@ -99,7 +99,7 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
         {
           const removeBtn = document.createElement('button');
           removeBtn.textContent = '❌';
-          removeBtn.title = 'Supprimer ce joueur';
+          removeBtn.title = t('tournament.remove_player');
           removeBtn.className =
             'mt-1 text-red-500 hover:text-red-700 font-bold transition duration-200';
           removeBtn.addEventListener('click', () => {
@@ -111,7 +111,7 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
         }
       } 
       else
-        slot.textContent = `Joueur ${index + 1} : vide`;
+        slot.textContent = t('tournament.slot_empty', { num: index + 1 });
       slotsContainer.appendChild(slot);
     });
   };
@@ -121,7 +121,7 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
   const friendSelect = document.createElement('select');
   friendSelect.className = 'bg-gray-700 text-white p-2 rounded';
   const defaultOption = document.createElement('option');
-  defaultOption.text = 'Choisir un ami';
+  defaultOption.text = t('tournament.select_friend');
   defaultOption.disabled = true;
   defaultOption.selected = true;
   friendSelect.appendChild(defaultOption);
@@ -130,22 +130,22 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
   controls.className = 'flex gap-4 mt-6';
 
   const addFriendBtn = document.createElement('button');
-  addFriendBtn.textContent = 'Ajouter ami';
+  addFriendBtn.textContent = t('tournament.add_friend');
   addFriendBtn.className = 'bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded';
 
   const guestInput = document.createElement('input');
-  guestInput.placeholder = 'Nom de l’invité';
+  guestInput.placeholder = t('tournament.guest_name_placeholder');
   guestInput.className = 'bg-gray-700 text-white p-2 rounded';
 
   const addGuestBtn = document.createElement('button');
-  addGuestBtn.textContent = 'Ajouter invité';
+  addGuestBtn.textContent = t('tournament.add_guest');
   addGuestBtn.className = 'bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded';
 
   controls.append(friendSelect, addFriendBtn, guestInput, addGuestBtn);
 
 
   const startBtn = document.createElement('button');
-  startBtn.textContent = 'Lancer le tournoi';
+  startBtn.textContent = t('tournament.start');
   startBtn.disabled = true;
   startBtn.className = 'mt-6 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded font-bold transition duration-300 disabled:opacity-40';
 
@@ -171,7 +171,7 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
     friendSelect.innerHTML = ''; // 드롭다운 초기화
   
     const defaultOption = document.createElement('option');
-    defaultOption.text = 'Choisir un ami';
+    defaultOption.text = t('tournament.select_friend');
     defaultOption.disabled = true;
     defaultOption.selected = true;
     friendSelect.appendChild(defaultOption);
@@ -276,11 +276,11 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
       const response = await fetch('/api/tournaments/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: 'Tournoi Local', players: selectedPlayers })
+        body: JSON.stringify({ name: t('tournament.local_name'), players: selectedPlayers })
       });
       
       if (!response.ok) {
-        throw new Error('Erreur lors de la création du tournoi');
+        throw new Error(t('tournament.creation_error'));
       }
       
       const data = await response.json();
