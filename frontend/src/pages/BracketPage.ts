@@ -1,9 +1,7 @@
-
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from '../utils/theme';
 import { createPongScene } from '../games/pong3d/PongScene';
 import { loadPongSettings } from '../utils/pongSettings';
-import { t } from '../utils/translator'; // ou chemin correct
 
 type Player = {
   id: string;
@@ -12,9 +10,15 @@ type Player = {
   avatar?: string;
 };
 
+
 export function createBracketPage(navigate: (path: string) => void): HTMLElement {
   const params = new URLSearchParams(window.location.search);
-  const id = params.get('id');
+  const id = params.get('id'); 
+  // const previousId = sessionStorage.getItem('lastTournamentId');
+  // if (previousId !== id) {
+  //   sessionStorage.removeItem('semiFinalists');
+  //   sessionStorage.setItem('lastTournamentId', id ?? '');
+  // }
 
   const container = document.createElement('div');
   container.className = 'flex flex-col h-screen bg-gray-900 text-white';
@@ -35,7 +39,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
   gameFrame.className = 'w-3/4 h-3/4 border-4 border-white relative overflow-hidden bg-black flex flex-col items-center p-8 gap-6';
 
   const title = document.createElement('h1');
-  title.textContent = t('bracket.title', { id: id || 'N/A' });
+  title.textContent = `Tournoi #${id || 'N/A'}`;
   title.className = 'text-3xl font-bold mb-6 text-center';
   gameFrame.appendChild(title);
 
@@ -98,7 +102,32 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
   final.className = 'flex flex-col justify-center h-96';
   bracketWrapper.appendChild(final);
 
+  // sessionStorage.removeItem('semiFinalists');
   let semiFinalists: (Player | null)[] = [null, null];
+  const savedSemiFinalists = sessionStorage.getItem("semiFinalists");
+  if (savedSemiFinalists) {
+    semiFinalists = JSON.parse(savedSemiFinalists);
+    console.log("[INIT] semiFinalists restored from sessionStorage:", semiFinalists);
+  }
+  
+  function saveWinnerToSemiFinal(winner: Player) {
+    const alreadyIn = semiFinalists.some(p => p?.id === winner.id);
+    if (alreadyIn) {
+      console.log("[DEBUG] Winner already present, skipping:", winner);
+      return;
+    }
+    if (!semiFinalists[0]) {
+      console.log("[DEBUG] Putting winner in semiFinalists[0]", winner);
+      semiFinalists[0] = winner;
+    } else if (!semiFinalists[1]) {
+      console.log("[DEBUG] Putting winner in semiFinalists[1]", winner);
+      semiFinalists[1] = winner;
+    } else {
+      console.warn("[WARN] semiFinalists full, cannot insert:", winner);
+    }
+    sessionStorage.setItem("semiFinalists", JSON.stringify(semiFinalists));
+  }
+
   let finalist: Player | null = null;
 
   const renderMatch = (p1: Player, p2: Player, onWinner: (winner: Player) => void) => {
@@ -121,18 +150,16 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     });
 
     const playBtn = document.createElement('button');
-    playBtn.textContent = t('bracket.play');
+    playBtn.textContent = 'play';
     playBtn.className = 'mt-2 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm';
     playBtn.addEventListener('click', () => {
+      console.log(`[MATCH] ${p1.username} vs ${p2.username}`);
       const nextPhase = semiFinalists.includes(null) ? 'semiFinal' : 'final';
+      console.log(`[MATCH DEBUG] NEXT PHASE : ${nextPhase}`);
       showTournamentAnnouncement(p1, p2, nextPhase, id);
     });
 
-
-
-
     matchDiv.appendChild(playBtn);
-
     return matchDiv;
   };
 
@@ -152,17 +179,23 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
       connect(s1[1], f1);
     }
   };
-
+  
+  const saveSemiFinalists = () => {
+    sessionStorage.setItem("semiFinalists", JSON.stringify(semiFinalists));
+  };
+  
   const updateSemiFinal = () => {
+    console.log('[SEMI FINAL] Updating semi-final with players:', semiFinalists);
     semiFinal.innerHTML = '';
 
     semiFinalists.forEach((player) => {
       const slot = document.createElement('div');
       slot.className = 'p-2 border rounded bg-gray-700 w-48 text-center';
-      slot.textContent = player ? player.username : t('bracket.waiting');
+      slot.textContent = player ? player.username : 'En attente';
       semiFinal.appendChild(slot);
     });
 
+    saveSemiFinalists();
     updateLines();
 
     if (semiFinalists[0] && semiFinalists[1]) {
@@ -171,6 +204,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
   };
 
   const renderFinal = (p1: Player, p2: Player) => {
+    console.log('[FINAL] Rendering final between:', p1.username, 'and', p2.username);
     final.innerHTML = '';
     final.appendChild(renderMatch(p1, p2, (winner) => {
       finalist = winner;
@@ -184,51 +218,54 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     final.innerHTML = '';
     const winnerDiv = document.createElement('div');
     winnerDiv.className = 'p-4 border-2 border-yellow-500 bg-gray-700 w-48 text-center font-bold animate-pulse';
-    winnerDiv.textContent = `🏆 ${t('bracket.winner')}: ${finalist?.username}`;
+    winnerDiv.textContent = '🏆 Winner : ' + finalist?.username;
     final.appendChild(winnerDiv);
     updateLines();
   };
 
   fetch(`/api/tournaments/${id}`)
-    .then(res => res.json())
-    .then((data: { players: Player[] }) => {
-      const players = data.players;
-      if (players.length !== 4) {
-        console.warn('Le bracket est prévu pour 4 joueurs.');
-        return;
-      }
+  .then(res => res.json())
+  .then((data: { players: Player[] }) => {
+    const players = data.players;
+    if (players.length !== 4) {
+      console.warn('Le bracket est prévu pour 4 joueurs.');
+      return;
+    }
 
-      round1.appendChild(renderMatch(players[0], players[1], (winner) => {
-        semiFinalists[0] = winner;
-        updateSemiFinal();
-      }));
+    // 비동기 렌더 함수
+    round1.appendChild(renderMatch(players[0], players[1], (winner) => {
+      saveWinnerToSemiFinal(winner);
+      updateSemiFinal();
+    }));
+    round1.appendChild(renderMatch(players[2], players[3], (winner) => {
+      saveWinnerToSemiFinal(winner);
+      updateSemiFinal();
+    }));
 
-      round1.appendChild(renderMatch(players[2], players[3], (winner) => {
-        semiFinalists[1] = winner;
-        updateSemiFinal();
-      }));
+    // 세미파이널 슬롯이 모두 설정된 뒤에 matchWinner 적용
+    setTimeout(() => {
+      const matchWinnerStr = sessionStorage.getItem('matchWinner');
+      if (matchWinnerStr) {
+        console.log('[BRACKET PAGE] matchWinner from session:', matchWinnerStr);
+        const { winner, nextPhase } = JSON.parse(matchWinnerStr);
+        sessionStorage.removeItem('matchWinner');
 
-    //   setTimeout(updateLines, 300);
-    })
-    .catch(err => {
-      console.error(err);
-    });
-
-const matchWinnerStr = sessionStorage.getItem('matchWinner');
-if (matchWinnerStr) {
-  const { winner, nextPhase } = JSON.parse(matchWinnerStr);
-  sessionStorage.removeItem('matchWinner');
-
-  if (nextPhase === 'semiFinal') {
-    if (!semiFinalists[0]) semiFinalists[0] = winner;
-    else if (!semiFinalists[1]) semiFinalists[1] = winner;
-    updateSemiFinal();
-  } else if (nextPhase === 'final') {
-    finalist = winner;
-    renderWinner();
-  }
-}
-
+        console.log(`[SESSION DEBUG] winner from session:`, winner);
+        console.log(`[SESSION DEBUG] nextPhase:`, nextPhase);
+    
+          if (nextPhase === 'semiFinal') {
+            saveWinnerToSemiFinal(winner);
+            updateSemiFinal();
+          } else if (nextPhase === 'final') {
+            finalist = winner;
+            renderWinner();
+          }
+        }
+      }, 100);// bracket DOM이 완전히 구성된 후 실행
+  })
+  .catch(err => {
+    console.error(err);
+  });
 
   const layout = document.createElement('div');
   layout.className = 'flex flex-1';
@@ -237,23 +274,23 @@ if (matchWinnerStr) {
   gameArea.appendChild(gameFrame);
   container.appendChild(layout);
 
-  // sidebar.addEventListener('mouseenter', () => {
-  //   document.querySelectorAll('.sidebar-label').forEach(label => {
-  //     (label as HTMLElement).classList.remove('opacity-0');
-  //     (label as HTMLElement).classList.add('opacity-100');
-  //   });
-  //   backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-  //   layout.classList.add('ml-44');
-  // });
+  sidebar.addEventListener('mouseenter', () => {
+    document.querySelectorAll('.sidebar-label').forEach(label => {
+      (label as HTMLElement).classList.remove('opacity-0');
+      (label as HTMLElement).classList.add('opacity-100');
+    });
+    backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+    layout.classList.add('ml-44');
+  });
 
-  // sidebar.addEventListener('mouseleave', () => {
-  //   document.querySelectorAll('.sidebar-label').forEach(label => {
-  //     (label as HTMLElement).classList.add('opacity-0');
-  //     (label as HTMLElement).classList.remove('opacity-100');
-  //   });
-  //   backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-  //   layout.classList.remove('ml-44');
-  // });
+  sidebar.addEventListener('mouseleave', () => {
+    document.querySelectorAll('.sidebar-label').forEach(label => {
+      (label as HTMLElement).classList.add('opacity-0');
+      (label as HTMLElement).classList.remove('opacity-100');
+    });
+    backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+    layout.classList.remove('ml-44');
+  });
 
   function showTournamentAnnouncement(p1: Player, p2: Player, nextPhase: string, tournamentId: string | null) {
   const overlay = document.createElement('div');
@@ -263,7 +300,7 @@ if (matchWinnerStr) {
   matchBox.className = 'bg-gray-800 text-white rounded-2xl border-4 border-yellow-400 p-12 flex flex-col items-center gap-6';
 
   const title = document.createElement('div');
-  title.textContent = t('bracket.next_match');
+  title.textContent = 'Match à venir';
   title.className = 'text-3xl font-bold text-yellow-400';
   matchBox.appendChild(title);
 
@@ -297,19 +334,26 @@ if (matchWinnerStr) {
   document.body.appendChild(overlay);
 
   let timeLeft = 4;
-  countdown.textContent = t('bracket.countdown', { timeLeft });
   countdown.textContent = `Début dans ${timeLeft}...`;
 
+  sessionStorage.removeItem("matchWinner"); // 2105 추가
   const interval = setInterval(() => {
     timeLeft--;
     if (timeLeft > 0) {
       countdown.textContent = `Début dans ${timeLeft}...`;
     } else {
       clearInterval(interval);
-      sessionStorage.setItem('currentMatch', JSON.stringify({ p1, p2, nextPhase, tournamentId }));
+      console.log(`[MATCH ANNONCE] saving match res for next phase:` , { p1, p2, nextPhase });
+      sessionStorage.removeItem("matchWinner"); // 여기 추가
+      
+      sessionStorage.setItem('currentMatch', JSON.stringify({
+        p1: { ...p1, id: String(p1.id) },
+        p2: { ...p2, id: String(p2.id) },
+        nextPhase,
+        tournamentId
+      }));
       overlay.remove();
       launchBracketGame(container);
-
     }
   }, 1000);
 }
@@ -340,7 +384,7 @@ function launchBracketGame(container: HTMLElement) {
   announce.className = "absolute top-16 left-1/2 transform -translate-x-1/2 text-yellow-300 text-xl font-semibold";
 
   const btnReturn = document.createElement("button");
-  btnReturn.textContent = t('bracket.return');
+  btnReturn.textContent = "Retour";
   btnReturn.className = `
     absolute bottom-8 left-1/2 transform -translate-x-1/2 
     bg-yellow-400 hover:bg-yellow-500 text-black font-bold 
@@ -348,35 +392,14 @@ function launchBracketGame(container: HTMLElement) {
   `.replace(/\s+/g, ' ').trim();
   btnReturn.addEventListener("click", () => location.reload());
 
-  const layout = document.getElementById('game-layout');
-  layout!.innerHTML = '';
-  layout!.className = 'flex flex-1 justify-center items-center';
+const layout = document.getElementById('game-layout');
+layout!.innerHTML = '';
+layout!.className = 'flex flex-1 justify-center items-center'; // ensure it's centered
 
   const frame = document.createElement('div');
   frame.className = 'w-3/4 h-3/4 border-4 border-white relative overflow-hidden bg-black';
   frame.style.position = 'relative';
   frame.style.margin = 'auto';
-
-  // ✅ Add player labels from sessionStorage
-  const matchData = sessionStorage.getItem('currentMatch');
-  if (matchData) {
-    const { p1, p2 } = JSON.parse(matchData);
-
-    const playerLabel = document.createElement("div");
-    playerLabel.textContent = p1.username;
-    playerLabel.className = `
-      absolute top-4 left-6 text-white font-bold z-30 text-lg
-    `.replace(/\s+/g, ' ').trim();
-
-    const opponentLabel = document.createElement("div");
-    opponentLabel.textContent = p2.username;
-    opponentLabel.className = `
-      absolute top-4 right-6 text-white font-bold z-30 text-lg text-right
-    `.replace(/\s+/g, ' ').trim();
-
-    frame.appendChild(playerLabel);
-    frame.appendChild(opponentLabel);
-  }
 
   frame.appendChild(canvas);
   frame.appendChild(scoreBoard);
@@ -385,20 +408,29 @@ function launchBracketGame(container: HTMLElement) {
 
   layout!.appendChild(frame);
 
+  const matchData = sessionStorage.getItem("currentMatch");
+  if (!matchData) {
+    console.error("❌ currentMatch not found in sessionStorage");
+    return;
+  }
+
+  const parsed = JSON.parse(matchData);
+
+
   const settings = loadPongSettings();
   createPongScene(
     canvas,
     {
-      mode: 'local',
+      mode: 'tournament',
       speed: settings.speed,
       scoreToWin: settings.scoreToWin,
       paddleSize: settings.paddleSize,
-      theme: settings.theme
+      theme: settings.theme,
+      tournamentContext: parsed
     },
     btnReturn
   );
 }
-
 
   return container;
 }

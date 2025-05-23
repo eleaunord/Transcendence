@@ -19,7 +19,7 @@ import {
 } from "@babylonjs/core";
 
 export type PongOptions = {
-  mode: 'local' | 'ai';
+  mode: 'local' | 'ai' | 'tournament';
   speed: number;
   scoreToWin: number;
   paddleSize: number;
@@ -43,12 +43,55 @@ export type PongOptions = {
 };
 
 
+// 2205 추가
+
+//  가장 간단한 방법: 브라우저 전역 객체에 guestIndex 저장
+if (!(window as any).guestIndex) {
+  (window as any).guestIndex = 0;
+}
+
+//  1. sessionStorage에서 복원
+const storedMap = sessionStorage.getItem("guestIdMap");
+const guestIdMap = storedMap
+  ? new Map<string, number>(JSON.parse(storedMap))
+  : new Map<string, number>();
+
+//  2. guestIndex는 맵의 크기로부터 유도
+let guestIndex = guestIdMap.size;
+
+function getGuestNumericId(guestStringId: string | number): number {
+  const rawId = guestStringId;
+  guestStringId = String(guestStringId);
+
+  if (!guestIdMap.has(guestStringId)) {
+    console.log(`[DEBUG] Mapping new guest:`, {
+      rawId,
+      typeofRawId: typeof rawId,
+      stringId: guestStringId,
+      guestIndex
+    });
+
+    const id = -10000 - guestIndex++;
+    guestIdMap.set(guestStringId, id);
+    
+    //  3. 매핑 결과를 sessionStorage에 다시 저장
+    sessionStorage.setItem("guestIdMap", JSON.stringify(Array.from(guestIdMap.entries())));
+  } else {
+    console.log('[GUEST ID MAP] Existing guest:', guestStringId);
+  }
+
+  return guestIdMap.get(guestStringId)!;
+}
+
+
 export async function createPongScene(
   canvas: HTMLCanvasElement,
   options: PongOptions,
   returnButton: HTMLButtonElement, // bouton reçu depuis l'extérieur
 ): Promise<any> {
   const isAI = options.mode === 'ai';
+  const isTournament = options.mode === 'tournament';
+  const isLocal = options.mode === 'local';
 
   // 🎨 Définir les styles selon le thème choisi
   let paddleColor1 = new Color3(0.6, 0.2, 0.8);
@@ -79,20 +122,34 @@ export async function createPongScene(
       // Garde les couleurs définies par défaut
       break;
   }
+
+
   let tournamentContext = options.tournamentContext;
 
   // 🔁 Si on ne reçoit pas via options, on vérifie dans sessionStorage (fallback)
-  if (!tournamentContext) {
+  if (!tournamentContext && isTournament) {
     const matchData = sessionStorage.getItem("currentMatch");
     if (matchData) {
       try {
         tournamentContext = JSON.parse(matchData);
+  
+        // TypeScript-friendly 방식
+        if (tournamentContext?.p1) {
+          tournamentContext.p1.id = String(tournamentContext.p1.id);
+        }
+        if (tournamentContext?.p2) {
+          tournamentContext.p2.id = String(tournamentContext.p2.id);
+        }
+  
       } catch (e) {
-        console.warn(" Erreur parsing currentMatch:", e);
+        console.warn("Erreur parsing currentMatch:", e);
       }
     }
   }
   
+  // 2105 추가
+  const opponentIsAI = !tournamentContext && isAI;
+
 
   const scoreBoard = document.getElementById("scoreBoard");
   const announce = document.getElementById("announce");
@@ -193,30 +250,64 @@ canvasContainer.appendChild(opponentBox);
   const scene = new Scene(engine);
   scene.clearColor = new Color4(0, 0, 0, 1.0);
 
-  //1705 추가
+  // 2205 추가
+  // 현재 경기 ID
   let gameId: number | null = null;
 
   async function startMatch() {
-    const user_id = Number(sessionStorage.getItem("userId"));
-    const opponent_id = isAI ? 2 : 3;
-  
-    // ✅ user_id 유효성 검사
-    if (!user_id || isNaN(user_id)) {
-      console.error("❗ user_id is missing or invalid in sessionStorage");
-      return;
-    }
-  
-    try {
-    const response = await fetch("/api/match/start", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("token")}`
-      },
-      body: JSON.stringify({ user_id, opponent_id })
-    });
+    const token = sessionStorage.getItem("token");
 
-  
+    let user_id: number | undefined;
+    let opponent_id: number;
+
+    if (tournamentContext) {
+      const p1 = tournamentContext.p1;
+      const p2 = tournamentContext.p2;
+
+      console.log("[TYPE CHECK] p1.id =", p1.id, typeof p1.id); // 
+
+      // user_id 결정
+      // user_id = p1.source === 'friend'
+      //   ? Number(p1.id)
+      //   : getGuestNumericId(String(p1.id)); // guest일 경우 고유 음수 ID 부여
+
+     // guest일 때만 getGuestNumericId 적용
+      user_id = p1.source === 'guest'
+      ? getGuestNumericId(p1.id)
+      : Number(p1.id);
+
+      // opponent_id 결정
+      opponent_id = p2.source === 'guest'
+        ? getGuestNumericId(p2.id)
+        : Number(p2.id);
+
+    } else {
+      // 일반 모드 (1vs1, AI)
+      user_id = Number(sessionStorage.getItem("userId"));
+      opponent_id = isAI ? 2 : 3;
+    }
+
+    const body = user_id !== undefined
+      ? { user_id, opponent_id }
+      : { opponent_id }; // 게스트 vs 게스트일 때 user_id 생략
+
+    console.log("[START MATCH] user_id:", user_id);
+    console.log("[START MATCH] opponent_id:", opponent_id);
+
+    try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        ...(user_id !== undefined && user_id >= 0 && token
+          ? { Authorization: `Bearer ${token}` }
+          : {})
+      };
+    
+      const response = await fetch("/api/match/start", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(body)
+      });
+    
       const data = await response.json();
       gameId = data.gameId;
       console.log("[MATCH STARTED]", { gameId, user_id, opponent_id });
@@ -224,6 +315,60 @@ canvasContainer.appendChild(opponentBox);
       console.error("❌ Error starting match:", err);
     }
   }
+
+  // async function startMatch() {
+  //   const token = sessionStorage.getItem("token");
+  
+  //   let user_id: number | undefined;
+  //   let opponent_id: number;
+  
+  //   if (tournamentContext) {
+  //     const p1 = tournamentContext.p1;
+  //     const p2 = tournamentContext.p2;
+  
+  //     //  user_id: 로그인 유저 또는 guest
+  //     if (p1.source === 'friend') {
+  //       user_id = Number(p1.id);
+  //     } else {
+  //       user_id = getGuestNumericId(p1.id, 0); // 첫 번째 게스트는 -10000
+  //     }
+  
+  //     //  opponent_id: 친구 또는 guest
+  //     if (p2.source === 'friend') {
+  //       opponent_id = Number(p2.id);
+  //     } else {
+  //       opponent_id = getGuestNumericId(p2.id, 1); // 두 번째 게스트는 -10001
+  //     }
+  //   } else {
+  //     // 일반 모드
+  //     user_id = Number(sessionStorage.getItem("userId"));
+  //     opponent_id = isAI ? 2 : 3;
+  //   }
+  
+  //   const body = user_id !== undefined
+  //     ? { user_id, opponent_id }
+  //     : { opponent_id }; // 게스트 vs 게스트 시 user_id 생략
+  
+  //   console.log("[START MATCH] user_id:", user_id);
+  //   console.log("[START MATCH] opponent_id:", opponent_id);
+  
+  //   try {
+  //     const response = await fetch("/api/match/start", {
+  //       method: "POST",
+  //       headers: {
+  //         "Authorization": `Bearer ${token}`,
+  //         "Content-Type": "application/json"
+  //       },
+  //       body: JSON.stringify(body)
+  //     });
+  
+  //     const data = await response.json();
+  //     gameId = data.gameId;
+  //     console.log("[MATCH STARTED]", { gameId, user_id, opponent_id });
+  //   } catch (err) {
+  //     console.error("❌ Error starting match:", err);
+  //   }
+  // }
   
   await startMatch();  
 // 1705 일단 여기 위에까지 추가임 \\
@@ -568,44 +713,42 @@ canvasContainer.appendChild(opponentBox);
   }
 
   //1705 추가
-  async function checkGameOver() {
+async function checkGameOver() {
   if (scorePlayer >= SCORE_LIMIT || scoreIA >= SCORE_LIMIT) {
     gameOver = true;
     const isWin = scorePlayer > scoreIA;
 
     let winnerName = "Unknown";
 
-    const currentMatchData = sessionStorage.getItem("currentMatch");
-    if (currentMatchData) {
-      const { p1, p2, nextPhase } = JSON.parse(currentMatchData);
-      winnerName = isWin ? p1.username : p2.username;
-
-      sessionStorage.setItem(
-        "matchWinner",
-        JSON.stringify({ winner: isWin ? p1 : p2, nextPhase })
-      );
+    // 🎯 Résolution du nom du gagnant
+    if (tournamentContext) {
+      winnerName = isWin ? tournamentContext.p1.username : tournamentContext.p2.username;
     } else {
-      const userId = Number(sessionStorage.getItem("userId"));
-      const opponentId = isAI ? 2 : 3;
-      const winnerId = isWin ? userId : opponentId;
+      const currentMatchData = sessionStorage.getItem("currentMatch");
+      if (currentMatchData) {
+        const { p1, p2, nextPhase } = JSON.parse(currentMatchData);
+        winnerName = isWin ? p1.username : p2.username;
 
-      if (winnerId === 2) {
-        winnerName = "AI";
-      } else if (winnerId === 3) {
-        winnerName = "Guest";
+        sessionStorage.setItem(
+          "matchWinner",
+          JSON.stringify({ winner: isWin ? p1 : p2, nextPhase })
+        );
       } else {
-        winnerName = isWin
-          ? sessionStorage.getItem("username") || "Player 1"
-          : opponentId === 3
-            ? "Guest"
-            : "Unknown";
+        const userId = Number(sessionStorage.getItem("userId"));
+        const opponentId = isAI ? 2 : 3;
+        const winnerId = isWin ? userId : opponentId;
+
+        if (winnerId === 2) winnerName = "AI";
+        else if (winnerId === 3) winnerName = "Guest";
+        else winnerName = sessionStorage.getItem("username") || "Player 1";
       }
     }
 
-    // Show the centered winner screen instead of canvas announcement
+    // 🎨 Affichage visuel
     showWinnerScreen(winnerName);
 
-    if (isAI) {
+    // 🔁 IA dynamique
+    if (opponentIsAI) {
       const scoreDiff = scorePlayer - scoreIA;
       currentProfile = scoreDiff >= 2
         ? iaProfiles.aggressive
@@ -614,16 +757,34 @@ canvasContainer.appendChild(opponentBox);
         : iaProfiles.balanced;
     }
 
+    // 💾 Enregistrement du match
     if (gameId !== null) {
-      const user_id = Number(sessionStorage.getItem("userId"));
-      const opponent_id = isAI ? 2 : 3;
+      let user_id: number | undefined;
+      let opponent_id: number;
+
+      if (tournamentContext) {
+        const p1 = tournamentContext.p1;
+        const p2 = tournamentContext.p2;
+        user_id = p1.source === 'friend' ? Number(p1.id) : getGuestNumericId(p1.id);
+        opponent_id = p2.source === 'friend' ? Number(p2.id) : getGuestNumericId(p2.id);
+      } else {
+        user_id = Number(sessionStorage.getItem("userId"));
+        opponent_id = isAI ? 2 : 3;
+      }
+
+      const isGuestVsGuest = user_id < 0 && opponent_id < 0;
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json"
+      };
+      const token = sessionStorage.getItem("token");
+      if (!isGuestVsGuest && token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       try {
         const res = await fetch("/api/match/end", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("token")}`  // 🔐 AJOUT ICI
-          },
+          headers,
           body: JSON.stringify({
             gameId,
             user_id,
@@ -635,22 +796,25 @@ canvasContainer.appendChild(opponentBox);
         const result = await res.json();
         console.log("[MATCH ENDED]", result);
       } catch (err) {
-        console.error("[DEBUG GAME/PONG SCENE] Error ending match:", err);
+        console.error("❌ Error ending match:", err);
       }
-      
-      if (tournamentContext) {
-        const winner = isWin ? tournamentContext.p1 : tournamentContext.p2;
-      
-        sessionStorage.setItem("matchWinner", JSON.stringify({
-          winner,
-          nextPhase: tournamentContext.nextPhase,
-          tournamentId: tournamentContext.tournamentId
-        }));
-      
-        setTimeout(() => {
-          window.location.href = `/bracket?id=${tournamentContext.tournamentId}`;
-        }, 2000);
-      }
+    }
+
+    // 🏆 Redirection tournoi
+    if (tournamentContext) {
+      const winner = isWin ? tournamentContext.p1 : tournamentContext.p2;
+      sessionStorage.setItem("matchWinner", JSON.stringify({
+        winner: {
+          ...winner,
+          id: String(winner.id)
+        },
+        nextPhase: tournamentContext.nextPhase,
+        tournamentId: tournamentContext.tournamentId
+      }));
+
+      setTimeout(() => {
+        window.location.href = `/bracket?id=${tournamentContext.tournamentId}`;
+      }, 2000);
     }
   }
 }
@@ -763,13 +927,17 @@ canvasContainer.appendChild(opponentBox);
 
     if (ball.position.x > 4.8) {
       scorePlayer++;
+      // const label = opponentIsAI ? "AI" : "Player 2";
+      const label = opponentIsAI ? "AI" : tournamentContext?.p2.username || "Player 2"; 
       console.log(`[GAME DEBUG] Point for Player Score: ${scorePlayer} - ${scoreIA}`);
       scoreBoard!.textContent = `${scorePlayer} - ${scoreIA}`;
       checkGameOver();
       if (!gameOver) resetBall();
     } else if (ball.position.x < -4.8) {
       scoreIA++;
-      console.log(`[GAME DEBUG] Point for AI! Score: ${scorePlayer} - ${scoreIA}`);
+      // const label = opponentIsAI ? "AI" : "Player 2";
+      const label = opponentIsAI ? "AI" : tournamentContext?.p2.username || "Player 2"; 
+      console.log(`[GAME DEBUG] Point for ${label}! Score: ${scorePlayer} - ${scoreIA}`);
       scoreBoard!.textContent = `${scorePlayer} - ${scoreIA}`;
       checkGameOver();
       if (!gameOver) resetBall();
@@ -783,3 +951,4 @@ canvasContainer.appendChild(opponentBox);
     scene
   };
 }
+

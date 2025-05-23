@@ -11,6 +11,16 @@ dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
+type ExportedGame = {
+  game_id: number;
+  user_id: number;
+  opponent_id: number;
+  winner_id: number;
+  created_at: string;
+  user_username: string | null;
+  opponent_username: string | null;
+};
+
 export async function meRoutes(app: FastifyInstance) {
   app.addHook('preHandler', authenticateToken);
 
@@ -214,8 +224,18 @@ export async function meRoutes(app: FastifyInstance) {
       LEFT JOIN users u1 ON g.user_id = u1.id
       LEFT JOIN users u2 ON g.opponent_id = u2.id
       WHERE g.user_id = ? OR g.opponent_id = ?
-    `).all(userId, userId);
+    `).all(userId, userId) as ExportedGame[];;
   
+    // 게스트 opponent/user 이름 보정
+    for (const game of games) {
+      if (game.opponent_id < 0 && !game.opponent_username) {
+        game.opponent_username = 'Invité';
+      }
+      if (game.user_id < 0 && !game.user_username) {
+        game.user_username = 'Invité';
+      }
+    }
+
     // 게임별 점수 가져오기
     const gameScores = db.prepare(`
       SELECT 
