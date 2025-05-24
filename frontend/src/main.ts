@@ -31,6 +31,7 @@ import { createMemoryOpponentPage } from './pages/MemoryOpponentPage';
 import { createMemoryFriendPage } from './pages/MemoryFriendPage';
 import { createBracketPage } from './pages/BracketPage';
 import { renderNotFoundPage } from './pages/404Page'; 
+import { refreshSidebar } from './utils/sidebar';
 
 // Fonction utilitaire pour injecter `navigate` dans chaque page
 function withNavigate(navigate: (path: string) => void) {
@@ -99,3 +100,11 @@ window.addEventListener('DOMContentLoaded', () => {
     setLanguage(lang as 'en' | 'fr' | 'ko');
   applyTranslations();
 };
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    setTimeout(() => {
+      refreshSidebar();
+    }, 100);
+  }
+});

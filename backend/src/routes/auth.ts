@@ -42,7 +42,8 @@ export async function authRoutes(app: FastifyInstance) {
         user: {
           id: user.id,
           username: user.username,
-          email: user.email
+          email: user.email,
+          image: user.image  // NEW 18H
         }
       });
 

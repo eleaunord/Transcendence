@@ -1,10 +1,42 @@
 import { t } from '../utils/translator';
+import { refreshSidebar } from './sidebar';
 
 export type RouteMap = { [path: string]: (navigate: (path: string) => void) => HTMLElement };
 
 /**
  * Vérifie si le token est valide côté serveur
  */
+
+// OLD
+
+// async function validateToken(): Promise<boolean> {
+//   const token = localStorage.getItem('token');
+//   if (!token) return false;
+
+//   try {
+//     const response = await fetch('/api/validate-token', {
+//       method: 'GET',
+//       headers: {
+//         'Authorization': `Bearer ${token}`,
+//         'Content-Type': 'application/json'
+//       }
+//     });
+    
+//     if (response.ok) {
+//       const data = await response.json();
+//       return data.valid === true;
+//     } else {
+//       // Token invalide, on le supprime
+//       localStorage.removeItem('token');
+//       return false;
+//     }
+//   } catch (error) {
+//     console.error('[TokenValidation] Error validating token:', error);
+//     return false;
+//   }
+// }
+
+// NEW 18H
 async function validateToken(): Promise<boolean> {
   const token = localStorage.getItem('token');
   if (!token) return false;
@@ -20,10 +52,14 @@ async function validateToken(): Promise<boolean> {
     
     if (response.ok) {
       const data = await response.json();
+      if (data.valid && data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+        refreshSidebar(); // ⬅️ Add this
+      }
       return data.valid === true;
     } else {
-      // Token invalide, on le supprime
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
       return false;
     }
   } catch (error) {
@@ -183,6 +219,7 @@ export function initRouter(routes: RouteMap, teamPrefix = '', rootId = 'app') {
   function navigate(path: string) {
     window.history.pushState({}, '', path);
     renderRoute(path);
+    refreshSidebar();
   }
 
   function renderRoute(path: string) {

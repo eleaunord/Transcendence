@@ -1,5 +1,7 @@
 import { t } from "../utils/translator";
 
+
+
 export function createSidebar(navigate: (path: string) => void): HTMLElement {
   const sidebar = document.createElement('div');
   sidebar.id = 'sidebar';
@@ -19,15 +21,24 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
   const topContainer = document.createElement('div');
   topContainer.className = 'flex flex-col gap-1';
 
+  
+
   // --- Profil Section ---
   const profileSection = document.createElement('div');
   // profileSection.className = 'flex flex-col items-center mb-28 transition-all duration-300';
   profileSection.className = 'relative flex flex-col items-center mb-28 h-36';
 
   const profileImage = document.createElement('img');
-  let profilePictureSrc = sessionStorage.getItem('profilePicture') || '/assets/profile-pictures/default.jpg';
+  //let profilePictureSrc = sessionStorage.getItem('profilePicture') || '/assets/profile-pictures/default.jpg';
+  //profileImage.src = profilePictureSrc;
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  //const profilePictureSrc = user.image || '/assets/profile-pictures/default.jpg';
+  let profilePictureSrc =
+  user.image ||
+  sessionStorage.getItem('profilePicture') ||
+  '/assets/profile-pictures/default.jpg';
   profileImage.src = profilePictureSrc;
-
+  
   // Ajout du listener d'événement(changement photo profil)
   window.addEventListener('profilePictureUpdated', (e: Event) => {
     const customEvent = e as CustomEvent<string>;
@@ -51,8 +62,8 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
   usernameText.className = 'text-white text-xl opacity-0 sidebar-label transition-opacity duration-300 p-4 mt-36 absolute';
 
   //met a jour username avec ce qui est stocke
-  usernameText.textContent = sessionStorage.getItem('username') || t('sidebar.username');
-
+  //usernameText.textContent = sessionStorage.getItem('username') || t('sidebar.username');
+  usernameText.textContent = user.username || t('sidebar.username');
 
   const statsContainer = document.createElement('div');
   statsContainer.id = 'sidebar-stats-container';
@@ -165,3 +176,18 @@ const bottomItems = [
     
   return sidebar;
 }
+
+export function refreshSidebar() {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+  const usernameText = document.getElementById('sidebar-username');
+  if (usernameText) {
+    usernameText.textContent = user.username || 'User';
+  }
+
+  const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
+  if (profileImg) {
+    profileImg.src = user.image || '/assets/profile-pictures/default.jpg';
+  }
+}
+
