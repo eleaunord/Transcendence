@@ -103,8 +103,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
-    setTimeout(() => {
-      refreshSidebar();
-    }, 100);
+    refreshSidebar();
   }
 });
