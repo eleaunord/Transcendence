@@ -10,6 +10,11 @@ import { initSidebarHoverEffects } from "../profile_events/initSidebarHoverEffec
 import { setLanguage, t,applyTranslations } from '../utils/translator'
 
 export function createUserProfilePage(navigate: (path: string) => void): HTMLElement {
+  if ((window as any).activePongCleanup) {
+    (window as any).activePongCleanup();
+    delete (window as any).activePongCleanup;
+  }
+  
   const token: string | null = localStorage.getItem('token');
 
   const container = document.createElement('div');

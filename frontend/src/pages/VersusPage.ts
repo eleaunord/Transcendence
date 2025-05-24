@@ -5,6 +5,8 @@ import { loadPongSettings } from '../utils/pongSettings';
 import { setLanguage, t } from "../utils/translator";
 
 export function createVersusPage(navigate: (path: string) => void): HTMLElement {
+  sessionStorage.removeItem("currentMatch"); // 2305 디버깅 추가
+
   const container = document.createElement('div');
   container.className = 'flex flex-col h-screen bg-gray-900 text-white';
 
@@ -151,10 +153,16 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
 
   async function launchGame(mode: 'local' | 'ai') {
     // 2105 추가
+    if ((window as any).activePongCleanup) {
+      (window as any).activePongCleanup();
+      delete (window as any).activePongCleanup;
+    }
+    // 2105 추가
     sessionStorage.removeItem("currentMatch");
     sessionStorage.removeItem("matchWinner");
     sessionStorage.removeItem("semiFinalists");
     sessionStorage.removeItem("tournamentId");
+
 
     const scoreBoard = document.createElement("div");
     scoreBoard.id = "scoreBoard";
@@ -214,7 +222,8 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
 
     const settings = loadPongSettings();
 
-    await createPongScene(
+    // 2305 수정
+    const pong = await createPongScene(
       canvas,
       {
         mode,
@@ -225,6 +234,8 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
       },
       btnReturn
     );
+    console.log("✅ Pong scene created, setting cleanup globally");
+    (window as any).activePongCleanup = pong.cleanup;
   }
 
   return container;

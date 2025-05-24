@@ -1,7 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import db from '../db/db';
 
-
 export function leaderboardRoutes(app: FastifyInstance) {
   // Get pong leaderboard data - top players by total points
   app.get('/leaderboard', async (request, reply) => {
@@ -23,7 +22,7 @@ export function leaderboardRoutes(app: FastifyInstance) {
       const leaderboard = rows.map((row: any) => ({
         id: row.id,
         username: row.username,
-        totalPoints: row.totalPoints || 0
+        totalPoints: row.totalPoints || 0 
       }));
 
       // CORS headers
@@ -40,7 +39,7 @@ export function leaderboardRoutes(app: FastifyInstance) {
     }
   });
 
-  // Get memory leaderboard data - top players by memory game performance
+  // Get memory leaderboard data - top players by memory game performance <-- 24 여기서 부터 바뀜
   app.get('/memory-leaderboard', async (request, reply) => {
     try {
       console.log('Memory leaderboard endpoint accessed');

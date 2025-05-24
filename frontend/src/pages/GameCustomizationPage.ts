@@ -4,6 +4,11 @@ import { savePongSettings } from "../utils/pongSettings";
 import { t } from '../utils/translator'; 
 
 export function createGameCustomizationPage(navigate: (path: string) => void): HTMLElement {
+  if ((window as any).activePongCleanup) {
+    (window as any).activePongCleanup();
+    delete (window as any).activePongCleanup;
+  }
+
   const container = document.createElement('div');
   container.className = 'flex flex-col h-screen bg-gray-900 text-white';
 

@@ -92,6 +92,7 @@ export async function createPongScene(
   const isAI = options.mode === 'ai';
   const isTournament = options.mode === 'tournament';
   const isLocal = options.mode === 'local';
+  console.log("[DEBUG] Game mode:", options.mode); // 2305 디버깅 추가
 
   // 🎨 Définir les styles selon le thème choisi
   let paddleColor1 = new Color3(0.6, 0.2, 0.8);
@@ -132,8 +133,6 @@ export async function createPongScene(
     if (matchData) {
       try {
         tournamentContext = JSON.parse(matchData);
-  
-        // TypeScript-friendly 방식
         if (tournamentContext?.p1) {
           tournamentContext.p1.id = String(tournamentContext.p1.id);
         }
@@ -316,63 +315,62 @@ canvasContainer.appendChild(opponentBox);
     }
   }
 
-  // async function startMatch() {
-  //   const token = sessionStorage.getItem("token");
-  
-  //   let user_id: number | undefined;
-  //   let opponent_id: number;
-  
-  //   if (tournamentContext) {
-  //     const p1 = tournamentContext.p1;
-  //     const p2 = tournamentContext.p2;
-  
-  //     //  user_id: 로그인 유저 또는 guest
-  //     if (p1.source === 'friend') {
-  //       user_id = Number(p1.id);
-  //     } else {
-  //       user_id = getGuestNumericId(p1.id, 0); // 첫 번째 게스트는 -10000
-  //     }
-  
-  //     //  opponent_id: 친구 또는 guest
-  //     if (p2.source === 'friend') {
-  //       opponent_id = Number(p2.id);
-  //     } else {
-  //       opponent_id = getGuestNumericId(p2.id, 1); // 두 번째 게스트는 -10001
-  //     }
-  //   } else {
-  //     // 일반 모드
-  //     user_id = Number(sessionStorage.getItem("userId"));
-  //     opponent_id = isAI ? 2 : 3;
-  //   }
-  
-  //   const body = user_id !== undefined
-  //     ? { user_id, opponent_id }
-  //     : { opponent_id }; // 게스트 vs 게스트 시 user_id 생략
-  
-  //   console.log("[START MATCH] user_id:", user_id);
-  //   console.log("[START MATCH] opponent_id:", opponent_id);
-  
-  //   try {
-  //     const response = await fetch("/api/match/start", {
-  //       method: "POST",
-  //       headers: {
-  //         "Authorization": `Bearer ${token}`,
-  //         "Content-Type": "application/json"
-  //       },
-  //       body: JSON.stringify(body)
-  //     });
-  
-  //     const data = await response.json();
-  //     gameId = data.gameId;
-  //     console.log("[MATCH STARTED]", { gameId, user_id, opponent_id });
-  //   } catch (err) {
-  //     console.error("❌ Error starting match:", err);
-  //   }
-  // }
-  
   await startMatch();  
 // 1705 일단 여기 위에까지 추가임 \\
 
+// ----- 24 added ---- \\
+async function endMatch(score1: number, score2: number) {
+  if (!gameId) {
+    console.warn("[END MATCH] gameId가 null이므로 요청 중단됨");
+    return;
+  }
+
+  let user_id: number | undefined;
+  let opponent_id: number;
+
+  if (tournamentContext) {
+    const p1 = tournamentContext.p1;
+    const p2 = tournamentContext.p2;
+    user_id = p1.source === 'friend' ? Number(p1.id) : getGuestNumericId(p1.id);
+    opponent_id = p2.source === 'friend' ? Number(p2.id) : getGuestNumericId(p2.id);
+  } else {
+    user_id = Number(sessionStorage.getItem("userId"));
+    opponent_id = isAI ? 2 : 3;
+  }
+
+  const isGuestVsGuest = user_id < 0 && opponent_id < 0;
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  const token = sessionStorage.getItem("token");
+  if (!isGuestVsGuest && token) headers["Authorization"] = `Bearer ${token}`;
+
+  const payload = {
+    gameId,
+    user_id,
+    opponent_id,
+    score1,
+    score2
+  };
+
+  console.log("[END MATCH] 요청 전 payload 확인:", payload);
+
+  try {
+    const res = await fetch("/api/match/end", {
+      method: "POST",
+      headers,
+      body: JSON.stringify(payload)
+    });
+
+    const result = await res.json();
+    console.log("[MATCH ENDED RESPONSE]", result);
+
+    if (!res.ok) {
+      console.error("[END MATCH] 서버 응답 실패", res.status, result);
+    }
+  } catch (err) {
+    console.error("❌ Error ending match (exception):", err);
+  }
+}
+// ----- ^ 24 added ^ ---- \\
 
   const SCORE_LIMIT = options.scoreToWin;
   let scorePlayer = 0;
@@ -743,36 +741,38 @@ canvasContainer.appendChild(opponentBox);
   }
 
   //1705 추가
-async function checkGameOver() {
-  if (scorePlayer >= SCORE_LIMIT || scoreIA >= SCORE_LIMIT) {
-    gameOver = true;
-    const isWin = scorePlayer > scoreIA;
-
-    let winnerName = "Unknown";
-
-    // 🎯 Résolution du nom du gagnant
-    if (tournamentContext) {
-      winnerName = isWin ? tournamentContext.p1.username : tournamentContext.p2.username;
-    } else {
-      const currentMatchData = sessionStorage.getItem("currentMatch");
-      if (currentMatchData) {
-        const { p1, p2, nextPhase } = JSON.parse(currentMatchData);
-        winnerName = isWin ? p1.username : p2.username;
-
-        sessionStorage.setItem(
-          "matchWinner",
-          JSON.stringify({ winner: isWin ? p1 : p2, nextPhase })
-        );
+  async function checkGameOver() {
+    if (scorePlayer >= SCORE_LIMIT || scoreIA >= SCORE_LIMIT) {
+      gameOver = true;
+      const isWin = scorePlayer > scoreIA;
+      let winnerName = "Unknown";
+  
+      // 서버에 match 기록 저장
+      await endMatch(scorePlayer, scoreIA);
+  
+      // 승자 이름 결정
+      if (tournamentContext) {
+        winnerName = isWin ? tournamentContext.p1.username : tournamentContext.p2.username;
       } else {
-        const userId = Number(sessionStorage.getItem("userId"));
-        const opponentId = isAI ? 2 : 3;
-        const winnerId = isWin ? userId : opponentId;
-
-        if (winnerId === 2) winnerName = "AI";
-        else if (winnerId === 3) winnerName = t('player.guest');
-        else winnerName = sessionStorage.getItem("username") || "Player 1";
+        const currentMatchData = sessionStorage.getItem("currentMatch");
+        if (currentMatchData) {
+          const { p1, p2, nextPhase } = JSON.parse(currentMatchData);
+          winnerName = isWin ? p1.username : p2.username;
+  
+          sessionStorage.setItem(
+            "matchWinner",
+            JSON.stringify({ winner: isWin ? p1 : p2, nextPhase })
+          );
+        } else {
+          const userId = Number(sessionStorage.getItem("userId"));
+          const opponentId = isAI ? 2 : 3;
+          const winnerId = isWin ? userId : opponentId;
+  
+          if (winnerId === 2) winnerName = "AI";
+          else if (winnerId === 3) winnerName = "Guest";
+          else winnerName = sessionStorage.getItem("username") || "Player 1";
+        }
       }
-    }
 
     // 🎨 Affichage visuel
     showWinnerScreen(winnerName);
@@ -787,48 +787,48 @@ async function checkGameOver() {
         : iaProfiles.balanced;
     }
 
-    // 💾 Enregistrement du match
-    if (gameId !== null) {
-      let user_id: number | undefined;
-      let opponent_id: number;
+    // // 💾 Enregistrement du match
+    // if (gameId !== null) {
+    //   let user_id: number | undefined;
+    //   let opponent_id: number;
 
-      if (tournamentContext) {
-        const p1 = tournamentContext.p1;
-        const p2 = tournamentContext.p2;
-        user_id = p1.source === 'friend' ? Number(p1.id) : getGuestNumericId(p1.id);
-        opponent_id = p2.source === 'friend' ? Number(p2.id) : getGuestNumericId(p2.id);
-      } else {
-        user_id = Number(sessionStorage.getItem("userId"));
-        opponent_id = isAI ? 2 : 3;
-      }
+    //   if (tournamentContext) {
+    //     const p1 = tournamentContext.p1;
+    //     const p2 = tournamentContext.p2;
+    //     user_id = p1.source === 'friend' ? Number(p1.id) : getGuestNumericId(p1.id);
+    //     opponent_id = p2.source === 'friend' ? Number(p2.id) : getGuestNumericId(p2.id);
+    //   } else {
+    //     user_id = Number(sessionStorage.getItem("userId")) ;
+    //     opponent_id = isAI ? 2 : 3;
+    //   }
 
-      const isGuestVsGuest = user_id < 0 && opponent_id < 0;
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json"
-      };
-      const token = sessionStorage.getItem("token");
-      if (!isGuestVsGuest && token) {
-        headers["Authorization"] = `Bearer ${token}`;
-      }
+    //   const isGuestVsGuest = user_id < 0 && opponent_id < 0;
+    //   const headers: Record<string, string> = {
+    //     "Content-Type": "application/json"
+    //   };
+    //   const token = sessionStorage.getItem("token");
+    //   if (!isGuestVsGuest && token) {
+    //     headers["Authorization"] = `Bearer ${token}`;
+    //   }
 
-      try {
-        const res = await fetch("/api/match/end", {
-          method: "POST",
-          headers,
-          body: JSON.stringify({
-            gameId,
-            user_id,
-            opponent_id,
-            score1: scorePlayer,
-            score2: scoreIA
-          })
-        });
-        const result = await res.json();
-        console.log("[MATCH ENDED]", result);
-      } catch (err) {
-        console.error("❌ Error ending match:", err);
-      }
-    }
+    //   try {
+    //     const res = await fetch("/api/match/end", {
+    //       method: "POST",
+    //       headers,
+    //       body: JSON.stringify({
+    //         gameId,
+    //         user_id,
+    //         opponent_id,
+    //         score1: scorePlayer,
+    //         score2: scoreIA
+    //       })
+    //     });
+    //     const result = await res.json();
+    //     console.log("[MATCH ENDED]", result);
+    //   } catch (err) {
+    //     console.error("❌ Error ending match:", err);
+    //   }
+    // }
 
     // 🏆 Redirection tournoi
     if (tournamentContext) {
@@ -841,6 +841,9 @@ async function checkGameOver() {
         nextPhase: tournamentContext.nextPhase,
         tournamentId: tournamentContext.tournamentId
       }));
+      // 2405 아래 2줄 추가
+      const matchDoneKey = `match_done_${tournamentContext.p1.id}::${tournamentContext.p2.id}`;
+      sessionStorage.setItem(matchDoneKey, "true");
 
       setTimeout(() => {
         window.location.href = `/bracket?id=${tournamentContext.tournamentId}`;
@@ -853,7 +856,7 @@ async function checkGameOver() {
 
 
   resetBall();
-
+  // MERGE? 여기 어케 해야하지?? 이 부분 내 코드에서는 주석 제거 되어있음 A VOIR
   // window.addEventListener("keydown", (e) => {
   //   if (e.key.toLowerCase() === "r" && gameOver) {
   //     resetGame();
@@ -993,7 +996,17 @@ async function checkGameOver() {
 
   return {
     engine,
-    scene
+    scene,
+    cleanup: () => {
+      if (!gameOver)
+        console.log("[CLEANUP] 게임이 정상 종료되지 않고 중단됨!");
+      console.log("!!!!! CLEANUP FUNCTION CALLED !!!!!");
+      scene.onBeforeRenderObservable.clear();
+      engine.stopRenderLoop();
+      scene.dispose();
+      engine.dispose();
+      console.log("[PONG CLEANUP] Engine and scene disposed.");
+    }
   };
+  
 }
-

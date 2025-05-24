@@ -18,6 +18,15 @@ const guestAvatars = [
 const playerSlots: (Player | null | 'loading')[] = ['loading', null , null , null ];
 
 export function createTournamentPage(navigate: (path: string) => void): HTMLElement {
+  if ((window as any).activePongCleanup) {
+    (window as any).activePongCleanup();
+    delete (window as any).activePongCleanup;
+  }
+
+  for (let i = 1; i < playerSlots.length; i++) {
+    playerSlots[i] = null;
+  }
+  
   const container = document.createElement('div');
   container.className = 'flex flex-col h-screen bg-gray-900 text-white';
 
@@ -90,7 +99,7 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
         name.textContent =
           index === 0
             ? player.name
-            : `${player.name} (${player.source === 'friend' ? t('tournament.friend') : t('tournament.guest')})`;
+            : `${player.name} (${player.source === 'friend' ? t('tournament.friend') : t('tournament.guest')})`; // MERGE? : `${player.name} (${player.source === 'friend' ? 'Ami' : 'Invité'})`;
         name.className = 'text-lg font-semibold';
         slot.appendChild(name);
 
@@ -99,8 +108,8 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
         {
           const removeBtn = document.createElement('button');
           removeBtn.textContent = '❌';
-          removeBtn.title = t('tournament.remove_player');
-          removeBtn.className =
+          removeBtn.title = t('tournament.remove_player'); // MERGE? :'Supprimer ce joueur';
+          removeBtn.className = 
             'mt-1 text-red-500 hover:text-red-700 font-bold transition duration-200';
           removeBtn.addEventListener('click', () => {
             playerSlots[index] = null;
@@ -111,7 +120,7 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
         }
       } 
       else
-        slot.textContent = t('tournament.slot_empty', { num: index + 1 });
+        slot.textContent = t('tournament.slot_empty', { num: index + 1 }); // MERGE?  : slot.textContent = `Joueur ${index + 1} : vide`;
       slotsContainer.appendChild(slot);
     });
   };
