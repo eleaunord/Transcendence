@@ -103,6 +103,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
-    refreshSidebar();
+    // Increased delay and added multiple attempts
+    setTimeout(() => {
+      refreshSidebar();
+      // If still no image after refresh, try again
+      setTimeout(() => {
+        const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
+        if (profileImg && !profileImg.src.includes('default.jpg')) {
+          refreshSidebar();
+        }
+      }, 300);
+    }, 200);
   }
 });

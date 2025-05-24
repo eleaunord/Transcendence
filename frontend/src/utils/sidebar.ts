@@ -24,26 +24,34 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
   const profileImage = document.createElement('img');
   
   // Enhanced profile picture loading with error handling and caching
-  function loadProfilePicture() {
+  function loadProfilePicture(retryCount = 0) {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     let profilePictureSrc = user.image || 
                            sessionStorage.getItem('profilePicture') || 
                            '/assets/profile-pictures/default.jpg';
     
+    // If no user data and we haven't retried much, wait and retry
+    if (!user.image && !sessionStorage.getItem('profilePicture') && retryCount < 3) {
+      setTimeout(() => loadProfilePicture(retryCount + 1), 200);
+      return;
+    }
+    
     // Ensure the image loads properly
     const tempImg = new Image();
     tempImg.onload = () => {
       profileImage.src = profilePictureSrc;
+      profileImage.style.opacity = '1';
     };
     tempImg.onerror = () => {
       console.warn('Failed to load profile picture, using default');
       profileImage.src = '/assets/profile-pictures/default.jpg';
+      profileImage.style.opacity = '1';
     };
     tempImg.src = profilePictureSrc;
   }
 
-  // Initial load
-  loadProfilePicture();
+  // Initial load with delay to ensure data is available
+  setTimeout(() => loadProfilePicture(), 50);
   
   // Enhanced event listener for profile picture updates
   const handleProfilePictureUpdate = (e: Event) => {
@@ -65,11 +73,20 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
     if (document.visibilityState === 'visible') {
       setTimeout(() => {
         loadProfilePicture();
-      }, 100); // Small delay to ensure everything is loaded
+      }, 150); // Increased delay to ensure everything is loaded
     }
   };
   
   document.addEventListener('visibilitychange', handleVisibilityChange);
+
+  // Also listen for storage changes in case user data is updated in another tab
+  const handleStorageChange = (e: StorageEvent) => {
+    if (e.key === 'user' || e.key === null) {
+      setTimeout(() => loadProfilePicture(), 100);
+    }
+  };
+  
+  window.addEventListener('storage', handleStorageChange);
 
   profileImage.className = `
   absolute top-0 
@@ -78,7 +95,7 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
   border-2 border-white 
   object-cover 
   transition-all duration-300
-  opacity-100
+  opacity-0
 `.replace(/\s+/g, ' ').trim();
 
   profileImage.id = 'profile-img-sidebar';
@@ -224,13 +241,18 @@ export function refreshSidebar() {
                              sessionStorage.getItem('profilePicture') || 
                              '/assets/profile-pictures/default.jpg';
     
+    // Start with opacity 0 for smooth loading
+    profileImg.style.opacity = '0';
+    
     // Preload image before setting it
     const tempImg = new Image();
     tempImg.onload = () => {
       profileImg.src = profilePictureSrc;
+      profileImg.style.opacity = '1';
     };
     tempImg.onerror = () => {
       profileImg.src = '/assets/profile-pictures/default.jpg';
+      profileImg.style.opacity = '1';
     };
     tempImg.src = profilePictureSrc;
   }
