@@ -18,6 +18,40 @@ const GOOGLE_REDIRECT_URL = process.env.GOOGLE_REDIRECT_URL!;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'https://localhost';
 
 export async function authRoutes(app: FastifyInstance) {
+  // ----- Route de validation de token ----- \\
+  app.get('/validate-token', async (req, reply) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader?.startsWith('Bearer ')) {
+        return reply.code(401).send({ valid: false, error: 'No token provided' });
+      }
+
+      const token = authHeader.split(' ')[1];
+      const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
+
+      // Vérifier que l'utilisateur existe toujours en base
+      const user = db.prepare('SELECT id, username, email FROM users WHERE id = ?').get(decoded.userId) as User | undefined;
+      
+      if (!user) {
+        return reply.code(401).send({ valid: false, error: 'User not found' });
+      }
+
+      // Token valide et utilisateur existe
+      reply.send({ 
+        valid: true, 
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email
+        }
+      });
+
+    } catch (err: any) {
+      console.log('[TokenValidation] Invalid token:', err.message);
+      reply.code(401).send({ valid: false, error: 'Invalid token' });
+    }
+  });
+
  // ----- Authentification Classique ------ \\
   app.post('/signup', async (req, reply) => {
     const { username: rawUsername, email: rawEmail, password } = req.body as any;
