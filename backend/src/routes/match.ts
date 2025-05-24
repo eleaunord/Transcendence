@@ -59,19 +59,6 @@ export async function matchRoutes(app: FastifyInstance) {
     }
   
     try {
-      // const result = db.prepare(`
-      //   INSERT INTO games (user_id, opponent_id) VALUES (?, ?)
-      // `).run(finalUserId ?? -9999, opponent_id); // ✅ guest 전용 -9999 fallback 사용
-      // const gameId = result.lastInsertRowid as number;
-  
-      // // 점수 초기화 (게임 시작 시)
-      // const stmtScore = db.prepare(`
-      //   INSERT INTO scores (game_id, player_id, score) VALUES (?, ?, ?)
-      // `);
-      // stmtScore.run(gameId, finalUserId ?? -9999, 0); // -9999 사용시 이 값도 동일하게 적용
-      // stmtScore.run(gameId, opponent_id, 0);
-  
-      //reply.send({ status: 'created', gameId });
       reply.send({ status: 'ready' });
 
     } catch (err) {
@@ -83,14 +70,13 @@ export async function matchRoutes(app: FastifyInstance) {
   // 경기 종료 및 점수 저장
   app.post('/match/end', async (req, reply) => {
     //  수정된 부분: user_id도 body에서 받음 (게스트용)
-    const { gameId, user_id, opponent_id, score1, score2 } = req.body as {
-      gameId: number;
-      user_id?: number;
-      opponent_id: number;
-      score1: number;
-      score2: number;
-    };
-  
+  const { user_id, opponent_id, score1, score2 } = req.body as {
+    user_id?: number;
+    opponent_id: number;
+    score1: number;
+    score2: number;
+  };
+
     // 수정된 부분: 로그인 유저가 없으면 게스트 user_id 사용
     const finalUserId = user_id ?? req.auth?.userId; 
       
@@ -100,13 +86,12 @@ export async function matchRoutes(app: FastifyInstance) {
     // 기존과 동일한 파라미터 유효성 체크
     if (
       !isGuestVsGuest &&
-      (!finalUserId || !gameId || opponent_id === undefined || score1 === undefined || score2 === undefined)
+      (!finalUserId || opponent_id === undefined || score1 === undefined || score2 === undefined)
     ) {
       return reply.status(400).send({ error: 'Missing parameters' });
     }
   
     console.log('[DEBUG GAME DATA BACKEND] Reçu POST /match/end', {
-      gameId,
       finalUserId,
       opponent_id,
       score1,
@@ -136,17 +121,6 @@ export async function matchRoutes(app: FastifyInstance) {
   
     console.log(`[DEBUG GAME DATA BACKEND] Winner determined: winner_id=${winner_id}`);
   
-    // 점수 저장
-    // db.prepare(`UPDATE scores SET score = ? WHERE game_id = ? AND player_id = ?`)
-    //   .run(score1, gameId, finalUserId!);
-    // db.prepare(`UPDATE scores SET score = ? WHERE game_id = ? AND player_id = ?`)
-    //   .run(score2, gameId, opponent_id);
-  
-    // // 승자 기록
-    // db.prepare(`UPDATE games SET winner_id = ? WHERE id = ?`)
-    //   .run(winner_id, gameId);
-
-    // 1. Insert game row
     const result = db.prepare(`
       INSERT INTO games (user_id, opponent_id, winner_id) VALUES (?, ?, ?)
     `).run(finalUserId ?? -9999, opponent_id, winner_id);
@@ -157,8 +131,9 @@ export async function matchRoutes(app: FastifyInstance) {
     const stmtScore = db.prepare(`
       INSERT INTO scores (game_id, player_id, score) VALUES (?, ?, ?)
     `);
-    stmtScore.run(gameId, finalUserId ?? -9999, score1);
-    stmtScore.run(gameId, opponent_id, score2);
+    stmtScore.run(insertedGameId, finalUserId ?? -9999, score1);
+    stmtScore.run(insertedGameId, opponent_id, score2);
+
 
   
     console.log('🎯 Match mis à jour', { insertedGameId, score1, score2, winner_id });
