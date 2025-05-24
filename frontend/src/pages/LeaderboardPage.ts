@@ -6,8 +6,11 @@ interface PlayerScore {
   id: number;
   username: string;
   totalPoints: number;
+  wins?: number;
+  totalGames?: number;
 }
 
+type LeaderboardType = 'pong' | 'memory';
 
 export function createLeaderboardPage(navigate: (path: string) => void): HTMLElement {
   const container = document.createElement('div');
@@ -32,90 +35,101 @@ export function createLeaderboardPage(navigate: (path: string) => void): HTMLEle
   title.className = 'text-4xl font-bold mb-8 text-white';
   leaderboardSection.appendChild(title);
 
-  const leaderboardCard = document.createElement('div');
-  leaderboardCard.className = 'bg-gray-700/80 backdrop-blur-md p-4 rounded-md shadow-xl w-[32rem]';
+  // Create tab buttons
+  const tabContainer = document.createElement('div');
+  tabContainer.className = 'flex mb-6 bg-gray-800/50 rounded-lg p-1';
 
-  // Add loading indicator
-  const loadingIndicator = document.createElement('div');
-  loadingIndicator.className = 'text-center py-8 text-white';
-  loadingIndicator.textContent = t('leaderboard.loading');
-  leaderboardCard.appendChild(loadingIndicator);
+  const pongTab = document.createElement('button');
+  pongTab.textContent = 'Pong';
+  pongTab.className = 'px-6 py-3 rounded-md font-semibold transition-all duration-200 bg-blue-600 text-white shadow-lg';
+  
+  const memoryTab = document.createElement('button');
+  memoryTab.textContent = 'Memory';
+  memoryTab.className = 'px-6 py-3 rounded-md font-semibold transition-all duration-200 text-gray-300 hover:text-white hover:bg-gray-700/50';
+
+  tabContainer.appendChild(pongTab);
+  tabContainer.appendChild(memoryTab);
+  leaderboardSection.appendChild(tabContainer);
+
+  const leaderboardCard = document.createElement('div');
+  leaderboardCard.className = 'bg-gray-700/80 backdrop-blur-md p-4 rounded-md shadow-xl w-[36rem]';
 
   leaderboardSection.appendChild(leaderboardCard);
   container.appendChild(leaderboardSection);
 
-  // // Sidebar hover logic
-  // sidebar.addEventListener('mouseenter', () => {
-  //   document.querySelectorAll('.sidebar-label').forEach(label => {
-  //     (label as HTMLElement).classList.remove('opacity-0');
-  //     (label as HTMLElement).classList.add('opacity-100');
-  //   });
-  //   const backgroundImage = document.getElementById('backgroundImage');
-  //   if (backgroundImage) {
-  //     backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300 z-10';
-  //   }
-  // });
+  let currentTab: LeaderboardType = 'pong';
 
-  // sidebar.addEventListener('mouseleave', () => {
-  //   document.querySelectorAll('.sidebar-label').forEach(label => {
-  //     (label as HTMLElement).classList.add('opacity-0');
-  //     (label as HTMLElement).classList.remove('opacity-100');
-  //   });
-  //   const backgroundImage = document.getElementById('backgroundImage');
-  //   if (backgroundImage) {
-  //     backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300 z-10';
-  //   }
-  // });
+  // Tab switching logic
+  function switchTab(tab: LeaderboardType) {
+    currentTab = tab;
+    
+    // Update tab appearance
+    if (tab === 'pong') {
+      pongTab.className = 'px-6 py-3 rounded-md font-semibold transition-all duration-200 bg-blue-600 text-white shadow-lg';
+      memoryTab.className = 'px-6 py-3 rounded-md font-semibold transition-all duration-200 text-gray-300 hover:text-white hover:bg-gray-700/50';
+    } else {
+      memoryTab.className = 'px-6 py-3 rounded-md font-semibold transition-all duration-200 bg-purple-600 text-white shadow-lg';
+      pongTab.className = 'px-6 py-3 rounded-md font-semibold transition-all duration-200 text-gray-300 hover:text-white hover:bg-gray-700/50';
+    }
 
-  // Fetch leaderboard data from backend
-  fetchLeaderboardData()
-    .then(topPlayers => {
-      // Remove loading indicator
-      leaderboardCard.innerHTML = '';
-      
-      // Create and populate the table
-      const table = createLeaderboardTable(topPlayers);
-      leaderboardCard.appendChild(table);
-    })
-    .catch(error => {
-      leaderboardCard.innerHTML = '';
+    // Load leaderboard data
+    loadLeaderboard(tab);
+  }
 
-      const errorMessage = document.createElement('div');
-      errorMessage.className = 'text-center py-8 text-red-400';
+  pongTab.addEventListener('click', () => switchTab('pong'));
+  memoryTab.addEventListener('click', () => switchTab('memory'));
 
-      // If the error is a network error or a failed response
-      if (error instanceof Error && error.message.includes('Failed to fetch leaderboard')) {
-        errorMessage.textContent = t('leaderboard.error');
-      }
+  // Function to load leaderboard data
+  function loadLeaderboard(type: LeaderboardType) {
+    // Add loading indicator
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.className = 'text-center py-8 text-white';
+    loadingIndicator.textContent = t('leaderboard.loading');
+    leaderboardCard.innerHTML = '';
+    leaderboardCard.appendChild(loadingIndicator);
 
-      leaderboardCard.appendChild(errorMessage);
-      console.error('Failed to fetch leaderboard data:', error);
-    });
+    // Fetch appropriate leaderboard data
+    const endpoint = type === 'pong' ? '/api/leaderboard' : '/api/memory-leaderboard';
+    
+    fetchLeaderboardData(endpoint)
+      .then(topPlayers => {
+        // Remove loading indicator
+        leaderboardCard.innerHTML = '';
+        
+        // Create and populate the table
+        const table = createLeaderboardTable(topPlayers, type);
+        leaderboardCard.appendChild(table);
+      })
+      .catch(error => {
+        leaderboardCard.innerHTML = '';
+
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'text-center py-8 text-red-400';
+
+        // If the error is a network error or a failed response
+        if (error instanceof Error && error.message.includes('Failed to fetch leaderboard')) {
+          errorMessage.textContent = t('leaderboard.error');
+        }
+
+        leaderboardCard.appendChild(errorMessage);
+        console.error(`Failed to fetch ${type} leaderboard data:`, error);
+      });
+  }
+
+  // Initial load
+  loadLeaderboard('pong');
   
-    window.addEventListener('focus', () => {
-      fetchLeaderboardData()
-        .then(topPlayers => {
-          leaderboardCard.innerHTML = '';
-          const table = createLeaderboardTable(topPlayers);
-          leaderboardCard.appendChild(table);
-        })
-        .catch(error => {
-          console.error('Error refreshing leaderboard on focus:', error);
-        });
-    });
+  // Refresh on window focus
+  window.addEventListener('focus', () => {
+    loadLeaderboard(currentTab);
+  });
   
   return container;
 }
 
-async function fetchLeaderboardData(): Promise<PlayerScore[]> {
-
-  //throw new Error('Simulated API failure');
-  
-  // Update with your production API URL
-  const API_BASE_URL = '';
-    
+async function fetchLeaderboardData(endpoint: string): Promise<PlayerScore[]> {
   try {
-    const response = await fetch(`/api/leaderboard`, {
+    const response = await fetch(endpoint, {
       method: 'GET',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -146,7 +160,7 @@ async function fetchLeaderboardData(): Promise<PlayerScore[]> {
   }
 }
 
-function createLeaderboardTable(players: PlayerScore[]): HTMLTableElement {
+function createLeaderboardTable(players: PlayerScore[], type: LeaderboardType): HTMLTableElement {
   const table = document.createElement('table');
   table.className = 'w-full text-center text-white border-collapse';
 
@@ -169,6 +183,7 @@ function createLeaderboardTable(players: PlayerScore[]): HTMLTableElement {
   headerRow.appendChild(rankHeader);
   headerRow.appendChild(playerHeader);
   headerRow.appendChild(pointsHeader);
+  
   thead.appendChild(headerRow);
   table.appendChild(thead);
 
@@ -189,7 +204,10 @@ function createLeaderboardTable(players: PlayerScore[]): HTMLTableElement {
     </svg>`
   };
 
-  players.forEach((player, index) => {
+  // Limit to top 5 players
+  const topFivePlayers = players.slice(0, 5);
+
+  topFivePlayers.forEach((player, index) => {
     const tr = document.createElement('tr');
     tr.className = 'bg-gray-900 hover:bg-gray-800';
 
@@ -214,6 +232,7 @@ function createLeaderboardTable(players: PlayerScore[]): HTMLTableElement {
     tr.appendChild(rankCell);
     tr.appendChild(nameCell);
     tr.appendChild(pointsCell);
+
     tbody.appendChild(tr);
   });
 

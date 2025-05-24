@@ -73,5 +73,8 @@ export async function memoryRoutes(app: FastifyInstance) {
       reply.status(500).send({ error: 'Memory history failed' });
     }
   });
+
+
+
 }
 
