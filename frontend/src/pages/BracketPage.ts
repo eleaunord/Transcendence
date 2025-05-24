@@ -11,12 +11,17 @@ type Player = {
   avatar?: string;
 };
 
-
 export function createBracketPage(navigate: (path: string) => void): HTMLElement {
+  if ((window as any).activePongCleanup) {
+    console.log('[debug bracketpage] Cleaning up previous Pong scene...');
+    (window as any).activePongCleanup();
+    delete (window as any).activePongCleanup;
+  }
+
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id'); 
   // const previousId = sessionStorage.getItem('lastTournamentId');
-  // if (previousId !== id) {
+  // if (previousId !== id) { 
   //   sessionStorage.removeItem('semiFinalists');
   //   sessionStorage.setItem('lastTournamentId', id ?? '');
   // }
@@ -30,7 +35,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
   const backgroundImage = document.createElement('div');
   backgroundImage.id = 'backgroundImage';
   backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-  container.appendChild(backgroundImage);
+  container.appendChild(backgroundImage); 
   applyUserTheme(backgroundImage);
 
   const gameArea = document.createElement('div');
@@ -149,21 +154,35 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
       playerRow.append(avatar, name);
       matchDiv.appendChild(playerRow);
     });
+    
+    const matchKey = `match_done_${p1.id}::${p2.id}`;
+    const isMatchDone = sessionStorage.getItem(matchKey) === 'true';
+    
+    if (!isMatchDone) {
+      const playBtn = document.createElement('button');
+      playBtn.textContent = t('bracket.play');
+      playBtn.className = 'mt-2 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm';
+      playBtn.addEventListener('click', () => {
+        console.log(`[MATCH] ${p1.username} vs ${p2.username}`);
+        const nextPhase = semiFinalists.includes(null) ? 'semiFinal' : 'final';
+        console.log(`[MATCH DEBUG] NEXT PHASE : ${nextPhase}`);
+        showTournamentAnnouncement(p1, p2, nextPhase, id);
 
-    const playBtn = document.createElement('button');
-    playBtn.textContent = t('bracket.play');
-    playBtn.className = 'mt-2 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm';
-    playBtn.addEventListener('click', () => {
-      console.log(`[MATCH] ${p1.username} vs ${p2.username}`);
-      const nextPhase = semiFinalists.includes(null) ? 'semiFinal' : 'final';
-      console.log(`[MATCH DEBUG] NEXT PHASE : ${nextPhase}`);
-      showTournamentAnnouncement(p1, p2, nextPhase, id);
-    });
+        // sessionStorage.setItem(matchKey, 'true'); // 플레이 버튼 비활성화 용도
+      });
 
-    matchDiv.appendChild(playBtn);
+      matchDiv.appendChild(playBtn);
+    }
+    else {
+      const doneLabel = document.createElement('div');
+      doneLabel.textContent = 'Match terminé';
+      doneLabel.className = 'mt-2 text-sm text-gray-400 italic';
+      matchDiv.appendChild(doneLabel);
+    } 
+
     return matchDiv;
   };
-
+  
   const updateLines = () => {
     svgLines.innerHTML = '<defs>' + defs.innerHTML + '</defs>';
     const r1 = round1.querySelectorAll('div');
@@ -244,29 +263,38 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     }));
 
     // 세미파이널 슬롯이 모두 설정된 뒤에 matchWinner 적용
-    setTimeout(() => {
+    function applyMatchWinnerFromSession() {
       const matchWinnerStr = sessionStorage.getItem('matchWinner');
-      if (matchWinnerStr) {
-        console.log('[BRACKET PAGE] matchWinner from session:', matchWinnerStr);
-        const { winner, nextPhase } = JSON.parse(matchWinnerStr);
-        sessionStorage.removeItem('matchWinner');
-
-        console.log(`[SESSION DEBUG] winner from session:`, winner);
-        console.log(`[SESSION DEBUG] nextPhase:`, nextPhase);
+      if (!matchWinnerStr) return;
     
-          if (nextPhase === 'semiFinal') {
-            saveWinnerToSemiFinal(winner);
-            updateSemiFinal();
-          } else if (nextPhase === 'final') {
-            finalist = winner;
-            renderWinner();
-          }
+      try {
+        const { winner, nextPhase } = JSON.parse(matchWinnerStr);
+        console.log('[BRACKET PAGE] Restored winner from session:', winner);
+        console.log('[BRACKET PAGE] nextPhase:', nextPhase);
+    
+        if (nextPhase === 'semiFinal') {
+          saveWinnerToSemiFinal(winner);
+          updateSemiFinal();
+        } else if (nextPhase === 'final') {
+          finalist = winner;
+          renderWinner();
         }
-      }, 100);// bracket DOM이 완전히 구성된 후 실행
-  })
-  .catch(err => {
-    console.error(err);
-  });
+    
+        sessionStorage.removeItem('matchWinner');
+      } catch (error) {
+        console.error('Error parsing matchWinner from sessionStorage:', error);
+      }
+    }
+
+    // 브래킷 DOM이 완전히 구성된 뒤 실행
+    setTimeout(() => {
+      applyMatchWinnerFromSession();
+    }, 150); // 조금 더 여유 있게
+    
+    })
+    .catch(err => {
+      console.error(err);
+    });
 
   const layout = document.createElement('div');
   layout.className = 'flex flex-1';
@@ -359,7 +387,8 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
   }, 1000);
 }
 
-function launchBracketGame(container: HTMLElement) {
+// MERGE?
+async function launchBracketGame(container: HTMLElement) {
   const canvas = document.createElement('canvas');
   canvas.id = 'pong-canvas';
   canvas.className = 'w-full h-full absolute top-0 left-0';
@@ -411,7 +440,7 @@ layout!.className = 'flex flex-1 justify-center items-center'; // ensure it's ce
 
   const matchData = sessionStorage.getItem("currentMatch");
   if (!matchData) {
-    console.error("❌ currentMatch not found in sessionStorage");
+    console.error("currentMatch not found in sessionStorage");
     return;
   }
 
@@ -419,7 +448,7 @@ layout!.className = 'flex flex-1 justify-center items-center'; // ensure it's ce
 
 
   const settings = loadPongSettings();
-  createPongScene(
+  const pong = await createPongScene(
     canvas,
     {
       mode: 'tournament',
@@ -431,6 +460,8 @@ layout!.className = 'flex flex-1 justify-center items-center'; // ensure it's ce
     },
     btnReturn
   );
+  console.log("!!Pong scene created in bracket --> setting activePongCleanup");
+  (window as any).activePongCleanup = pong.cleanup;
 }
 
   return container;

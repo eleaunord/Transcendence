@@ -2,6 +2,11 @@ import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
 
 export function createCustomizationPage(navigate: (path: string) => void): HTMLElement {
+  if ((window as any).activePongCleanup) {
+    (window as any).activePongCleanup();
+    delete (window as any).activePongCleanup;
+  }
+  
   const container = document.createElement('div');
   container.className = 'relative flex flex-col h-screen bg-gray-900 text-white overflow-hidden';
 

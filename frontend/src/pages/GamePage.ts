@@ -4,6 +4,10 @@ import { applyUserTheme } from '../utils/theme';
 import { t } from '../utils/translator'; 
 
 export function createGamePage(navigate: (path: string) => void): HTMLElement {
+  if ((window as any).activePongCleanup) {
+    (window as any).activePongCleanup();
+    delete (window as any).activePongCleanup;
+  }
 
   const container = document.createElement('div');
   container.className = 'flex flex-col h-screen bg-gray-900 text-white';
