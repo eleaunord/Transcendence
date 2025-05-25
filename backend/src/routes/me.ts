@@ -312,27 +312,69 @@ export async function meRoutes(app: FastifyInstance) {
     }
   });
 
-  app.delete('/me', async (req, reply) => {
+app.delete('/me', async (req, reply) => {
     const auth = req.headers.authorization;
-    if (!auth) return reply.code(401).send({ error: 'me.error.missing_token' });
-  
+    if (!auth) {
+      return reply.code(401).send({ error: 'me.error.missing_token' });
+    }
+
+    let payload: any;
     try {
-      const token = auth.split(' ')[1];
-      const payload = jwt.verify(token, JWT_SECRET) as any;
-      const userId = payload.userId;
-  
-      // 실제 삭제 (ON DELETE CASCADE 가 있으면 연관 테이블도 자동 정리됨)
-      const result = db.prepare('DELETE FROM users WHERE id = ?').run(userId);
-  
-      if (result.changes > 0) {
-        reply.send({ message: 'me.deleted.success' });
-      } else {
-        reply.code(404).send({ error: 'me.error.user_not_found' });
-      }
-    } catch (err) {
+      payload = jwt.verify(auth.split(' ')[1], JWT_SECRET);
+    } catch {
+      return reply.code(401).send({ error: 'me.error.invalid_token' });
+    }
+    const userId: number = payload.userId;
+
+    try {
+      // wrap in one transaction so either ALL deletes succeed or none do
+      db.transaction(() => {
+        // 1) delete every score in games the user ever played (whether player_id === them or not)
+        db.prepare(`
+          DELETE FROM scores
+          WHERE game_id IN (
+            SELECT id FROM games
+            WHERE user_id = ? OR opponent_id = ?
+          )
+        `).run(userId, userId);
+
+        // 2) just in case there are stray scores not covered above
+        db.prepare(`DELETE FROM scores WHERE player_id = ?`)
+          .run(userId);
+
+        // 3) delete memory_games
+        db.prepare(`DELETE FROM memory_games WHERE user_id = ?`)
+          .run(userId);
+
+        // 4) delete all friend‐relations
+        db.prepare(`
+          DELETE FROM user_friends
+          WHERE user_id = ? OR friend_id = ?
+        `).run(userId, userId);
+
+        // 5) now delete the games themselves
+        db.prepare(`
+          DELETE FROM games
+          WHERE user_id = ? OR opponent_id = ?
+        `).run(userId, userId);
+
+        // 6) finally delete the user
+        const result = db.prepare(`DELETE FROM users WHERE id = ?`)
+                         .run(userId);
+        if (result.changes === 0) {
+          throw new Error('me.error.user_not_found');
+        }
+      })();
+
+      return reply.send({ message: 'me.deleted.success' });
+    } catch (err: any) {
       console.error('Delete error:', err);
-      reply.code(401).send({ error: 'me.error.invalid_token' });
+
+      if (err.message === 'me.error.user_not_found') {
+        return reply.code(404).send({ error: err.message });
+      }
+      return reply.code(500).send({ error: 'me.error.delete_failed' });
     }
   });
-}
 
+}

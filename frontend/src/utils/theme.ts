@@ -13,10 +13,10 @@ export async function applyUserTheme(bg: HTMLElement) {
         headers: { Authorization: `Bearer ${token}` },
       });
       const user = await res.json();
-      theme = user.theme || '/assets/profile-themes/arabesque.png';
+      theme = user.theme || '/assets/Backgrounds/bg_th1.jpg';
     } catch (err) {
       console.error('Erreur récupération thème utilisateur :', err);
-      theme = '/assets/profile-themes/arabesque.png'; // Valeur par défaut en cas d'erreur
+      theme = '/assets/Backgrounds/bg_th1.jpg'; // Valeur par défaut en cas d'erreur
     }
   }
 
@@ -32,8 +32,6 @@ export async function applyUserTheme(bg: HTMLElement) {
     };
   }
 }
-
-
 
 // export async function applyUserTheme(bg: HTMLElement) {
 //   if (!bg) return;

@@ -26,9 +26,9 @@ export function createCustomizationPage(navigate: (path: string) => void): HTMLE
   customizations.className = 'flex  space-x-8 justify-center items-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 bg-black/50 p-4 rounded-lg';
 
   const themes = [
-    { name: 'Thème 1', path: '/assets/background/korea2.jpg' },
-    { name: 'Thème 2', path: '/assets/background/colibri.jpg' },
-    { name: 'Thème 3', path: '/assets/background/cieletoile.jpg' },
+    { name: 'Thème 1', path: '/assets/Backgrounds/bg_th1.jpg' },
+    { name: 'Thème 2', path: '/assets/Backgrounds/bg_th2.jpg' },
+    { name: 'Thème 3', path: '/assets/Backgrounds/bg_th3.jpg' },
   ];
 
   themes.forEach(({ name, path }) => {

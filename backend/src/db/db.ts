@@ -33,7 +33,7 @@ function ensureThemeColumn() {
     // Add the theme column
     db.prepare(`
       ALTER TABLE users 
-      ADD COLUMN theme TEXT DEFAULT '/assets/profile-themes/arabesque.png'
+      ADD COLUMN theme TEXT DEFAULT '/assets/Backgrounds/bg_th1.jpg'
     `).run();
     console.log('✅ Added theme column to users table');
   }
@@ -41,7 +41,7 @@ function ensureThemeColumn() {
   // Ensure all existing users have a theme
   db.prepare(`
     UPDATE users 
-    SET theme = '/assets/profile-themes/arabesque.png' 
+    SET theme = '/assets/Backgrounds/bg_th1.jpg' 
     WHERE theme IS NULL OR theme = ''
   `).run();
 }
@@ -52,15 +52,15 @@ ensureThemeColumn();
 // === Insertion des utilisateurs spéciaux si non présents ===
 db.prepare(`
  INSERT OR IGNORE INTO users (id, username, email, theme) 
- VALUES (1, 'PlayerOne', 'player1@example.com', '/assets/profile-themes/arabesque.png')
+ VALUES (1, 'PlayerOne', 'player1@example.com', '/assets/Backgrounds/bg_th1.jpg')
 `).run();
 db.prepare(`
  INSERT OR IGNORE INTO users (id, username, email, theme) 
- VALUES (2, 'AI', 'ai@game.com', '/assets/profile-themes/arabesque.png')
+ VALUES (2, 'AI', 'ai@game.com', '/assets/Backgrounds/bg_th1.jpg')
 `).run();
 db.prepare(`
  INSERT OR IGNORE INTO users (id, username, email, theme) 
- VALUES (3, 'Guest', 'guest@game.com', '/assets/profile-themes/arabesque.png')
+ VALUES (3, 'Guest', 'guest@game.com', '/assets/Backgrounds/bg_th1.jpg')
 `).run();
 
 // === Création de la table games ===
@@ -109,13 +109,13 @@ export default db;
 //     email TEXT NOT NULL UNIQUE,
 //     password_hash TEXT DEFAULT NULL,
 //     image TEXT DEFAULT 'default.jpg',
-//     theme TEXT DEFAULT '/assets/profile-themes/arabesque.png'
+//     theme TEXT DEFAULT '/assets/Backgrounds/bg_th1.jpg'
 //   )
 // `).run();
 
 // db.prepare(`
 //   UPDATE users 
-//   SET theme = '/assets/profile-themes/arabesque.png' 
+//   SET theme = '/assets/Backgrounds/bg_th1.jpg' 
 //   WHERE theme IS NULL;
 // `).run();
 
