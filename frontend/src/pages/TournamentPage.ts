@@ -242,7 +242,18 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
   });
 
   addGuestBtn.addEventListener('click', () => {
-    const name = guestInput.value.trim();
+    //const name = guestInput.value.trim();
+    let name = guestInput.value.trim();
+
+    // 🔒 Validation stricte : lettres, chiffres, espaces, _ ou -
+    const nameRegex = /^[\w\s-]{3,20}$/;
+    if (!nameRegex.test(name)) {
+      alert(t('guest.invalid_name')); // à ajouter dans ton fichier de traductions
+      return;
+    }
+
+    // Protection XSS basique (supprimer < > " ' /)
+    name = name.replace(/[<>"'/]/g, '');
     if (!name) return;
   
     const isNameTaken = playerSlots.some(

@@ -327,6 +327,7 @@
   "tournament.start": "Start Tournament",
   "tournament.local_name": "Local Tournament",
   "tournament.creation_error": "Failed to create tournament",
+  "guest.invalid_name": "Invalid name. Only letters, numbers, hyphens and underscores are allowed (3 to 20 characters).",
 
   "team.name.shinhye": "Shinhye YUN",
   "team.name.alix": "Alix CERALINE",

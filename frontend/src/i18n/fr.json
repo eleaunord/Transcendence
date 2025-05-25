@@ -327,7 +327,8 @@
   "tournament.start": "Lancer le tournoi",
   "tournament.local_name": "Tournoi Local",
   "tournament.creation_error": "Erreur lors de la création du tournoi",
-
+  "guest.invalid_name": "Nom invalide. Seuls les lettres, chiffres, tirets et underscores sont autorisés (3 à 20 caractères).",
+  
   "team.name.shinhye": "Shinhye YUN",
   "team.name.alix": "Alix CERALINE",
   "team.name.gnouma": "Gnouma DUKURAY",

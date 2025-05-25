@@ -327,6 +327,7 @@
   "tournament.start": "토너먼트 시작",
   "tournament.local_name": "로컬 토너먼트",
   "tournament.creation_error": "토너먼트를 생성할 수 없습니다",
+  "guest.invalid_name": "잘못된 이름입니다. 영문자, 숫자, 하이픈(-), 밑줄(_)만 사용할 수 있으며, 3~20자 사이여야 합니다.",
 
   "team.name.shinhye": "Shinhye YUN",
   "team.name.alix": "Alix CERALINE",
