@@ -9,19 +9,19 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
 
   const themeAssets: Record<string, { background: string; icons: string[]; folder: string }> = {
     classic: {
-      background: '/assets/background/game_background.jpg',
-      folder: 'theme2',
-      icons: ['comet', 'knight', 'moon', 'star', 'sword', 'dnd'],
+      background: '/assets/Memory/Theme2/memory_bg1.jpg',
+      folder: 'Theme2',
+      icons: ['memory_th1_01', 'memory_th1_02', 'memory_th1_03', 'memory_th1_04', 'memory_th1_05', 'memory_th1_06'],
     },
     cloud: {
-      background: '/assets/background/cloud_background.jpg',
-      folder: 'theme0',
-      icons: ['blue_dragon', 'blue_lady', 'blue_star', 'blue_tarot', 'blue_witch', 'blue_flower'],
+      background: '/assets/Memory/Theme1/memory_bg0.jpg',
+      folder: 'Theme1',
+      icons: ['memory_th0_01', 'memory_th0_02', 'memory_th0_03', 'memory_th0_04', 'memory_th0_05', 'memory_th0_06'],
     },
     sun: {
-      background: '/assets/background/sun_background.jpg',
-      folder: 'theme1',
-      icons: ['orange_eye', 'orange_knight', 'orange_mage', 'orange_queen', 'orange_tarot', 'orange_witch'],
+      background: '/assets/Memory/Theme3/memory_bg2.jpg',
+      folder: 'Theme3',
+      icons: ['memory_th2_01', 'memory_th2_02', 'memory_th2_03', 'memory_th2_04', 'memory_th2_05', 'memory_th2_06'],
     },
   };
 
@@ -90,14 +90,14 @@ export function createMemoryGamePage(navigate: (path: string) => void): HTMLElem
 
     const front = document.createElement('div');
     front.className = 'memory-front absolute w-full h-full rounded-lg';
-    front.style.backgroundImage = 'url(/assets/icons/card_background.jpg)';
+    front.style.backgroundImage = 'url(/assets/Memory/memory_backcard.jpg)';
     front.style.backgroundSize = 'cover';
     front.style.backgroundPosition = 'center';
     front.style.backfaceVisibility = 'hidden';
 
     const back = document.createElement('div');
     back.className = 'memory-back absolute w-full h-full rounded-lg';
-    back.style.backgroundImage = `url(/assets/icons/${folder}/${icon}.jpg)`;
+    back.style.backgroundImage = `url(/assets/Memory/${folder}/${icon}.jpg)`;
     back.style.backgroundSize = 'cover';
     back.style.backgroundPosition = 'center';
     back.style.backfaceVisibility = 'hidden';

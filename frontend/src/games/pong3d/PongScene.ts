@@ -98,7 +98,7 @@ export async function createPongScene(
   let paddleColor1 = new Color3(0.6, 0.2, 0.8);
   let paddleColor2 = new Color3(0.2, 0.4, 1);
   let ballColor = new Color3(1, 0.84, 0);
-  let groundTexturePath = "/assets/background/mat_wallpaper.jpg";
+  let groundTexturePath = "/assets/Pong/pong_mat1.jpg";
   let wallColorDiffuse = new Color3(0.05, 0.05, 0.3); // Couleur par défaut
   let wallColorEmissive = new Color3(0.1, 0.1, 0.4);
 
@@ -107,7 +107,7 @@ export async function createPongScene(
       paddleColor1 = new Color3(1, 0.3, 0.3);
       paddleColor2 = new Color3(1, 1, 0.3);
       ballColor = new Color3(0.3, 1, 0.3);
-      groundTexturePath = "/assets/background/sun_energy.jpg";
+      groundTexturePath = "/assets/Pong/pong_mat3.jpg";
       wallColorDiffuse = new Color3(0.4, 0.1, 0.1);     // Rouge foncé
       wallColorEmissive = new Color3(0.8, 0.2, 0.2);    // Rouge lumineux
       break;
@@ -115,7 +115,7 @@ export async function createPongScene(
       paddleColor1 = new Color3(0.2, 0.6, 1);
       paddleColor2 = new Color3(0.8, 0.3, 1);
       ballColor = new Color3(0.7, 0.9, 1);
-      groundTexturePath = "/assets/background/new_moon.jpg";
+      groundTexturePath = "/assets/Pong/pong_mat2.jpg";
       wallColorDiffuse = new Color3(0.2, 0.3, 0.5);     // Bleu profond
       wallColorEmissive = new Color3(0.3, 0.4, 0.7);    // Bleu lumineux
       break;
@@ -729,12 +729,8 @@ async function endMatch(score1: number, score2: number) {
 
     overlay.appendChild(winnerText);
     overlay.appendChild(scoreText);
+    overlay.appendChild(overlayReturnButton);
 
-    if (!isTournament)
-    {
-      overlay.appendChild(overlayReturnButton);
-    }
-    
     // Add the overlay to the canvas container
     canvasContainer.style.position = 'relative'; // Make sure container is positioned
     canvasContainer.appendChild(overlay);
@@ -767,19 +763,15 @@ async function endMatch(score1: number, score2: number) {
             "matchWinner",
             JSON.stringify({ winner: isWin ? p1 : p2, nextPhase })
           );
-          } else {
-            const userId = Number(sessionStorage.getItem("userId"));
-            const opponentId = isAI ? 2 : 3;
-            const winnerId = isWin ? userId : opponentId;
-
-            if (winnerId === 2) {
-              winnerName = "AI";
-            } else if (winnerId === 3) {
-              winnerName = t('player.guest');
-            } else {
-              winnerName = sessionStorage.getItem("username") || t('player.you');
-            }
-          }
+        } else {
+          const userId = Number(sessionStorage.getItem("userId"));
+          const opponentId = isAI ? 2 : 3;
+          const winnerId = isWin ? userId : opponentId;
+  
+          if (winnerId === 2) winnerName = "AI";
+          else if (winnerId === 3) winnerName = "Guest";
+          else winnerName = sessionStorage.getItem("username") || "Player 1";
+        }
       }
 
     // 🎨 Affichage visuel
