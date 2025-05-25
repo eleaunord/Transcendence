@@ -4,14 +4,16 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
   const sidebar = document.createElement('div');
   sidebar.id = 'sidebar';
 
-  sidebar.className = `
+sidebar.className = `
   fixed top-0 left-0 h-full w-20 hover:w-64
   bg-gray-800 text-white
   transition-all duration-300 ease-in-out
   z-40
   flex flex-col justify-between p-4
   overflow-visible
+  min-w-[5rem]
 `.replace(/\s+/g, ' ').trim();
+
 
   // --- Partie haute de la sidebar ---
   const topContainer = document.createElement('div');
@@ -127,71 +129,83 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
   profileSection.appendChild(statsContainer);
   topContainer.appendChild(profileSection);
 
-  // --- Menu principal ---
-  const menuItems = [
-    { icon: '/assets/side-bar/profil.png', label: t('sidebar.profile'), route: '/user-profile' },
-    { icon: '/assets/side-bar/custom.png', label: t('sidebar.customization'), route: '/customization' },
-    { icon: '/assets/side-bar/leaderboard.png', label: t('sidebar.leaderboard'), route: '/leaderboard' },
-    { icon: '/assets/side-bar/friends.png', label: t('sidebar.friends'), route: '/friends' },
-    { icon: '/assets/side-bar/pong.png', label: t('sidebar.games'), route: '/game' },
-  ];
+  const theme = sessionStorage.getItem('theme') || '/assets/Backgrounds/bg_th1.jpg';
+const themeMatch = theme.match(/bg_th(\d)/);
+const themeId = themeMatch ? `th${themeMatch[1]}` : 'th1';
+const themeFolder = `/assets/Icons/Thème ${themeId.slice(-1)}`;
 
-  menuItems.forEach(item => {
-    const menuItem = document.createElement('div');
-    menuItem.className = 'flex items-center gap-4 p-2 cursor-pointer hover:bg-blue-700 rounded-md transition-colors duration-200';
+const menuItems = [
+  { name: 'profile', label: t('sidebar.profile'), route: '/user-profile' },
+  { name: 'custom', label: t('sidebar.customization'), route: '/customization' },
+  { name: 'leaderboard', label: t('sidebar.leaderboard'), route: '/leaderboard' },
+  { name: 'friends', label: t('sidebar.friends'), route: '/friends' },
+  { name: 'pong', label: t('sidebar.games'), route: '/game' },
+];
 
-    const icon = document.createElement('img');
-    icon.src = item.icon;
-    icon.className = 'w-8 h-8';
+menuItems.forEach(item => {
+  const menuItem = document.createElement('div');
+menuItem.className = `
+  flex items-center gap-4 p-2
+  cursor-pointer hover:bg-blue-700
+  rounded-md transition-colors duration-200
+  shrink-0
+`.replace(/\s+/g, ' ').trim();
 
-    const label = document.createElement('span');
-    label.textContent = item.label;
-    label.className = 'whitespace-nowrap opacity-0 sidebar-label transition-opacity duration-300';
 
-    menuItem.appendChild(icon);
-    menuItem.appendChild(label);
-    menuItem.addEventListener('click', () => navigate(item.route));
+  const icon = document.createElement('img');
+  icon.src = `${themeFolder}/sb_${item.name}_${themeId}.png`;
+  icon.className = 'w-12 h-12 min-w-[3rem] min-h-[3rem] shrink-0';
 
-    topContainer.appendChild(menuItem);
-  });
+
+
+  const label = document.createElement('span');
+  label.textContent = item.label;
+  label.className = 'whitespace-nowrap opacity-0 sidebar-label transition-opacity duration-300';
+
+  menuItem.appendChild(icon);
+  menuItem.appendChild(label);
+  menuItem.addEventListener('click', () => navigate(item.route));
+
+  topContainer.appendChild(menuItem);
+});
 
   // --- Partie basse de la sidebar ---
   const bottomContainer = document.createElement('div');
   bottomContainer.className = 'flex flex-col gap-2';
 
   const bottomItems = [
-    { icon: '/assets/side-bar/aboutUs.png', label: t('sidebar.about'), route: '/about' },
-    { icon: '/assets/side-bar/logout.png', label: t('sidebar.logout'), route: '/' },
-  ];
+  { name: 'aboutus', label: t('sidebar.about'), route: '/about' },
+  { name: 'logout', label: t('sidebar.logout'), route: '/' },
+];
 
-  bottomItems.forEach(item => {
-    const menuItem = document.createElement('div');
-    menuItem.className = 'flex items-center gap-4 p-2 cursor-pointer hover:bg-blue-700 rounded-md transition-colors duration-200';
+bottomItems.forEach(item => {
+  const menuItem = document.createElement('div');
+  menuItem.className = 'flex items-center gap-4 p-2 cursor-pointer hover:bg-blue-700 rounded-md transition-colors duration-200';
 
-    const icon = document.createElement('img');
-    icon.src = item.icon;
-    icon.className = 'w-8 h-8';
+  const icon = document.createElement('img');
+  icon.src = `${themeFolder}/sb_${item.name}_${themeId}.png`;
+  icon.className = 'w-12 h-12 min-w-[3rem] min-h-[3rem] shrink-0';
 
-    const label = document.createElement('span');
-    label.textContent = item.label;
-    label.className = 'whitespace-nowrap opacity-0 sidebar-label transition-opacity duration-300';
+  const label = document.createElement('span');
+  label.textContent = item.label;
+  label.className = 'whitespace-nowrap opacity-0 sidebar-label transition-opacity duration-300';
 
-    menuItem.appendChild(icon);
-    menuItem.appendChild(label);
-    
-    if (item.label === 'Log out' || item.label === t('sidebar.logout')) {
-      menuItem.addEventListener('click', () => {
-        localStorage.removeItem('token');
-        sessionStorage.clear();
-        localStorage.clear();
-        navigate(item.route);
-      });
-    } else {
-      menuItem.addEventListener('click', () => navigate(item.route));
-    }
+  menuItem.appendChild(icon);
+  menuItem.appendChild(label);
 
-    bottomContainer.appendChild(menuItem);
-  });
+  if (item.name === 'logout') {
+    menuItem.addEventListener('click', () => {
+      localStorage.removeItem('token');
+      sessionStorage.clear();
+      localStorage.clear();
+      navigate(item.route);
+    });
+  } else {
+    menuItem.addEventListener('click', () => navigate(item.route));
+  }
+
+  bottomContainer.appendChild(menuItem);
+});
 
   // Assemble toute la sidebar
   sidebar.appendChild(topContainer);
@@ -224,6 +238,32 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
     });
   });
   
+  window.addEventListener('themeChanged', () => {
+  const theme = sessionStorage.getItem('theme') || '/assets/Backgrounds/bg_th1.jpg';
+  const themeMatch = theme.match(/bg_th(\d)/);
+  const themeId = themeMatch ? `th${themeMatch[1]}` : 'th1';
+  const themeFolder = `/assets/Icons/Thème ${themeId.slice(-1)}`;
+
+  // Liste des icônes par ID et nom logique
+  const iconMap = {
+    profile: 'sb_profile',
+    custom: 'sb_custom',
+    leaderboard: 'sb_leaderboard',
+    friends: 'sb_friends',
+    pong: 'sb_pong',
+    aboutus: 'sb_aboutus',
+    logout: 'sb_logout'
+  };
+
+  // Remplacer les icônes existantes
+  Object.entries(iconMap).forEach(([key, baseName]) => {
+    const icon = document.querySelector(`img[src*="${baseName}_"]`) as HTMLImageElement;
+    if (icon) {
+      icon.src = `${themeFolder}/${baseName}_${themeId}.png`;
+    }
+  });
+});
+
   return sidebar;
 }
 
