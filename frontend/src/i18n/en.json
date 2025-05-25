@@ -214,6 +214,8 @@
   "2fa.missing_info": "Missing info",
   "2fa.verified": "2FA Verified!",
   "2fa.verification_failed": "Verification failed",
+  "2fa.status.on": "ON",
+  "2fa.status.off": "OFF",
 
   "auth.must_be_logged_in": "You must be logged in.",
   "error.download_failed": "Error downloading data.",
@@ -306,6 +308,7 @@
   "versus.countdown": "Game starts in {{seconds}}...",
   "versus.retry": "Play again",
   "versus.backToModes": "Back to game modes",
+  "versus.title": "VERSUS",
 
   "pong.resume_in": "Resuming in {{seconds}}...",
   "pong.winner": "🎉 {{name}} won! 🎉",

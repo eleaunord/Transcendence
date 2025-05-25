@@ -38,12 +38,12 @@ export function createSettingsPanel(navigate: (path: string) => void): HTMLEleme
 
   const twoFAButton = document.createElement('button');
   twoFAButton.id = 'toggle2FAButton';
-  twoFAButton.textContent = 'OFF';
+  twoFAButton.textContent = t('2fa.status.off');;
   twoFAButton.className = `${commonButtonClass} bg-red-400 hover:bg-red-500`;
 
   const twoFADescription = document.createElement('p');
   twoFADescription.className = 'mt-2 text-sm text-gray-300 italic';
-  twoFADescription.textContent = 'Clicking 2FA ON/OFF will enable or disable two-factor authentication.';
+  twoFADescription.textContent = t('user.2fa.description');
 
   twoFAButton.addEventListener('click', async () => {
     const token = localStorage.getItem('token');
@@ -52,7 +52,7 @@ export function createSettingsPanel(navigate: (path: string) => void): HTMLEleme
     twoFAButton.disabled = true;
 
     try {
-      const isCurrentlyEnabled = twoFAButton.textContent === 'ON';
+      const isCurrentlyEnabled = twoFAButton.textContent === t('2fa.status.on');
       const newValue = !isCurrentlyEnabled;
 
       const res = await fetch('/api/me/2fa', {
@@ -69,10 +69,10 @@ export function createSettingsPanel(navigate: (path: string) => void): HTMLEleme
       const result = await res.json();
 
       if (result.is_2fa_enabled) {
-        twoFAButton.textContent = 'ON';
+        twoFAButton.textContent = t('2fa.status.on');
         twoFAButton.className = twoFAButton.className.replace('bg-red-400 hover:bg-red-500', 'bg-green-400 hover:bg-green-500');
       } else {
-        twoFAButton.textContent = 'OFF';
+        twoFAButton.textContent = t('2fa.status.off');
         twoFAButton.className = twoFAButton.className.replace('bg-green-400 hover:bg-green-500', 'bg-red-400 hover:bg-red-500');
       }
     } catch (err) {

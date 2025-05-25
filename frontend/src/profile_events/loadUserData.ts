@@ -1,3 +1,5 @@
+import { t } from '../utils/translator';
+
 export function loadUserData(token: string): void {
   fetch('/api/me', {
     headers: {
@@ -27,10 +29,10 @@ export function loadUserData(token: string): void {
 
       if (user.is_2fa_enabled !== undefined && toggle2FAButton) {
         if (user.is_2fa_enabled === 1) {
-          toggle2FAButton.textContent = 'ON';
+          toggle2FAButton.textContent = t('2fa.status.on');;
           toggle2FAButton.className = toggle2FAButton.className.replace('bg-red-400 hover:bg-red-500', 'bg-green-400 hover:bg-green-500');
         } else {
-          toggle2FAButton.textContent = 'OFF';
+          toggle2FAButton.textContent = t('2fa.status.off');;
           toggle2FAButton.className = toggle2FAButton.className.replace('bg-green-400 hover:bg-green-500', 'bg-red-400 hover:bg-red-500');
         }
       }

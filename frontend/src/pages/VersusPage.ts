@@ -74,7 +74,7 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
     matchBox.className = "relative z-20 w-fit px-16 py-12 bg-white/10 backdrop-blur-md rounded-2xl border-4 border-yellow-400 shadow-2xl text-center";
 
     const title = document.createElement("div");
-    title.textContent = "VERSUS";
+    title.textContent = t('versus.title');
     title.className = "text-2xl font-bold text-yellow-400 mb-8 tracking-widest";
     matchBox.appendChild(title);
 
