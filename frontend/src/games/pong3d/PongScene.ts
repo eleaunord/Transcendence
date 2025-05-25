@@ -732,8 +732,6 @@ async function endMatch(score1: number, score2: number) {
 
     if (!isTournament)
     {
-      const overlayReturnButton = document.createElement('button');
-      overlayReturnButton.textContent = t('versus.backToModes');
       overlay.appendChild(overlayReturnButton);
     }
     
@@ -769,15 +767,19 @@ async function endMatch(score1: number, score2: number) {
             "matchWinner",
             JSON.stringify({ winner: isWin ? p1 : p2, nextPhase })
           );
-        } else {
-          const userId = Number(sessionStorage.getItem("userId"));
-          const opponentId = isAI ? 2 : 3;
-          const winnerId = isWin ? userId : opponentId;
-  
-          if (winnerId === 2) winnerName = "AI";
-          else if (winnerId === 3) winnerName = "Guest";
-          else winnerName = sessionStorage.getItem("username") || "Player 1";
-        }
+          } else {
+            const userId = Number(sessionStorage.getItem("userId"));
+            const opponentId = isAI ? 2 : 3;
+            const winnerId = isWin ? userId : opponentId;
+
+            if (winnerId === 2) {
+              winnerName = "AI";
+            } else if (winnerId === 3) {
+              winnerName = t('player.guest');
+            } else {
+              winnerName = sessionStorage.getItem("username") || t('player.you');
+            }
+          }
       }
 
     // 🎨 Affichage visuel

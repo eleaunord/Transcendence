@@ -123,21 +123,23 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     console.log("[INIT] semiFinalists restored from sessionStorage:", semiFinalists);
   }
   
-  function saveWinnerToSemiFinal(winner: Player) {
+  function saveWinnerToSemiFinal(winner: Player, matchIndex: number) {
     const alreadyIn = semiFinalists.some(p => p?.id === winner.id);
     if (alreadyIn) {
       console.log("[DEBUG] Winner already present, skipping:", winner);
       return;
     }
-    if (!semiFinalists[0]) {
-      console.log("[DEBUG] Putting winner in semiFinalists[0]", winner);
-      semiFinalists[0] = winner;
-    } else if (!semiFinalists[1]) {
-      console.log("[DEBUG] Putting winner in semiFinalists[1]", winner);
-      semiFinalists[1] = winner;
-    } else {
-      console.warn("[WARN] semiFinalists full, cannot insert:", winner);
-    }
+    semiFinalists[matchIndex] = winner;
+    console.log(`[DEBUG] winner is in -> semifinalists[${matchIndex}] !`)
+    // if (!semiFinalists[0]) {
+    //   console.log("[DEBUG] Putting winner in semiFinalists[0]", winner);
+    //   semiFinalists[0] = winner;
+    // } else if (!semiFinalists[1]) {
+    //   console.log("[DEBUG] Putting winner in semiFinalists[1]", winner);
+    //   semiFinalists[1] = winner;
+    // } else {
+    //   console.warn("[WARN] semiFinalists full, cannot insert:", winner);
+    // }
     sessionStorage.setItem("semiFinalists", JSON.stringify(semiFinalists));
   }
 
@@ -173,7 +175,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
         console.log(`[MATCH] ${p1.username} vs ${p2.username}`);
         const nextPhase = semiFinalists.includes(null) ? 'semiFinal' : 'final';
         console.log(`[MATCH DEBUG] NEXT PHASE : ${nextPhase}`);
-        showTournamentAnnouncement(p1, p2, nextPhase, id);
+        showTournamentAnnouncement(p1, p2, nextPhase, id, gameFrame);
 
         // sessionStorage.setItem(matchKey, 'true'); // 플레이 버튼 비활성화 용도
       });
@@ -224,6 +226,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     sessionStorage.setItem("semiFinalists", JSON.stringify(semiFinalists));
   };
   
+  // 2205 수정
   const updateSemiFinal = () => {
     console.log('[SEMI FINAL] Updating semi-final with players:', semiFinalists);
     semiFinal.innerHTML = '';
@@ -238,11 +241,20 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     saveSemiFinalists();
     updateLines();
 
+    const finalAlreadyRendered = sessionStorage.getItem('finalRendered') === 'true';
+    const savedFinalist = sessionStorage.getItem('finalist');
+
     if (semiFinalists[0] && semiFinalists[1]) {
-      renderFinal(semiFinalists[0]!, semiFinalists[1]!);
+      if (finalAlreadyRendered && savedFinalist) {
+        finalist = JSON.parse(savedFinalist);
+        renderWinner(); // 결승 완료 상태 복구
+      } else {
+        renderFinal(semiFinalists[0]!, semiFinalists[1]!); // 결승전 미진행 상태
+      }
     }
   };
 
+  // 2205 수정
   const renderFinal = (p1: Player, p2: Player) => {
     console.log('[FINAL] Rendering final between:', p1.username, 'and', p2.username);
     final.innerHTML = '';
@@ -250,7 +262,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
       finalist = winner;
       renderWinner();
     }));
-
+    sessionStorage.setItem('finalRendered', 'true'); // 2205 추가
     updateLines();
   };
 
@@ -274,11 +286,11 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
 
     // 비동기 렌더 함수
     round1.appendChild(renderMatch(players[0], players[1], (winner) => {
-      saveWinnerToSemiFinal(winner);
+      saveWinnerToSemiFinal(winner, 0);
       updateSemiFinal();
     }));
     round1.appendChild(renderMatch(players[2], players[3], (winner) => {
-      saveWinnerToSemiFinal(winner);
+      saveWinnerToSemiFinal(winner, 1);
       updateSemiFinal();
     }));
 
@@ -293,7 +305,13 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
         console.log('[BRACKET PAGE] nextPhase:', nextPhase);
     
         if (nextPhase === 'semiFinal') {
-          saveWinnerToSemiFinal(winner);
+          // 위 경기 (players[0] vs players[1])인지 확인
+          const isMatch1 =
+            winner.id === players[0].id ||
+            winner.id === players[1].id;
+          const matchIndex = isMatch1 ? 0 : 1;
+
+          saveWinnerToSemiFinal(winner, matchIndex);
           updateSemiFinal();
         } else if (nextPhase === 'final') {
           finalist = winner;
@@ -305,6 +323,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
         console.error('Error parsing matchWinner from sessionStorage:', error);
       }
     }
+
 
     // 브래킷 DOM이 완전히 구성된 뒤 실행
     setTimeout(() => {
@@ -341,7 +360,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     layout.classList.remove('ml-44');
   });
 
-  function showTournamentAnnouncement(p1: Player, p2: Player, nextPhase: string, tournamentId: string | null) {
+  function showTournamentAnnouncement(p1: Player, p2: Player, nextPhase: string, tournamentId: string | null, parent: HTMLElement) {
   const overlay = document.createElement('div');
   overlay.className = 'absolute inset-0 z-50 flex justify-center items-center bg-black bg-opacity-80';
 
@@ -380,7 +399,9 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
   matchBox.appendChild(countdown);
 
   overlay.appendChild(matchBox);
-  document.body.appendChild(overlay);
+  parent.appendChild(overlay);
+
+
 
   let timeLeft = 4;
   countdown.textContent = t('bracket.countdown', { timeLeft });
