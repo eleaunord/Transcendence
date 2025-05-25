@@ -44,11 +44,6 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
   const gameFrame = document.createElement('div');
   gameFrame.className = 'w-3/4 h-3/4 border-4 border-white relative overflow-hidden bg-black flex flex-col items-center p-8 gap-6';
 
-  const title = document.createElement('h1');
-  title.textContent = t('bracket.title', { id: id || 'N/A' });
-  title.className = 'text-3xl font-bold mb-6 text-center';
-  gameFrame.appendChild(title);
-
   const bracketWrapper = document.createElement('div');
   bracketWrapper.className = 'relative flex gap-16';
   gameFrame.appendChild(bracketWrapper);
@@ -94,6 +89,12 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     path.setAttribute('d', `M${x1},${y1} C${x1 + 50},${y1} ${x2 - 50},${y2} ${x2},${y2}`);
     path.setAttribute('class', 'bracket-line');
     svgLines.appendChild(path);
+
+    // to rm black thingy
+    path.setAttribute('stroke','url(#gradientStroke)')
+    path.setAttribute('stroke-width','3')
+    path.setAttribute('fill','none')
+
   };
 
   const round1 = document.createElement('div');
@@ -189,15 +190,28 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     const s1 = semiFinal.querySelectorAll('div');
     const f1 = final.querySelector('div');
 
-    if (r1.length >= 2 && s1.length >= 2) {
-      connect(r1[0], s1[0]);
-      connect(r1[1], s1[1]);
-    }
+    // if (r1.length >= 2 && s1.length >= 2) {
+    //   connect(r1[0], s1[0]);
+    //   connect(r1[1], s1[1]);
+    // }
 
-    if (s1.length >= 2 && f1) {
-      connect(s1[0], f1);
-      connect(s1[1], f1);
-    }
+    // if (s1.length >= 2 && f1) {
+    //   connect(s1[0], f1);
+    //   connect(s1[1], f1);
+    // }
+
+  // only draw semis→final if both semi slots and a final slot exist
+  if (s1.length === 2 && f1) {
+    connect(s1[0], f1)
+    connect(s1[1], f1)
+  }
+
+  // only draw round1→semis if you actually have two semis
+  if (r1.length === 2 && s1.length === 2) {
+    connect(r1[0], s1[0])
+    connect(r1[1], s1[1])
+  }
+    
   };
   
   const saveSemiFinalists = () => {
@@ -456,7 +470,7 @@ layout!.className = 'flex flex-1 justify-center items-center'; // ensure it's ce
       scoreToWin: settings.scoreToWin,
       paddleSize: settings.paddleSize,
       theme: settings.theme,
-      tournamentContext: parsed
+      tournamentContext: parsed,
     },
     btnReturn
   );

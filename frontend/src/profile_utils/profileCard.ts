@@ -69,6 +69,11 @@ export function createProfileCard(): HTMLElement {
           profileImg.src = result;
           sessionStorage.setItem('profilePicture', result);
 
+          // new 18H
+          const user = JSON.parse(localStorage.getItem('user') || '{}');
+          user.image = result;
+          localStorage.setItem('user', JSON.stringify(user));
+
           const token = localStorage.getItem('token');
           if (token) {
             fetch('/api/me/image', {
@@ -85,7 +90,7 @@ export function createProfileCard(): HTMLElement {
           }
 
           const updateEvent = new CustomEvent('profilePictureUpdated', { detail: result });
-          window.dispatchEvent(updateEvent);
+          window.dispatchEvent(updateEvent); 
         };
         reader.readAsDataURL(file);
       }

@@ -1,3 +1,4 @@
+
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import db from '../db/db';
 
@@ -142,6 +143,7 @@ export default async function tournaments(fastify: FastifyInstance) {
       return reply.code(500).send({ error: 'Erreur interne serveur' });
     }
   });
+
   
 }
 

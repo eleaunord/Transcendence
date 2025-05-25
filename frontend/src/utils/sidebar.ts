@@ -3,8 +3,6 @@ import { t } from "../utils/translator";
 export function createSidebar(navigate: (path: string) => void): HTMLElement {
   const sidebar = document.createElement('div');
   sidebar.id = 'sidebar';
-  // sidebar.className = 'fixed top-0 left-0 h-full bg-gray-800 bg-opacity-75 transition-all duration-300 ease-in-out z-20 flex flex-col justify-between p-4 w-20 hover:w-64 overflow-hidden';
-  //sidebar.className = 'fixed top-0 left-0 h-full bg-gray-800 bg-opacity-75 transition-all duration-300 ease-in-out z-20 flex flex-col justify-between p-4 w-20 hover:w-64 overflow-visible';
 
   sidebar.className = `
   fixed top-0 left-0 h-full w-20 hover:w-64
@@ -21,18 +19,75 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
 
   // --- Profil Section ---
   const profileSection = document.createElement('div');
-  // profileSection.className = 'flex flex-col items-center mb-28 transition-all duration-300';
   profileSection.className = 'relative flex flex-col items-center mb-28 h-36';
 
   const profileImage = document.createElement('img');
-  let profilePictureSrc = sessionStorage.getItem('profilePicture') || '/assets/profile-pictures/default.jpg';
-  profileImage.src = profilePictureSrc;
+  
+  // Enhanced profile picture loading with error handling and caching
+  function loadProfilePicture(retryCount = 0) {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    let profilePictureSrc = user.image || 
+                           sessionStorage.getItem('profilePicture') || 
+                           '/assets/profile-pictures/default.jpg';
+    
+    // If no user data and we haven't retried much, wait and retry
+    if (!user.image && !sessionStorage.getItem('profilePicture') && retryCount < 3) {
+      setTimeout(() => loadProfilePicture(retryCount + 1), 200);
+      return;
+    }
+    
+    // Ensure the image loads properly
+    const tempImg = new Image();
+    tempImg.onload = () => {
+      profileImage.src = profilePictureSrc;
+      profileImage.style.opacity = '1';
+    };
+    tempImg.onerror = () => {
+      console.warn('Failed to load profile picture, using default');
+      profileImage.src = '/assets/profile-pictures/default.jpg';
+      profileImage.style.opacity = '1';
+    };
+    tempImg.src = profilePictureSrc;
+  }
 
-  // Ajout du listener d'événement(changement photo profil)
-  window.addEventListener('profilePictureUpdated', (e: Event) => {
+  // Initial load with delay to ensure data is available
+  setTimeout(() => loadProfilePicture(), 50);
+  
+  // Enhanced event listener for profile picture updates
+  const handleProfilePictureUpdate = (e: Event) => {
     const customEvent = e as CustomEvent<string>;
-    profileImage.src = customEvent.detail;
-  });
+    if (customEvent.detail) {
+      // Preload the new image before setting it
+      const tempImg = new Image();
+      tempImg.onload = () => {
+        profileImage.src = customEvent.detail;
+      };
+      tempImg.src = customEvent.detail;
+    }
+  };
+
+  window.addEventListener('profilePictureUpdated', handleProfilePictureUpdate);
+  
+  // Add visibility change listener to reload profile picture when tab becomes visible
+  const handleVisibilityChange = () => {
+    if (document.visibilityState === 'visible') {
+      setTimeout(() => {
+        loadProfilePicture();
+      }, 150); // Increased delay to ensure everything is loaded
+    }
+  };
+  
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+
+  // Also listen for storage changes in case user data is updated in another tab
+  const handleStorageChange = (e: StorageEvent) => {
+    if (e.key === 'user' || e.key === null) {
+      setTimeout(() => loadProfilePicture(), 100);
+    }
+  };
+  
+  window.addEventListener('storage', handleStorageChange);
+
   profileImage.className = `
   absolute top-0 
   w-12 h-12 hover:w-36 hover:h-36
@@ -40,19 +95,28 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
   border-2 border-white 
   object-cover 
   transition-all duration-300
+  opacity-0
 `.replace(/\s+/g, ' ').trim();
 
-  // profileImage.className = 'w-36 h-36 rounded-full mb-2 border-2 border-white object-cover transition-transform duration-300 hover:scale-110';
   profileImage.id = 'profile-img-sidebar';
+  
+  // Add error handling for the profile image
+  profileImage.onerror = () => {
+    console.warn('Profile image failed to load, using default');
+    profileImage.src = '/assets/profile-pictures/default.jpg';
+  };
 
   const usernameText = document.createElement('span');
   usernameText.id = 'sidebar-username';
-  // usernameText.className = 'text-white text-lg opacity-0 sidebar-label transition-opacity duration-300 mb-1';
   usernameText.className = 'text-white text-xl opacity-0 sidebar-label transition-opacity duration-300 p-4 mt-36 absolute';
 
-  //met a jour username avec ce qui est stocke
-  usernameText.textContent = sessionStorage.getItem('username') || t('sidebar.username');
-
+  // Load username
+  function loadUsername() {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    usernameText.textContent = user.username || t('sidebar.username');
+  }
+  
+  loadUsername();
 
   const statsContainer = document.createElement('div');
   statsContainer.id = 'sidebar-stats-container';
@@ -65,12 +129,12 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
 
   // --- Menu principal ---
   const menuItems = [
-  { icon: '/assets/side-bar/profil.png', label: t('sidebar.profile'), route: '/user-profile' },
-  { icon: '/assets/side-bar/custom.png', label: t('sidebar.customization'), route: '/customization' },
-  { icon: '/assets/side-bar/leaderboard.png', label: t('sidebar.leaderboard'), route: '/leaderboard' },
-  { icon: '/assets/side-bar/friends.png', label: t('sidebar.friends'), route: '/friends' },
-  { icon: '/assets/side-bar/pong.png', label: t('sidebar.games'), route: '/game' },
-];
+    { icon: '/assets/side-bar/profil.png', label: t('sidebar.profile'), route: '/user-profile' },
+    { icon: '/assets/side-bar/custom.png', label: t('sidebar.customization'), route: '/customization' },
+    { icon: '/assets/side-bar/leaderboard.png', label: t('sidebar.leaderboard'), route: '/leaderboard' },
+    { icon: '/assets/side-bar/friends.png', label: t('sidebar.friends'), route: '/friends' },
+    { icon: '/assets/side-bar/pong.png', label: t('sidebar.games'), route: '/game' },
+  ];
 
   menuItems.forEach(item => {
     const menuItem = document.createElement('div');
@@ -95,10 +159,10 @@ export function createSidebar(navigate: (path: string) => void): HTMLElement {
   const bottomContainer = document.createElement('div');
   bottomContainer.className = 'flex flex-col gap-2';
 
-const bottomItems = [
-  { icon: '/assets/side-bar/aboutUs.png', label: t('sidebar.about'), route: '/about' },
-  { icon: '/assets/side-bar/logout.png', label: t('sidebar.logout'), route: '/' },
-];
+  const bottomItems = [
+    { icon: '/assets/side-bar/aboutUs.png', label: t('sidebar.about'), route: '/about' },
+    { icon: '/assets/side-bar/logout.png', label: t('sidebar.logout'), route: '/' },
+  ];
 
   bottomItems.forEach(item => {
     const menuItem = document.createElement('div');
@@ -114,7 +178,8 @@ const bottomItems = [
 
     menuItem.appendChild(icon);
     menuItem.appendChild(label);
-    if (item.label === 'Log out') {
+    
+    if (item.label === 'Log out' || item.label === t('sidebar.logout')) {
       menuItem.addEventListener('click', () => {
         localStorage.removeItem('token');
         sessionStorage.clear();
@@ -134,34 +199,61 @@ const bottomItems = [
 
   // Mouvement de la sidebar
   sidebar.addEventListener('mouseenter', () => {
-      const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
-      if (profileImg) {
-       // profileImg.style.transform = 'scale(3)';
-
-        profileImg.classList.remove('w-12', 'h-12');
-        profileImg.classList.add('w-36', 'h-36');
-      }
-    
-      document.querySelectorAll('.sidebar-label').forEach(label => {
-        (label as HTMLElement).classList.remove('opacity-0');
-        (label as HTMLElement).classList.add('opacity-100');
-      });
+    const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
+    if (profileImg) {
+      profileImg.classList.remove('w-12', 'h-12');
+      profileImg.classList.add('w-36', 'h-36');
+    }
+  
+    document.querySelectorAll('.sidebar-label').forEach(label => {
+      (label as HTMLElement).classList.remove('opacity-0');
+      (label as HTMLElement).classList.add('opacity-100');
     });
-    
-    sidebar.addEventListener('mouseleave', () => {
-      const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
-      if (profileImg) {
-       //profileImg.style.transform = 'scale(1)';
-
-        profileImg.classList.remove('w-36', 'h-36');
-        profileImg.classList.add('w-12', 'h-12');
-      }
-    
-      document.querySelectorAll('.sidebar-label').forEach(label => {
-        (label as HTMLElement).classList.add('opacity-0');
-        (label as HTMLElement).classList.remove('opacity-100');
-      });
+  });
+  
+  sidebar.addEventListener('mouseleave', () => {
+    const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
+    if (profileImg) {
+      profileImg.classList.remove('w-36', 'h-36');
+      profileImg.classList.add('w-12', 'h-12');
+    }
+  
+    document.querySelectorAll('.sidebar-label').forEach(label => {
+      (label as HTMLElement).classList.add('opacity-0');
+      (label as HTMLElement).classList.remove('opacity-100');
     });
-    
+  });
+  
   return sidebar;
+}
+
+export function refreshSidebar() {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+  const usernameText = document.getElementById('sidebar-username');
+  if (usernameText) {
+    usernameText.textContent = user.username || 'User';
+  }
+
+  const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
+  if (profileImg) {
+    const profilePictureSrc = user.image || 
+                             sessionStorage.getItem('profilePicture') || 
+                             '/assets/profile-pictures/default.jpg';
+    
+    // Start with opacity 0 for smooth loading
+    profileImg.style.opacity = '0';
+    
+    // Preload image before setting it
+    const tempImg = new Image();
+    tempImg.onload = () => {
+      profileImg.src = profilePictureSrc;
+      profileImg.style.opacity = '1';
+    };
+    tempImg.onerror = () => {
+      profileImg.src = '/assets/profile-pictures/default.jpg';
+      profileImg.style.opacity = '1';
+    };
+    tempImg.src = profilePictureSrc;
+  }
 }

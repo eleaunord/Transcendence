@@ -1,10 +1,75 @@
 import { t } from '../utils/translator';
+import { refreshSidebar } from './sidebar';
 
 export type RouteMap = { [path: string]: (navigate: (path: string) => void) => HTMLElement };
-//type RouteMap = { [path: string]: (navigate: (path: string) => void) => HTMLElement };
 
 /**
- * Permet de protéger une route : redirige vers /auth si aucun token n'est présent.
+ * Vérifie si le token est valide côté serveur
+ */
+
+// OLD
+
+// async function validateToken(): Promise<boolean> {
+//   const token = localStorage.getItem('token');
+//   if (!token) return false;
+
+//   try {
+//     const response = await fetch('/api/validate-token', {
+//       method: 'GET',
+//       headers: {
+//         'Authorization': `Bearer ${token}`,
+//         'Content-Type': 'application/json'
+//       }
+//     });
+    
+//     if (response.ok) {
+//       const data = await response.json();
+//       return data.valid === true;
+//     } else {
+//       // Token invalide, on le supprime
+//       localStorage.removeItem('token');
+//       return false;
+//     }
+//   } catch (error) {
+//     console.error('[TokenValidation] Error validating token:', error);
+//     return false;
+//   }
+// }
+
+// NEW 18H
+async function validateToken(): Promise<boolean> {
+  const token = localStorage.getItem('token');
+  if (!token) return false;
+
+  try {
+    const response = await fetch('/api/validate-token', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      if (data.valid && data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+        refreshSidebar(); // ⬅️ Add this
+      }
+      return data.valid === true;
+    } else {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      return false;
+    }
+  } catch (error) {
+    console.error('[TokenValidation] Error validating token:', error);
+    return false;
+  }
+}
+
+/**
+ * Permet de protéger une route : redirige vers /auth si aucun token valide n'est présent.
  */
 export function protectedRoute(
   page: (navigate: (path: string) => void) => HTMLElement,
@@ -13,8 +78,9 @@ export function protectedRoute(
   return (navigate) => {
     const token = localStorage.getItem('token');
     console.log('[ProtectedRoute] Token presence:', token);
+    
     if (!token) {
-      console.log('[ProtectedRoute] User not logged in → redirecting to home...');
+      console.log('[ProtectedRoute] No token found → redirecting to home...');
       const placeholder = document.createElement('div');
       placeholder.textContent = t('protected.redirecting');
       placeholder.className = 'text-white text-center mt-40 text-xl';
@@ -24,8 +90,108 @@ export function protectedRoute(
       }, 0);
       return placeholder;
     }
-    return page(navigate);
+
+    // Créer un placeholder pendant la validation
+    const placeholder = document.createElement('div');
+    placeholder.textContent = t('protected.validating') || 'Validating session...';
+    placeholder.className = 'text-white text-center mt-40 text-xl';
+
+    // Valider le token de manière asynchrone
+    validateToken().then(isValid => {
+      if (isValid) {
+        // Token valide, rendre la page
+        const actualPage = page(navigate);
+        placeholder.parentNode?.replaceChild(actualPage, placeholder);
+      } else {
+        // Token invalide, rediriger vers la page d'accueil
+        console.log('[ProtectedRoute] Invalid token → redirecting to home...');
+        localStorage.setItem('protected_route_notice', message);
+        navigate('/');
+      }
+    }).catch(error => {
+      console.error('[ProtectedRoute] Token validation failed:', error);
+      localStorage.setItem('protected_route_notice', message);
+      navigate('/');
+    });
+
+    return placeholder;
   };
+}
+
+/**
+ * Version améliorée pour les routes 2FA avec validation de token
+ */
+export function protected2FARoute(
+  page: (navigate: (path: string) => void) => HTMLElement
+): (navigate: (path: string) => void) => HTMLElement {
+  return (navigate) => {
+    const token = localStorage.getItem('token');
+    console.log('[2FA] token exists? :', token);
+    
+    if (!token) {
+      console.log('[2FA] User not logged in → redirecting to home...');
+      setTimeout(() => {
+        localStorage.setItem('2fa_redirect_notice', '1');
+        navigate('/');
+      }, 0);
+      return document.createElement('div');
+    }
+
+    // Créer un placeholder pendant la validation
+    const placeholder = document.createElement('div');
+    placeholder.textContent = 'Validating session...';
+    placeholder.className = 'text-white text-center mt-40 text-xl';
+
+    // Valider le token de manière asynchrone
+    validateToken().then(isValid => {
+      if (isValid) {
+        console.log('[2FA] Valid token → rendering 2FA page');
+        const actualPage = page(navigate);
+        placeholder.parentNode?.replaceChild(actualPage, placeholder);
+      } else {
+        console.log('[2FA] Invalid token → redirecting to home...');
+        localStorage.setItem('2fa_redirect_notice', '1');
+        navigate('/');
+      }
+    }).catch(error => {
+      console.error('[2FA] Token validation failed:', error);
+      localStorage.setItem('2fa_redirect_notice', '1');
+      navigate('/');
+    });
+
+    return placeholder;
+  };
+}
+
+/**
+ * Fonction pour rediriger les utilisateurs connectés vers /game au lieu de /
+ */
+async function handleHomeRedirect(navigate: (path: string) => void): Promise<HTMLElement> {
+  const token = localStorage.getItem('token');
+  
+  if (token) {
+    console.log('[HomeRedirect] Token found, validating...');
+    
+    const placeholder = document.createElement('div');
+    placeholder.textContent = 'Checking session...';
+    placeholder.className = 'text-white text-center mt-40 text-xl';
+
+    try {
+      const isValid = await validateToken();
+      if (isValid) {
+        console.log('[HomeRedirect] Valid token → redirecting to /game');
+        setTimeout(() => navigate('/game'), 0);
+        return placeholder;
+      }
+    } catch (error) {
+      console.error('[HomeRedirect] Token validation failed:', error);
+    }
+  }
+  
+  // Si pas de token ou token invalide, charger la page d'accueil normale
+  console.log('[HomeRedirect] No valid token → loading home page');
+  const { createHomePage } = await import('../pages/HomePage');
+  return createHomePage(navigate);
 }
 
 export function initRouter(routes: RouteMap, teamPrefix = '', rootId = 'app') {
@@ -53,20 +219,24 @@ export function initRouter(routes: RouteMap, teamPrefix = '', rootId = 'app') {
   function navigate(path: string) {
     window.history.pushState({}, '', path);
     renderRoute(path);
+    refreshSidebar();
   }
 
-  // function renderRoute(path: string) {
-  //   const pathOnly = path.split('?')[0]; // DONT REMOVE THIS LINE: c'est pour enlève la query string (ex: ?mode=input) pour matcher uniquement la route de base (ex: /2fa)
-  //   const page = routes[pathOnly];
-  //   if (page && root) {
-  //     root.innerHTML = '';
-  //     root.appendChild(page(navigate));
-  //   }
-  // }
   function renderRoute(path: string) {
-    if (!root) return; // Extra safety check
+    if (!root) return;
 
-    const pathOnly = path.split('?')[0]; // Remove query string
+    const pathOnly = path.split('?')[0];
+    
+    // Gestion spéciale pour la page d'accueil
+    if (pathOnly === '/') {
+      root.innerHTML = '';
+      handleHomeRedirect(navigate).then(element => {
+        if (root.children.length === 0) { // Vérifier que la page n'a pas déjà changé
+          root.appendChild(element);
+        }
+      });
+      return;
+    }
     
     // Check if it's a team member route
     if (teamPrefix && pathOnly.startsWith(`/${teamPrefix}/`)) {
@@ -76,16 +246,12 @@ export function initRouter(routes: RouteMap, teamPrefix = '', rootId = 'app') {
       return;
     }
     
-    // const page = routes[pathOnly];
-    // if (page) {
-    // const pathOnly = path.split('?')[0];
-    const page = routes[pathOnly] || routes['/404']; // ✅ fallback ici
+    const page = routes[pathOnly] || routes['/404'];
 
     if (page && root) {
       root.innerHTML = '';
       root.appendChild(page(navigate));
       
-      // (Optionnel) Mettre l’URL à /404 si la route n’existe pas
       if (!routes[pathOnly]) {
         window.history.replaceState({}, '', '/404');
       }
@@ -99,102 +265,3 @@ export function initRouter(routes: RouteMap, teamPrefix = '', rootId = 'app') {
   renderRoute(window.location.pathname);
   return navigate;
 }
-
-export function protected2FARoute(
-  page: (navigate: (path: string) => void) => HTMLElement
-): (navigate: (path: string) => void) => HTMLElement {
-  return (navigate) => {
-    const token = localStorage.getItem('token');
-    console.log('[2FA] token exists? :', token);
-    if (!token) {
-      console.log('[2FA] User not logged in → redirecting to home...');
-      setTimeout(() => {
-        localStorage.setItem('2fa_redirect_notice', '1');
-        navigate('/');
-      }, 0);
-      return document.createElement('div'); // 이걸 붙이면 비어있는 화면이 생김
-    }
-    console.log('[2FA] User is logged in → rendering 2FA page');
-    return page(navigate);
-  };
-}
-// type RouteMap = { [path: string]: (navigate: (path: string) => void) => HTMLElement };
-
-// /**
-//  * Permet de protéger une route : redirige vers /auth si aucun token n’est présent.
-//  */
-// export function protectedRoute(
-//   page: (navigate: (path: string) => void) => HTMLElement,
-//   message: string = 'Please log in to proceed.'
-// ): (navigate: (path: string) => void) => HTMLElement {
-//   return (navigate) => {
-//     const token = localStorage.getItem('token');
-//     console.log('[ProtectedRoute] Token presence:', token);
-
-//     if (!token) {
-//       console.log('[ProtectedRoute] User not logged in → redirecting to home...');
-
-//       const placeholder = document.createElement('div');
-//       placeholder.textContent = 'Redirecting to home...';
-//       placeholder.className = 'text-white text-center mt-40 text-xl';
-
-//       localStorage.setItem('protected_route_notice', message);
-
-//       setTimeout(() => {
-//         navigate('/');
-//       }, 0);
-
-//       return placeholder;
-//     }
-
-//     return page(navigate);
-//   };
-// }
-
-// export function initRouter(routes: RouteMap, rootId = 'app') {
-//   const root = document.getElementById(rootId);
-//   if (!root) return;
-
-//   function navigate(path: string) {
-//     window.history.pushState({}, '', path);
-//     renderRoute(path);
-//   }
-
-//   function renderRoute(path: string) {
-//     const pathOnly = path.split('?')[0]; // DONT REMOVE THIS LINE: c'est pour enlève la query string (ex: ?mode=input) pour matcher uniquement la route de base (ex: /2fa)
-//     const page = routes[pathOnly];
-//     if (page && root) {
-//       root.innerHTML = '';
-//       root.appendChild(page(navigate));
-//     }
-//   }
-
-//   window.addEventListener('popstate', () => {
-//     renderRoute(window.location.pathname);
-//   });
-
-//   renderRoute(window.location.pathname);
-
-//   return navigate;
-// }
-
-// export function protected2FARoute(
-//   page: (navigate: (path: string) => void) => HTMLElement
-// ): (navigate: (path: string) => void) => HTMLElement {
-//   return (navigate) => {
-//     const token = localStorage.getItem('token');
-//     console.log('[2FA] token exists? :', token);
-
-//     if (!token) {
-//       console.log('[2FA] User not logged in → redirecting to home...');
-//       setTimeout(() => {
-//         localStorage.setItem('2fa_redirect_notice', '1');
-//         navigate('/');
-//       }, 0);
-//       return document.createElement('div'); // 이걸 붙이면 비어있는 화면이 생김
-//     }
-
-//     console.log('[2FA] User is logged in → rendering 2FA page');
-//     return page(navigate);
-//   };
-// }

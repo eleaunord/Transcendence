@@ -18,7 +18,7 @@ import { createAIPage } from './pages/AIPage';
 import { createTournamentPage } from './pages/TournamentPage';
 import { createVersusPage } from './pages/VersusPage';
 import { createModePage } from './pages/ModePage';
-import { createAnonymizePage } from './pages/AnonymizePage'; // 1705 추가
+import { createAnonymizePage } from './pages/AnonymizePage';
 import { createDeleteAccountPage } from './pages/DeleteAccountPage';
 import { createPrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { createExportDataPage } from './pages/ExportDataPage';
@@ -31,7 +31,7 @@ import { createMemoryOpponentPage } from './pages/MemoryOpponentPage';
 import { createMemoryFriendPage } from './pages/MemoryFriendPage';
 import { createBracketPage } from './pages/BracketPage';
 import { renderNotFoundPage } from './pages/404Page'; 
-//import { createTeamMemberPage } from './pages/TeamMemberPage';
+import { refreshSidebar } from './utils/sidebar';
 
 // Fonction utilitaire pour injecter `navigate` dans chaque page
 function withNavigate(navigate: (path: string) => void) {
@@ -46,6 +46,8 @@ let navigate: (path: string) => void = () => {};
 const useWithNavigate = withNavigate((path) => navigate(path));
 
 const routes = {
+  // Note: La route '/' est maintenant gérée directement dans le router
+  // pour permettre la redirection automatique vers /game si connecté
   '/': useWithNavigate(createHomePage),
   '/auth': useWithNavigate(createAuthPage),
 
@@ -67,8 +69,8 @@ const routes = {
   '/memory': useWithNavigate(protectedRoute(createMemoryGamePage)),
   '/friends': useWithNavigate(protectedRoute(createFriendsPage)),
   '/leaderboard': useWithNavigate(protectedRoute(createLeaderboardPage)),
-  '/about': useWithNavigate((createAboutPage)), // 여기 변경해야함: maybe this shouldn't be a protected route
-  //'/local': useWithNavigate(protectedRoute(createLocalPage)), // ATTENTION vérifier l'utilité de cette page
+  '/about': useWithNavigate((createAboutPage)),
+  //'/local': useWithNavigate(protectedRoute(createLocalPage)),
   '/ai': useWithNavigate(protectedRoute(createAIPage)),
   '/tournament': useWithNavigate(protectedRoute(createTournamentPage)),
   '/versus': useWithNavigate(protectedRoute(createVersusPage)),
@@ -80,25 +82,16 @@ const routes = {
   '/anonymize': useWithNavigate(protectedRoute(createAnonymizePage)),
   '/delete-account': useWithNavigate(protectedRoute(createDeleteAccountPage)),
   '/privacy-policy': useWithNavigate(createPrivacyPolicyPage),
-  '/export-data': useWithNavigate(protectedRoute(createExportDataPage)), //0805 추가
+  '/export-data': useWithNavigate(protectedRoute(createExportDataPage)),
   '/bracket': useWithNavigate(protectedRoute(createBracketPage)),
   '/404': useWithNavigate(() => renderNotFoundPage()),
-
 }
 
 navigate = initRouter(routes, 'team')!;
 
-// const path = window.location.pathname;
-// if (path.startsWith('/team/')) {
-//   const name = decodeURIComponent(path.split('/team/')[1]);
-//   const container = document.getElementById('app');
-//   container.innerHTML = '';
-//   container.appendChild(createTeamMemberPage(name));
-// }
-
 console.log('🏁 Router chargé');
 
-// // === INTERNATIONALISATION ===
+// === INTERNATIONALISATION ===
 window.addEventListener('DOMContentLoaded', () => {
   applyTranslations();
 });
@@ -107,3 +100,19 @@ window.addEventListener('DOMContentLoaded', () => {
     setLanguage(lang as 'en' | 'fr' | 'ko');
   applyTranslations();
 };
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    // Increased delay and added multiple attempts
+    setTimeout(() => {
+      refreshSidebar();
+      // If still no image after refresh, try again
+      setTimeout(() => {
+        const profileImg = document.getElementById('profile-img-sidebar') as HTMLImageElement;
+        if (profileImg && !profileImg.src.includes('default.jpg')) {
+          refreshSidebar();
+        }
+      }, 300);
+    }, 200);
+  }
+});
