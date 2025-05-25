@@ -289,7 +289,7 @@
   "memory.victory.you": "🏆 You won!",
   "memory.victory.opponent": "🏆 {{opponent}} won!",
   "memory.victory.scores": "Scores",
-  "memory.backToModes": "Back to game modes",
+  "memory.backToModes": "Back",
   
   "memory.mode.versus": "Versus Mode",
   "memory.mode.solo": "Solo Mode",
@@ -305,7 +305,7 @@
 
   "versus.countdown": "Game starts in {{seconds}}...",
   "versus.retry": "Play again",
-  "versus.backToModes": "Back to game modes",
+  "versus.backToModes": "Back",
 
   "pong.resume_in": "Resuming in {{seconds}}...",
   "pong.winner": "🎉 {{name}} won! 🎉",
