@@ -4,7 +4,7 @@ export function createProfileCard(): HTMLElement {
   const profileCard = document.createElement('div');
   profileCard.id = 'profileCard';
   profileCard.className = `
-    relative bg-white/10 backdrop-blur-md p-10
+    relative bg-gray/10 backdrop-blur-md p-10
     rounded-2xl shadow-2xl
     flex flex-col items-center gap-7
     w-96

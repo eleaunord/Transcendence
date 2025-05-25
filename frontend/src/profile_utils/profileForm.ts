@@ -3,7 +3,7 @@ import { t } from '../utils/translator';
 export function createProfileForm(): HTMLElement {
   const formContainer = document.createElement('div');
   formContainer.className = `
-    relative bg-white/10 backdrop-blur-md p-10
+    relative bg-red backdrop-blur-md p-10
     rounded-2xl shadow-2xl
     flex flex-col items-start gap-6
     w-96
