@@ -116,7 +116,7 @@ export function createModePage(navigate: (path: string) => void): HTMLElement {
     //   }
     // });
   
-    // // Mouvement de la sidebar 
+    // // Mouvement de la sidebar
     // sidebar.addEventListener('mouseleave', () => {
     //   document.querySelectorAll('.sidebar-label').forEach(label => {
     //     (label as HTMLElement).classList.add('opacity-0');
@@ -131,7 +131,36 @@ export function createModePage(navigate: (path: string) => void): HTMLElement {
     //       if (layout) {
     //   layout.classList.remove('ml-44');
     //   }
-    // });
+  // });
+  
+  // ===  GAME RULES (ℹ️) ===
+    const infoIcon = document.createElement("div");
+    infoIcon.className = "absolute bottom-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white text-black cursor-pointer z-30 group";
+    infoIcon.innerHTML = `<span class="text-xl font-bold">i</span>`;
+
+    const infoPanel = document.createElement("div");
+    infoPanel.className = `
+      absolute bottom-4 right-16 w-96 p-4 rounded-lg bg-white text-black text-sm shadow-lg 
+      transform translate-x-full opacity-0 group-hover:translate-x-0 group-hover:opacity-100 
+      transition-all duration-500 z-20 pointer-events-none group-hover:pointer-events-auto
+    `;
+    infoPanel.innerHTML = `
+      <div class="font-bold mb-1">🕹️ Règles du jeu : Pong</div>
+      <p class="mb-2">Deux joueurs s'affrontent en renvoyant une balle à l'aide de leur raquette. Un point est marqué si l'adversaire rate la balle. Le premier à atteindre le score max gagne. Attention, le rythme s'accélère !</p>
+      <div class="font-bold mb-1">🎮 Contrôles</div>
+      <p>Joueur 1 : W (haut) / S (bas)<br>Joueur 2 : Flèche ↑ (haut) / Flèche ↓ (bas)</p>
+    `;
+
+
+    const infoWrapper = document.createElement("div");
+    infoWrapper.className = "absolute bottom-4 right-4 group";
+
+    infoWrapper.appendChild(infoPanel);
+    infoWrapper.appendChild(infoIcon);
+    gameFrame.appendChild(infoWrapper);
+  
+  // ===  GAME RULES (ℹ️) ===
+
   
     return container; 
 }
