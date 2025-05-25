@@ -241,6 +241,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     saveSemiFinalists();
     updateLines();
 
+    // refresh
     const finalAlreadyRendered = sessionStorage.getItem('finalRendered') === 'true';
     const savedFinalist = sessionStorage.getItem('finalist');
 
@@ -260,6 +261,8 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     final.innerHTML = '';
     final.appendChild(renderMatch(p1, p2, (winner) => {
       finalist = winner;
+      sessionStorage.setItem('finalist', JSON.stringify(winner)); // 2505 refresh 관련: 승자도 저장
+      sessionStorage.setItem('finalRendered', 'true'); // 2505 refresh 관련 : 결승 렌더 완료 플래그
       renderWinner();
     }));
     sessionStorage.setItem('finalRendered', 'true'); // 2205 추가
@@ -295,6 +298,7 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     }));
 
     // 세미파이널 슬롯이 모두 설정된 뒤에 matchWinner 적용
+    // 새로고침 시 sessionStorage에서 matchWinner 복원
     function applyMatchWinnerFromSession() {
       const matchWinnerStr = sessionStorage.getItem('matchWinner');
       if (!matchWinnerStr) return;
@@ -323,8 +327,8 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
         console.error('Error parsing matchWinner from sessionStorage:', error);
       }
     }
-
-
+    // 2505 추가
+    updateSemiFinal(); 
     // 브래킷 DOM이 완전히 구성된 뒤 실행
     setTimeout(() => {
       applyMatchWinnerFromSession();

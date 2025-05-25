@@ -18,6 +18,19 @@ export function createProfileCard(): HTMLElement {
     relative w-36 h-36
     flex items-center justify-center
   `.replace(/\s+/g, ' ').trim();
+  
+  // green online dot
+  const onlineDot = document.createElement('div');
+  onlineDot.className = `
+    absolute top-2 right-2      /* pull it out just a bit from the edge */
+    w-8 h-8                      /* 2rem × 2rem = 32px × 32px */
+    rounded-full
+    bg-green-500
+    border-2 border-white
+    z-10
+  `.replace(/\s+/g, ' ').trim();
+
+  spinningBorder.appendChild(onlineDot);
 
   const animatedBorder = document.createElement('div');
   animatedBorder.className = `
@@ -117,4 +130,3 @@ export function createProfileCard(): HTMLElement {
 
   return profileCard;
 }
-

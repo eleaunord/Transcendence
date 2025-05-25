@@ -3,8 +3,14 @@ import { t } from '../utils/translator';
 export function createProfileForm(): HTMLElement {
   const formContainer = document.createElement('div');
   formContainer.className = `
-    flex flex-col gap-4 bg-gray-800 bg-opacity-50 p-8 rounded-xl shadow-md w-96
+    relative bg-white/10 backdrop-blur-md p-10
+    rounded-2xl shadow-2xl
+    flex flex-col items-start gap-6
+    w-96
+    transform transition-all duration-300
+    hover:scale-105 hover:shadow-3xl
   `.replace(/\s+/g, ' ').trim();
+
 
   const emailRow = document.createElement('div');
   emailRow.className = 'flex justify-between items-center';
@@ -99,4 +105,3 @@ export function createProfileForm(): HTMLElement {
 
   return formContainer;
 }
-
