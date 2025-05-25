@@ -1,300 +1,187 @@
-import { FastifyInstance } from 'fastify';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import axios from 'axios';
-import dotenv from 'dotenv';
-import db from '../db/db';
-import { User } from '../types'; 
-import { sendEmail } from '../utils/sendEmail';
-import { generate2FACode } from '../utils/generate2FA';
-import { GoogleUser } from '../types';
-import { FastifyReply, FastifyRequest } from 'fastify'; 
+import { IS_DEV_MODE } from '../config';
+import { t } from '../utils/translator'; // Ajout pour i18n
 
-dotenv.config();
+export function createAuthPage(navigate: (path: string) => void): HTMLElement {
+  let error = '';
 
-const JWT_SECRET = process.env.JWT_SECRET!;
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
-const GOOGLE_REDIRECT_URL = process.env.GOOGLE_REDIRECT_URL!;
-const FRONTEND_URL = process.env.FRONTEND_URL || 'https://localhost';
+  const handleLogin = async () => {
+    console.log('handleLogin exécutée');
+    const usernameInput = document.getElementById('username') as HTMLInputElement;
+    const passwordInput = document.getElementById('password') as HTMLInputElement;
 
-async function preventIfLoggedIn(req: FastifyRequest, reply: FastifyReply) {
-  const authHeader = req.headers.authorization;
-  if (authHeader?.startsWith('Bearer ')) {
+    const username = usernameInput?.value;
+    const password = passwordInput?.value;
+
+    error = '';
+    updateError();
+
     try {
-      const token = authHeader.slice(7);
-      jwt.verify(token, JWT_SECRET);
-      // token is valid → user is “logged in”
-      return reply
-        .code(400)
-        .send({ error: 'auth.already_authenticated', message: 'You must log out before signing in or signing up again.' });
-    } catch (_err) {
-      // token invalid or expired → allow them through
-    }
-  }
-}
-
-export async function authRoutes(app: FastifyInstance) {
-  // ----- Route de validation de token ----- \\
-  app.get('/validate-token', async (req, reply) => {
-    try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith('Bearer ')) {
-        return reply.code(401).send({ valid: false, error: 'No token provided' });
-      }
-
-      const token = authHeader.split(' ')[1];
-      const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
-
-      // Vérifier que l'utilisateur existe toujours en base
-      const user = db.prepare('SELECT id, username, email FROM users WHERE id = ?').get(decoded.userId) as User | undefined;
-      
-      if (!user) {
-        return reply.code(401).send({ valid: false, error: 'User not found' });
-      }
-
-      // Token valide et utilisateur existe
-      reply.send({ 
-        valid: true, 
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          image: user.image  // NEW 18H
-        }
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
       });
 
-    } catch (err: any) {
-      console.log('[TokenValidation] Invalid token:', err.message);
-      reply.code(401).send({ valid: false, error: 'Invalid token' });
-    }
-  });
+      const data = await res.json();
+      console.log(data);
 
- // ----- Authentification Classique ------ \\
-  app.post('/signup', { preHandler: preventIfLoggedIn }, async (req, reply) => {
-    const { username: rawUsername, email: rawEmail, password } = req.body as any;
-    // Nettoyage des espaces
-    const username = rawUsername?.trim();
-    const email = rawEmail?.trim();
-    if (!username || !email || !password) {
-      return reply.code(400).send({ error: 'auth.missing_fields' });
-    }
-    // Vérification de l'email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return reply.code(400).send({ error: 'auth.invalid_email' });
-    }
-    // Vérification du username (3 à 20 caractères, lettres, chiffres ou underscore)
-    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-    if (!usernameRegex.test(username)) {
-      return reply.code(400).send({ error: 'auth.invalid_username' });
-    }
-    // Vérification du mot de passe( Au moins 8 caractères,au moins une majuscule, une minuscule, un chiffre, et un caractère spécial.)
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-    if (!passwordRegex.test(password)) {
-      return reply.code(400).send({
-        error: "auth.invalid_password",
-    });
-    }
+      if (!res.ok) {
+        error = t(data.error) || t('auth.error.connection');
+        updateError();
+        return;
+      }
 
-    const existing = db.prepare('SELECT * FROM users WHERE username = ? OR email = ?').get(username, email);
-    if (existing) 
-      return reply.code(409).send({ error: 'auth.duplicate_user' });
+      try {
+        console.log('Token reçu:', data.token);
 
-    const hashed = await bcrypt.hash(password, 10);
-    db.prepare('INSERT INTO users (username, email, password_hash, created_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)').run(username, email, hashed);
+        // 추가: remove original token
+        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
+        // 추가: set new token
+        localStorage.setItem('token', data.token);
 
-    // On récupère le user pour générer un token
-    const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username) as User;
-    if (!user) {
-      return reply.code(500).send({ error: 'User creation failed' });}
-    
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-    reply.code(201).send({ message: 'auth.creation_failed', token });  
-  });
+        console.log('Token stocké:', localStorage.getItem('token'));
 
-  app.post('/login',  { preHandler: preventIfLoggedIn }, async (req, reply) => {
-    const { username, password } = req.body as any;
+        // Récupération des infos utilisateur après login
+        try {
+          const res = await fetch('/api/me', {
+            headers: {
+              Authorization: `Bearer ${data.token}`
+            }
+          });
 
-    const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username) as User | undefined;
+          if (res.ok) {
+            const user = await res.json();
+            sessionStorage.setItem('username', user.username);
+            sessionStorage.setItem('userEmail', user.email); // 추가 한 부분!
+            sessionStorage.setItem('profilePicture', user.image);
+            console.log('Utilisateur chargé :', user);
+            sessionStorage.setItem('userId', user.id.toString()); // 1505 추가
 
-    if (!user) return reply.code(401).send({ error: 'auth.user_not_found' });
+            console.log('[DEBUG userId in AUTHPAGE] 저장된 userId:', sessionStorage.getItem('userId')); // 1505 추가
 
-    const match = await bcrypt.compare(password, user.password_hash || '');
-    if (!match) return reply.code(401).send({ error: 'auth.incorrect_password' });
-
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-    console.log('[STANDARD LOGIN] USER EMAIL:', user.email);
-    // 0805 수정
-    // reply.send({ token });
-    reply.send({
-      token,
-      user: {
-        email: user.email,
-        is_2fa_enabled: !!user.is_2fa_enabled,
-        seen_2fa_prompt: !!user.seen_2fa_prompt,
-      },
-    });
-  });
-
-  // ----- Google OAuth -----
-  app.get('/auth/google', async (_, reply) => {
-    console.log('[DEBUG] Sending redirect_uri to Google:', GOOGLE_REDIRECT_URL);
-    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URL}&response_type=code&scope=profile email&access_type=offline`;
-    reply.redirect(authUrl);
-  });
-
-  app.get('/auth/google/callback', async (req, reply) => {
-    const { code, error } = req.query as { code?: string; error?: string };
-
-    if (error === 'access_denied') {
-      //사용자가 Google 로그인 취소 → 프론트엔드에 리디렉트하면서 query 넘김
-      const redirectUrl = `${FRONTEND_URL}/auth/google?error=access_denied`;
-      return reply.redirect(redirectUrl);
-    }
-    
-    if (!code) return reply.code(400).send({ error: 'auth.missing_code' });
-
-    try {
-      const tokenRes = await axios.post<{ access_token: string }>(
-        'https://oauth2.googleapis.com/token',
-        {
-          code,
-          client_id: GOOGLE_CLIENT_ID,
-          client_secret: GOOGLE_CLIENT_SECRET,
-          redirect_uri: GOOGLE_REDIRECT_URL,
-          grant_type: 'authorization_code',
+            //0805 추가
+            const is2FA = !!user.is_2fa_enabled;
+            const seen2FA = !!user.seen_2fa_prompt;
+            if (!seen2FA) {
+              navigate('/2fa'); // 첫 로그인 → 2FA 활성화 여부 물어보는 페이지
+            } else if (is2FA) {
+              navigate('/2fa?mode=input'); // 이미 활성화됨 → 코드 입력
+            } else {
+              navigate('/profile-creation'); // 2FA 미사용 → 프로필 설정
+            }
+          } else {
+            console.warn('Impossible de charger le profil utilisateur');
+            error = t('auth.error.loadProfile');
+            updateError();
+          }
+        } catch (e) {
+          console.error('Erreur lors du chargement de /api/me :', e);
+          error = t('auth.error.profileFetch');
+          updateError();
         }
-      );
-
-      const accessToken = tokenRes.data.access_token;
-
-      const userInfo = await axios.get<GoogleUser>(
-        'https://www.googleapis.com/oauth2/v2/userinfo',
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
-      );
-
-      const { id: googleId, email, name, picture } = userInfo.data;
-
-      let username = name.replace(/\s+/g, '_');
-      let suffix = 1;
-      while (db.prepare('SELECT * FROM users WHERE username = ?').get(username)) {
-        username = `${name}_${suffix++}`;
+      } catch (e) {
+        console.error('Erreur lors du stockage du token:', e);
       }
-
-      let user = db.prepare('SELECT * FROM users WHERE google_id = ?').get(googleId) as User | undefined;
-
-      if (!user) {
-        const res = db.prepare(`
-          INSERT INTO users (username, email, google_id, image, is_2fa_enabled, seen_2fa_prompt)
-          VALUES (?, ?, ?, ?, 0, 0)
-        `).run(username, email, googleId, picture);      
-
-        user = db.prepare('SELECT * FROM users WHERE id = ?').get(res.lastInsertRowid) as User;
-      }
-
-      const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-      // 0805 수정
-      // const redirectUrl = `${FRONTEND_URL}/auth/google?token=${token}&email=${encodeURIComponent(email)}&is_2fa_enabled=${user.is_2fa_enabled}&seen_2fa_prompt=${user.seen_2fa_prompt}`;
-      const redirectUrl = `${FRONTEND_URL}/auth/google?token=${token}&email=${encodeURIComponent(email)}&id=${user.id}&is_2fa_enabled=${user.is_2fa_enabled}&seen_2fa_prompt=${user.seen_2fa_prompt}`;
-      console.log('[GOOGLE OAUTH] Redirecting to:', redirectUrl);
-      reply.redirect(redirectUrl);
-
-    } catch (err: any) {
-      console.error('Google Auth Error:', err?.response?.data || err.message);
-      reply.code(500).send({ error: 'auth.oauth_failed' });
-    }
-  });
-  
-  // ----- 2FA Enable -----
-  app.post('/enable-2fa', async (req, reply) => {
-    try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith('Bearer ')) {
-        return reply.code(401).send({ error: 'auth.unauthorized' });
-      }
-
-      const token = authHeader.split(' ')[1];
-      const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
-
-      const user = db.prepare('SELECT * FROM users WHERE id = ?').get(decoded.userId) as User | undefined;
-      console.log('[2FA] decoded userId:', decoded.userId); //debug
-      if (!user) 
-        return reply.code(404).send({ error: 'User not found' });
-
-      const code = generate2FACode();
-      const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5분 유효
-
-      db.prepare(`
-        UPDATE users SET
-          two_fa_code = ?,
-          two_fa_expires_at = ?
-        WHERE id = ?
-      `).run(code, expiresAt.toISOString(), decoded.userId);
-
-      console.log('[2FA] User Email:', user.email); // debug
-      console.log('[2FA] Sending code to email...'); // debug
-      
-      await sendEmail(user.email, 'Your 2FA Code', `Your code is ${code}. It will expire in 5 minutes.`);
-      reply.send({ message: 'auth.2fa_code_sent' });
-
     } catch (err) {
-      console.error('2FA enable error:', err);
-      reply.code(500).send({ error: 'auth.2fa_enable_failed' });
+      error = t('auth.error.network');
+      updateError();
     }
-  });
+  };
 
-  // ----- 2FA Verification -----
-  app.post('/verify-2fa', async (req, reply) => {
-    try {
-      const { code } = req.body as { code: string };
-      const authHeader = req.headers.authorization;
-  
-      if (!authHeader?.startsWith('Bearer ')) {
-        return reply.code(401).send({ error: 'auth.unauthorized' });
-      }
+  const container = document.createElement('div');
+  container.className = 'flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
 
-      const token = authHeader.split(' ')[1];
-      const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
+  const title = document.createElement('h1');
+  title.className = 'text-4xl font-bold mb-8';
+  title.textContent = t('auth.title');
 
-      const user = db.prepare('SELECT * FROM users WHERE id = ?').get(decoded.userId) as User | undefined;
-      if (!user || !user.two_fa_code || !user.two_fa_expires_at) {
-        return reply.code(400).send({ error: 'auth.2fa_not_initiated' });
-      }
+  const form = document.createElement('form');
+  form.id = 'authForm';
+  form.className = 'w-80 p-6 bg-gray-800 rounded-lg border-2 border-white';
 
-      const now = new Date();
-      const expiresAt = new Date(user.two_fa_expires_at);
-  
-      if (now > expiresAt) {
-        return reply.code(400).send({ error: 'auth.2fa_expired' });
-      }
+  // Username
+  const usernameDiv = document.createElement('div');
+  usernameDiv.className = 'mb-4';
+  const usernameLabel = document.createElement('label');
+  usernameLabel.htmlFor = 'username';
+  usernameLabel.className = 'block text-lg mb-2';
+  usernameLabel.textContent = t('auth.username');
+  const usernameInput = document.createElement('input');
+  usernameInput.type = 'text';
+  usernameInput.id = 'username';
+  usernameInput.placeholder = t('auth.username');
+  usernameInput.className = 'w-full p-2 bg-gray-700 text-white rounded-lg';
+  usernameInput.required = true;
+  usernameDiv.appendChild(usernameLabel);
+  usernameDiv.appendChild(usernameInput);
 
-      if (code !== user.two_fa_code) {
-        return reply.code(400).send({ error: 'auth.2fa_invalid' });
-      }
+  // Password
+  const passwordDiv = document.createElement('div');
+  passwordDiv.className = 'mb-6';
+  const passwordLabel = document.createElement('label');
+  passwordLabel.htmlFor = 'password';
+  passwordLabel.className = 'block text-lg mb-2';
+  passwordLabel.textContent = t('auth.password');
+  const passwordInput = document.createElement('input');
+  passwordInput.type = 'password';
+  passwordInput.id = 'password';
+  passwordInput.placeholder = t('auth.password');
+  passwordInput.className = 'w-full p-2 bg-gray-700 text-white rounded-lg';
+  passwordInput.required = true;
+  passwordDiv.appendChild(passwordLabel);
+  passwordDiv.appendChild(passwordInput);
 
-      // 인증 성공 처리
-      db.prepare(`
-        UPDATE users
-        SET is_2fa_enabled = 1,
-            two_fa_code = NULL,
-            two_fa_expires_at = NULL
-        WHERE id = ?
-      `).run(user.id);
+  // Submit button
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg';
+  button.textContent = t('auth.button');
+  button.addEventListener('click', handleLogin);
 
-      const finalToken = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-      reply.send({ token: finalToken });
+  // Error Message
+  const errorMessage = document.createElement('p');
+  errorMessage.className = 'mt-4 text-red-500';
+  errorMessage.style.display = 'none';
 
-    } catch (err) {
-      console.error('2FA verification error:', err);
-      reply.code(500).send({ error: 'auth.2fa_verification_failed' });
+  const updateError = () => {
+    if (error) {
+      errorMessage.textContent = error;
+      errorMessage.style.display = 'block';
+    } else {
+      errorMessage.textContent = '';
+      errorMessage.style.display = 'none';
     }
-  });
+  };
 
-  app.get('/users', async () => {
-    const users = db.prepare('SELECT id, username, email FROM users').all();
-    return users;
-  });
+  // Ajout bouton DEV si actif
+  if (IS_DEV_MODE) {
+    const devBanner = document.createElement('div');
+    devBanner.className = 'w-full bg-yellow-500 text-black text-center py-2 font-semibold z-50';
+    devBanner.textContent = t('auth.devMode');
+    container.appendChild(devBanner);
+
+    const devLoginBtn = document.createElement('button');
+    devLoginBtn.type = 'button';
+    devLoginBtn.textContent = t('auth.devLogin');
+    devLoginBtn.className =
+      'w-full mt-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg';
+    devLoginBtn.addEventListener('click', () => {
+      localStorage.setItem('token', 'dev-token');
+      navigate('/profile-creation');
+    });
+    form.appendChild(devLoginBtn);
+  }
+
+  // Assemble form
+  form.appendChild(usernameDiv);
+  form.appendChild(passwordDiv);
+  form.appendChild(button);
+  form.appendChild(errorMessage);
+
+  // Assemble page
+  container.appendChild(title);
+  container.appendChild(form);
+
+  return container;
 }

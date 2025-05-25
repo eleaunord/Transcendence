@@ -8,6 +8,7 @@ import { User } from '../types';
 import { sendEmail } from '../utils/sendEmail';
 import { generate2FACode } from '../utils/generate2FA';
 import { GoogleUser } from '../types';
+import { FastifyReply, FastifyRequest } from 'fastify'; 
 
 dotenv.config();
 
@@ -16,6 +17,22 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
 const GOOGLE_REDIRECT_URL = process.env.GOOGLE_REDIRECT_URL!;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'https://localhost';
+
+async function preventIfLoggedIn(req: FastifyRequest, reply: FastifyReply) {
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith('Bearer ')) {
+    try {
+      const token = authHeader.slice(7);
+      jwt.verify(token, JWT_SECRET);
+      // token is valid → user is “logged in”
+      return reply
+        .code(400)
+        .send({ error: 'auth.already_authenticated', message: 'You must log out before signing in or signing up again.' });
+    } catch (_err) {
+      // token invalid or expired → allow them through
+    }
+  }
+}
 
 export async function authRoutes(app: FastifyInstance) {
   // ----- Route de validation de token ----- \\
@@ -54,7 +71,7 @@ export async function authRoutes(app: FastifyInstance) {
   });
 
  // ----- Authentification Classique ------ \\
-  app.post('/signup', async (req, reply) => {
+  app.post('/signup', { preHandler: preventIfLoggedIn }, async (req, reply) => {
     const { username: rawUsername, email: rawEmail, password } = req.body as any;
     // Nettoyage des espaces
     const username = rawUsername?.trim();
@@ -96,7 +113,7 @@ export async function authRoutes(app: FastifyInstance) {
     reply.code(201).send({ message: 'auth.creation_failed', token });  
   });
 
-  app.post('/login', async (req, reply) => {
+  app.post('/login',  { preHandler: preventIfLoggedIn }, async (req, reply) => {
     const { username, password } = req.body as any;
 
     const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username) as User | undefined;

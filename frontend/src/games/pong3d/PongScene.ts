@@ -729,8 +729,14 @@ async function endMatch(score1: number, score2: number) {
 
     overlay.appendChild(winnerText);
     overlay.appendChild(scoreText);
-    overlay.appendChild(overlayReturnButton);
 
+    if (!isTournament)
+    {
+      const overlayReturnButton = document.createElement('button');
+      overlayReturnButton.textContent = t('versus.backToModes');
+      overlay.appendChild(overlayReturnButton);
+    }
+    
     // Add the overlay to the canvas container
     canvasContainer.style.position = 'relative'; // Make sure container is positioned
     canvasContainer.appendChild(overlay);
