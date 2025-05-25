@@ -71,12 +71,28 @@ export function createHistorySection(token: string): HTMLElement {
 
         pageItems.forEach(game => {
           const p = document.createElement('p');
-          //p.textContent = `${icon} ${game.score1} - ${game.score2} ${t('history.against')} ${game.opponent} • ${new Date(game.timestamp).toLocaleString()}`;
           const date = new Date(game.timestamp);
-          const dateOnly = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
-          p.textContent = `${icon} ${game.score1} - ${game.score2} ${t('history.against')} ${game.opponent} • ${dateOnly}`;
+          const dateOnly = [
+            String(date.getDate()).padStart(2,'0'),
+            String(date.getMonth()+1).padStart(2,'0'),
+            date.getFullYear()
+          ].join('/');
+
+
+          const rawOpp       = game.opponent;
+          const opponentLabel =
+
+            ( rawOpp === 'Invité' || rawOpp === 'Guest' )
+              ? t('opponent.guest')
+              : rawOpp;
+
+          p.textContent = 
+            `${icon} ${game.score1} - ${game.score2} ` +
+            `${t('history.against')} ${opponentLabel} • ${dateOnly}`;
+
           list.appendChild(p);
         });
+
 
         pageIndicator.textContent = `${currentPage + 1} / ${Math.ceil(data.length / 3)}`;
         prevBtn.disabled = currentPage === 0;
@@ -140,4 +156,3 @@ export function createHistorySection(token: string): HTMLElement {
 
   return historyWrapper;
 }
-
