@@ -686,7 +686,7 @@ async function endMatch(score1: number, score2: number) {
     };
 
     
-    // Store the original button's event listeners
+     // Store the original button's event listeners
     const originalButton = returnButton;
     
     // FIXED: Get all event listeners and the onclick handler
@@ -729,8 +729,12 @@ async function endMatch(score1: number, score2: number) {
 
     overlay.appendChild(winnerText);
     overlay.appendChild(scoreText);
-    overlay.appendChild(overlayReturnButton);
 
+    if (!isTournament)
+    {
+      overlay.appendChild(overlayReturnButton);
+    }
+    
     // Add the overlay to the canvas container
     canvasContainer.style.position = 'relative'; // Make sure container is positioned
     canvasContainer.appendChild(overlay);

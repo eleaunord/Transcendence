@@ -206,7 +206,7 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
 
     gameFrame.appendChild(scoreBoard);
     gameFrame.appendChild(announce);
-    gameFrame.appendChild(btnReturn);
+    //gameFrame.appendChild(btnReturn);
 
     const username = sessionStorage.getItem("username") || "Player 1";
     const opponentName = mode === "ai" ? "AI" : t('player.guest');
