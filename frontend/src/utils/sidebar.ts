@@ -238,8 +238,9 @@ bottomItems.forEach(item => {
     });
   });
   
-  window.addEventListener('themeChanged', () => {
-  const theme = sessionStorage.getItem('theme') || '/assets/Backgrounds/bg_th1.jpg';
+  window.addEventListener('themeChanged', (e) => {
+  const customEvent = e as CustomEvent<string>;
+  const theme = customEvent.detail || sessionStorage.getItem('theme') || '/assets/Backgrounds/bg_th1.jpg';
   const themeMatch = theme.match(/bg_th(\d)/);
   const themeId = themeMatch ? `th${themeMatch[1]}` : 'th1';
   const themeFolder = `/assets/Icons/Thème ${themeId.slice(-1)}`;

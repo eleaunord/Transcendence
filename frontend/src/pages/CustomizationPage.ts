@@ -42,6 +42,9 @@ export function createCustomizationPage(navigate: (path: string) => void): HTMLE
 
       sessionStorage.setItem('theme', path);
 
+      const updateThemeEvent = new CustomEvent('themeChanged', { detail: path });
+      window.dispatchEvent(updateThemeEvent);
+
       const token = localStorage.getItem('token');
       try {
         await fetch('/api/me/theme', {
