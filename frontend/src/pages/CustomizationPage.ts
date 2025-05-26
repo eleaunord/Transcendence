@@ -1,5 +1,6 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
+import { preloadThemeAssets } from '../utils/preloadAssets';
 
 export function createCustomizationPage(navigate: (path: string) => void): HTMLElement {
   if ((window as any).activePongCleanup) {
@@ -66,5 +67,6 @@ export function createCustomizationPage(navigate: (path: string) => void): HTMLE
 
   container.appendChild(customizations);
 
+  preloadThemeAssets();
   return container;
 }

@@ -1,4 +1,5 @@
 import { t } from "../utils/translator";
+import { preloadThemeAssets } from '../utils/preloadAssets';
 
 export function createSidebar(navigate: (path: string) => void): HTMLElement {
   const sidebar = document.createElement('div');
@@ -264,7 +265,7 @@ bottomItems.forEach(item => {
     }
   });
 });
-
+  preloadThemeAssets();
   return sidebar;
 }
 
