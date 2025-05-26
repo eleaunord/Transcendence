@@ -20,7 +20,8 @@ import {
 
 export type PongOptions = {
   mode: 'local' | 'ai' | 'tournament';
-  speed: number;
+  speed: number; // vitesse de la balle
+  paddleSpeed?: number; // vitesse des raquettes
   scoreToWin: number;
   paddleSize: number;
   theme: number;
@@ -95,29 +96,29 @@ export async function createPongScene(
   console.log("[DEBUG] Game mode:", options.mode); // 2305 디버깅 추가
 
   // 🎨 Définir les styles selon le thème choisi
-  let paddleColor1 = new Color3(0.6, 0.2, 0.8);
-  let paddleColor2 = new Color3(0.2, 0.4, 1);
-  let ballColor = new Color3(1, 0.84, 0);
+  let paddleColor1 = new Color3(0.9, 0.8, 0.6); // sable doré clair
+  let paddleColor2 = new Color3(0.8, 0.7, 0.4); // bronze doré
+  let ballColor = new Color3(1, 0.9, 0.6);   // lumière chaude
   let groundTexturePath = "/assets/Pong/pong_mat1.jpg";
-  let wallColorDiffuse = new Color3(0.05, 0.05, 0.3); // Couleur par défaut
-  let wallColorEmissive = new Color3(0.1, 0.1, 0.4);
+  let wallColorDiffuse  = new Color3(0.15, 0.1, 0.2); // bleu nuit
+  let wallColorEmissive = new Color3(0.4, 0.3, 0.2);  // reflets or mat
 
   switch (options.theme) {
     case 1: // Énergie
-      paddleColor1 = new Color3(1, 0.3, 0.3);
-      paddleColor2 = new Color3(1, 1, 0.3);
-      ballColor = new Color3(0.3, 1, 0.3);
-      groundTexturePath = "/assets/Pong/pong_mat3.jpg";
-      wallColorDiffuse = new Color3(0.4, 0.1, 0.1);     // Rouge foncé
-      wallColorEmissive = new Color3(0.8, 0.2, 0.2);    // Rouge lumineux
+      paddleColor1 = new Color3(0.1, 0.6, 0.7); // turquoise
+      paddleColor2 = new Color3(0.1, 0.6, 0.7); // turquoise
+      ballColor     = new Color3(0.7, 0.9, 1); // cyan clair
+      groundTexturePath = "/assets/Pong/pong_mat2.jpg";
+      wallColorDiffuse  = new Color3(0.55, 0.47, 0.25);  // sable foncé
+      wallColorEmissive = new Color3(0.73, 0.66, 0.39);  // or doux
       break;
     case 2: // Nébuleuse
-      paddleColor1 = new Color3(0.2, 0.6, 1);
-      paddleColor2 = new Color3(0.8, 0.3, 1);
-      ballColor = new Color3(0.7, 0.9, 1);
-      groundTexturePath = "/assets/Pong/pong_mat2.jpg";
-      wallColorDiffuse = new Color3(0.2, 0.3, 0.5);     // Bleu profond
-      wallColorEmissive = new Color3(0.3, 0.4, 0.7);    // Bleu lumineux
+      paddleColor1 = new Color3(1, 0.7, 0.1); // or chaud
+      paddleColor2 = new Color3(1, 0.5, 0);   // orange flamboyant
+      ballColor     = new Color3(1, 1, 0.3);   // lumière solaire
+      groundTexturePath = "/assets/Pong/pong_mat3.jpg";
+      wallColorDiffuse  = new Color3(0.1, 0.05, 0.3); // bleu spatial
+      wallColorEmissive = new Color3(0.6, 0.3, 0);    // reflets orangés
       break;
     default: // Classique
       // Garde les couleurs définies par défaut
@@ -203,8 +204,8 @@ const userImage = sessionStorage.getItem("profilePicture") || "/assets/profile-p
 const userName = sessionStorage.getItem("username") || "You";
 
 const opponentImage = isAI
-  ? "/assets/guest-avatars/bigstar.jpg"
-  : "/assets/guest-avatars/moon.jpg";
+  ? "/assets/Icons_Guests/guest_player1.png"
+  : "/assets/Icons_Guests/guest_player2.png";
 const opponentName = isAI ? "AI" : t('player.guest');
 
 // USER box (⟵ now on the LEFT)
@@ -492,9 +493,9 @@ async function endMatch(score1: number, score2: number) {
   };
 
   const iaProfiles: { [key: string]: IAProfile } = {
-    cautious: { errorRange: 0.15, reactionDelayMin: 4, reactionDelayMax: 7, adaptation: 0.9 },
-    balanced: { errorRange: 0.07, reactionDelayMin: 3, reactionDelayMax: 5, adaptation: 1.05 },
-    aggressive: { errorRange: 0.03, reactionDelayMin: 2, reactionDelayMax: 3, adaptation: 1.3 },
+    cautious:   { errorRange: 0.12, reactionDelayMin: 1, reactionDelayMax: 2, adaptation: 1.2 },
+    balanced:   { errorRange: 0.06, reactionDelayMin: 0, reactionDelayMax: 1, adaptation: 1.5 },
+    aggressive: { errorRange: 0.02, reactionDelayMin: 0, reactionDelayMax: 0, adaptation: 2.0 },
   };
 
   function interpolateProfiles(p1: IAProfile, p2: IAProfile, t: number): IAProfile {
@@ -512,7 +513,7 @@ async function endMatch(score1: number, score2: number) {
   let iaNextReactionIn = 0;
   let iaVelocity = 0;
 
-  const paddleSpeed = options.speed * 0.045;
+  const paddleSpeed = (options.paddleSpeed ?? 1) * 0.07;
   type KeyPressInfo = {
   isDown: boolean;
   timestamp: number;
@@ -559,7 +560,7 @@ async function endMatch(score1: number, score2: number) {
       const angleDeg = (Math.random() * 10 + 5) /* ATTENTTION -> endroit pour ajuster l'angle départ de la balle */ 
           * (Math.random() > 0.5 ? 1 : -1); // entre -15° et +15°
       const angleRad = (angleDeg * Math.PI) / 180;
-      const baseSpeed = options.speed * 0.01;
+      const baseSpeed = options.speed * 0.015;
 
       ballDir = new Vector3(
         baseSpeed * Math.cos(angleRad) * directionX,
@@ -686,7 +687,8 @@ async function endMatch(score1: number, score2: number) {
     };
 
     
-     // Store the original button's event listeners
+    
+    // Store the original button's event listeners
     const originalButton = returnButton;
     
     // FIXED: Get all event listeners and the onclick handler
@@ -791,48 +793,6 @@ async function endMatch(score1: number, score2: number) {
         : iaProfiles.balanced;
     }
 
-    // // 💾 Enregistrement du match
-    // if (gameId !== null) {
-    //   let user_id: number | undefined;
-    //   let opponent_id: number;
-
-    //   if (tournamentContext) {
-    //     const p1 = tournamentContext.p1;
-    //     const p2 = tournamentContext.p2;
-    //     user_id = p1.source === 'friend' ? Number(p1.id) : getGuestNumericId(p1.id);
-    //     opponent_id = p2.source === 'friend' ? Number(p2.id) : getGuestNumericId(p2.id);
-    //   } else {
-    //     user_id = Number(sessionStorage.getItem("userId")) ;
-    //     opponent_id = isAI ? 2 : 3;
-    //   }
-
-    //   const isGuestVsGuest = user_id < 0 && opponent_id < 0;
-    //   const headers: Record<string, string> = {
-    //     "Content-Type": "application/json"
-    //   };
-    //   const token = sessionStorage.getItem("token");
-    //   if (!isGuestVsGuest && token) {
-    //     headers["Authorization"] = `Bearer ${token}`;
-    //   }
-
-    //   try {
-    //     const res = await fetch("/api/match/end", {
-    //       method: "POST",
-    //       headers,
-    //       body: JSON.stringify({
-    //         gameId,
-    //         user_id,
-    //         opponent_id,
-    //         score1: scorePlayer,
-    //         score2: scoreIA
-    //       })
-    //     });
-    //     const result = await res.json();
-    //     console.log("[MATCH ENDED]", result);
-    //   } catch (err) {
-    //     console.error("❌ Error ending match:", err);
-    //   }
-    // }
 
     // 🏆 Redirection tournoi
     if (tournamentContext) {
@@ -860,23 +820,6 @@ async function endMatch(score1: number, score2: number) {
 
 
   resetBall();
-  // MERGE? 여기 어케 해야하지?? 이 부분 내 코드에서는 주석 제거 되어있음 A VOIR
-  // window.addEventListener("keydown", (e) => {
-  //   if (e.key.toLowerCase() === "r" && gameOver) {
-  //     resetGame();
-  //     return;
-  //   }
-
-  //   if (gameOver) return;
-
-  //   if (e.key === "s" && paddle1.position.z > -2.4) paddle1.position.z -= paddleSpeed;
-  //   if (e.key === "w" && paddle1.position.z < 2.4) paddle1.position.z += paddleSpeed;
-
-  //   if (!isAI) {
-  //     if (e.key === "ArrowDown" && paddle2.position.z > -2.4) paddle2.position.z -= paddleSpeed;
-  //     if (e.key === "ArrowUp" && paddle2.position.z < 2.4) paddle2.position.z += paddleSpeed;
-  //   }
-  // });
 
   scene.onBeforeRenderObservable.add(() => {
     if (gameOver) return;
@@ -919,11 +862,11 @@ async function endMatch(score1: number, score2: number) {
 
         const error = (Math.random() - 0.5) * currentProfile.errorRange;
         const speedFactor = clamp(1 - Math.abs(ball.position.x) / 6, 0.4, 1);
-        const maxStep = paddleSpeed * 0.5 * speedFactor * currentProfile.adaptation;
+        const maxStep = paddleSpeed * 0.7 * speedFactor * currentProfile.adaptation;
 
         // Appliquer accélération/inertie
         const desiredVelocity = clamp(dz + error, -maxStep, maxStep);
-        const acceleration = 0.04;
+        const acceleration = 0.06;
         iaVelocity += clamp(desiredVelocity - iaVelocity, -acceleration, acceleration);
         iaVelocity = clamp(iaVelocity, -maxStep, maxStep);
 

@@ -23,7 +23,7 @@ export function createHistorySection(token: string): HTMLElement {
       transition-all duration-300 hover:scale-[1.02] hover:shadow-3xl
       px-6 pt-4 pb-4 w-full max-w-[496px]
       h-[200px] overflow-hidden
-    `.trim();
+    `.replace(/\s+/g, ' ').trim();
 
 
     const header = document.createElement('div');
