@@ -45,7 +45,7 @@ export function createTeamMemberPage(navigate: (path: string) => void, name: str
   }
 
   // Test visuel (à supprimer ensuite)
-  backgroundImage.style.border = '2px dashed red';
+  //backgroundImage.style.border = '2px dashed red';
 
   container.appendChild(backgroundImage);
 

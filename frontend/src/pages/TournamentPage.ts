@@ -10,9 +10,9 @@ type Player = {
 };
 
 const guestAvatars = [
-  '/assets/guest-avatars/bigstar.jpg',
-  '/assets/guest-avatars/star.jpg',
-  '/assets/guest-avatars/moon.jpg'
+  '/assets/Icons_Guests/guest_player1.png',
+  '/assets/Icons_Guests/guest_player2.png',
+  '/assets/Icons_Guests/guest_player3.png'
 ];
 
 const playerSlots: (Player | null | 'loading')[] = ['loading', null , null , null ];

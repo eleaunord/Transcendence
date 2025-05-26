@@ -364,7 +364,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
   
   const opponentPicture = opponentType === 'friend'
     ? localStorage.getItem('opponent-picture') || '/assets/profile-pictures/default.jpg'
-    : '/assets/guest-avatars/moon.jpg'; // guest = moon
+    : '/assets/Icons_Guests/guest_player3.png'; // guest = moon
 
 
   const createAvatar = (name: string, imgSrc: string): HTMLElement => {
@@ -467,4 +467,3 @@ const updateAvatarHighlight = () => {
 
   return container;
 }
-

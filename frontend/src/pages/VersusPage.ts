@@ -118,9 +118,9 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
 
     let opponentCard: HTMLElement;
     if (mode === 'local') {
-      opponentCard = createPlayerCard("/assets/guest-avatars/moon.jpg", t('player.guest'));
+      opponentCard = createPlayerCard("/assets/Icons_Guests/guest_player1.png", t('player.guest'));
     } else {
-      opponentCard = createPlayerCard("/assets/guest-avatars/bigstar.jpg", "AI");
+      opponentCard = createPlayerCard("/assets/Icons_Guests/guest_player3.png", "AI");
     }
 
     const vsLabel = document.createElement("div");

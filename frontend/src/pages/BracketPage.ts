@@ -20,11 +20,6 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
 
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id'); 
-  // const previousId = sessionStorage.getItem('lastTournamentId');
-  // if (previousId !== id) { 
-  //   sessionStorage.removeItem('semiFinalists');
-  //   sessionStorage.setItem('lastTournamentId', id ?? '');
-  // }
 
   const container = document.createElement('div');
   container.className = 'flex flex-col h-screen bg-gray-900 text-white';
@@ -91,16 +86,6 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     const x2 = toRect.left - gridRect.left;
     const y2 = toRect.top + toRect.height / 2 - gridRect.top;
 
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', `M${x1},${y1} C${x1 + 50},${y1} ${x2 - 50},${y2} ${x2},${y2}`);
-    path.setAttribute('class', 'bracket-line');
-    svgLines.appendChild(path);
-
-    // to rm black thingy
-    path.setAttribute('stroke','url(#gradientStroke)')
-    path.setAttribute('stroke-width','3')
-    path.setAttribute('fill','none')
-
   };
 
   const round1 = document.createElement('div');
@@ -131,15 +116,6 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     }
     semiFinalists[matchIndex] = winner;
     console.log(`[DEBUG] winner is in -> semifinalists[${matchIndex}] !`)
-    // if (!semiFinalists[0]) {
-    //   console.log("[DEBUG] Putting winner in semiFinalists[0]", winner);
-    //   semiFinalists[0] = winner;
-    // } else if (!semiFinalists[1]) {
-    //   console.log("[DEBUG] Putting winner in semiFinalists[1]", winner);
-    //   semiFinalists[1] = winner;
-    // } else {
-    //   console.warn("[WARN] semiFinalists full, cannot insert:", winner);
-    // }
     sessionStorage.setItem("semiFinalists", JSON.stringify(semiFinalists));
   }
 
@@ -198,15 +174,6 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
     const s1 = semiFinal.querySelectorAll('div');
     const f1 = final.querySelector('div');
 
-    // if (r1.length >= 2 && s1.length >= 2) {
-    //   connect(r1[0], s1[0]);
-    //   connect(r1[1], s1[1]);
-    // }
-
-    // if (s1.length >= 2 && f1) {
-    //   connect(s1[0], f1);
-    //   connect(s1[1], f1);
-    // }
 
   // only draw semis→final if both semi slots and a final slot exist
   if (s1.length === 2 && f1) {
