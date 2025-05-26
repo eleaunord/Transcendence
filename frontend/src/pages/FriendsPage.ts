@@ -244,25 +244,6 @@ export function createFriendsPage(navigate: (path: string) => void): HTMLElement
     }
   };
 
-  // // Sidebar hover logic (unchanged)
-  // sidebar.addEventListener("mouseenter", () => {
-  //   document.querySelectorAll(".sidebar-label").forEach((label) => {
-  //     (label as HTMLElement).classList.remove("opacity-0");
-  //     (label as HTMLElement).classList.add("opacity-100");
-  //   });
-  //   const bg = document.getElementById("backgroundImage");
-  //   if (bg) bg.className = "absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300 z-10";
-  // });
-
-  // sidebar.addEventListener("mouseleave", () => {
-  //   document.querySelectorAll(".sidebar-label").forEach((label) => {
-  //     (label as HTMLElement).classList.add("opacity-0");
-  //     (label as HTMLElement).classList.remove("opacity-100");
-  //   });
-  //   const bg = document.getElementById("backgroundImage");
-  //   if (bg) bg.className = "absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300 z-10";
-  // });
-
   // Initial load
   fetchUserData();
 

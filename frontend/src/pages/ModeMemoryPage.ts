@@ -104,38 +104,31 @@ export function createModeMemoryPage(navigate: (path: string) => void): HTMLElem
   
     container.appendChild(layout);
     
-    // sidebar.addEventListener('mouseenter', () => {
-    //   document.querySelectorAll('.sidebar-label').forEach(label => {
-    //     (label as HTMLElement).classList.remove('opacity-0');
-    //     (label as HTMLElement).classList.add('opacity-100');
-    //   });
+    // === GAME RULES (ℹ️) ===
+    const infoIcon = document.createElement("div");
+    infoIcon.className = "absolute bottom-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white text-black cursor-pointer z-30 group";
+    infoIcon.innerHTML = `<span class="text-xl font-bold">i</span>`;
+
+    const infoPanel = document.createElement("div");
+    infoPanel.className = `
+      absolute bottom-4 right-16 w-96 p-4 rounded-lg bg-white text-black text-sm shadow-lg 
+      transform translate-x-full opacity-0 group-hover:translate-x-0 group-hover:opacity-100 
+      transition-all duration-500 z-20 pointer-events-none group-hover:pointer-events-auto
+    `;
+    infoPanel.innerHTML = `
+      <div class="font-bold mb-1">🧠 Règles du jeu : Mémo</div>
+      <p class="mb-2">Clique sur deux cartes par tour pour tenter de former des paires.<br>Mémorise leur position !</p>
+      <p>Les joueurs jouent à tour de rôle. Celui qui trouve le plus de paires remporte la partie.</p>
+    `;
+
+    const infoWrapper = document.createElement("div");
+    infoWrapper.className = "absolute bottom-4 right-4 group";
+
+    infoWrapper.appendChild(infoPanel);
+    infoWrapper.appendChild(infoIcon);
+    gameFrame.appendChild(infoWrapper);
   
-    //   const backgroundImage = document.getElementById('backgroundImage');
-    //   if (backgroundImage) {
-    //     backgroundImage.className = 'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-    //   }
-    //   const layout = document.getElementById('game-layout');
-    //   if (layout) {
-    //       layout.classList.add('ml-44'); // 11rem = 176px, correspond à w-64 (256px) - w-20 (80px)
-    //   }
-    // });
-  
-    // // Mouvement de la sidebar 
-    // sidebar.addEventListener('mouseleave', () => {
-    //   document.querySelectorAll('.sidebar-label').forEach(label => {
-    //     (label as HTMLElement).classList.add('opacity-0');
-    //     (label as HTMLElement).classList.remove('opacity-100');
-    //   });
-  
-    //   const backgroundImage = document.getElementById('backgroundImage');
-    //   if (backgroundImage) {
-    //     backgroundImage.className = 'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-    //   }
-    //   const layout = document.getElementById('game-layout');
-    //       if (layout) {
-    //   layout.classList.remove('ml-44');
-    //   }
-    // });
+  // === GAME RULES (ℹ️) ===
   
     return container;   
 }

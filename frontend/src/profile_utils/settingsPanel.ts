@@ -9,16 +9,17 @@ export function createSettingsPanel(navigate: (path: string) => void): HTMLEleme
 
   const settingsContainer = document.createElement('div');
   settingsContainer.className = `
-    bg-white/10 backdrop-blur-md
+    bg-black/60
     rounded-2xl shadow-2xl
     transform transition-all duration-300
     hover:scale-105 hover:shadow-3xl
     px-6 pt-6 pb-10 min-h-[200px] w-full max-w-5xl
-  `.replace(/\s+/g, ' ').trim();
+  `.trim();
+
 
   const settingsTitle = document.createElement('h3');
   settingsTitle.textContent = t('settings.title');
-  settingsTitle.className = 'text-xl text-gray-600 font-semibold mb-4';
+  settingsTitle.className = 'text-xl font-semibold mb-4';
   settingsContainer.appendChild(settingsTitle);
 
   const buttonsRow = document.createElement('div');
@@ -42,7 +43,7 @@ export function createSettingsPanel(navigate: (path: string) => void): HTMLEleme
   twoFAButton.className = `${commonButtonClass} bg-red-400 hover:bg-red-500`;
 
   const twoFADescription = document.createElement('p');
-  twoFADescription.className = 'mt-2 text-sm text-gray-600 italic';
+  twoFADescription.className = 'mt-2 text-sm text-gray-300 italic';
   twoFADescription.textContent = t('user.2fa.description');
 
   twoFAButton.addEventListener('click', async () => {
@@ -95,7 +96,7 @@ export function createSettingsPanel(navigate: (path: string) => void): HTMLEleme
   exportDataButton.className = `${commonButtonClass} bg-purple-500 hover:bg-purple-600`;
 
   const exportDescription = document.createElement('p');
-  exportDescription.className = 'mt-2 text-sm text-gray-600 italic';
+  exportDescription.className = 'mt-2 text-sm text-gray-300 italic';
   exportDescription.textContent = t('settings.export.description');
 
 
@@ -115,7 +116,7 @@ export function createSettingsPanel(navigate: (path: string) => void): HTMLEleme
   anonymizeButton.className = `${commonButtonClass} bg-yellow-500 hover:bg-yellow-600`;
 
   const anonymizeDescription = document.createElement('p');
-  anonymizeDescription.className = 'mt-2 text-sm text-gray-600 italic';
+  anonymizeDescription.className = 'mt-2 text-sm text-gray-300 italic';
   anonymizeDescription.textContent = t('settings.anonymize.description');
   anonymizeButton.addEventListener('click', () => {
     navigate('/anonymize');
@@ -133,7 +134,7 @@ export function createSettingsPanel(navigate: (path: string) => void): HTMLEleme
   deleteButton.className = `${commonButtonClass} bg-red-600 hover:bg-red-700`;
 
   const deleteDescription = document.createElement('p');
-  deleteDescription.className = 'mt-2 text-sm text-gray-600 italic';
+  deleteDescription.className = 'mt-2 text-sm text-gray-300 italic';
   deleteDescription.textContent = t('settings.delete.description');
 
   deleteButton.addEventListener('click', () => {
@@ -154,4 +155,3 @@ export function createSettingsPanel(navigate: (path: string) => void): HTMLEleme
 
   return settingsSection;
 }
-

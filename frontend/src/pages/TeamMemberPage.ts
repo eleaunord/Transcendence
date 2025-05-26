@@ -60,13 +60,13 @@ export function createTeamMemberPage(navigate: (path: string) => void, name: str
 
   const bioWrapper = document.createElement('div');
   bioWrapper.className = `
-    bg-white/10 backdrop-blur-md
+    bg-black/60
     p-10 rounded-2xl shadow-2xl
     max-w-4xl w-full
     transform transition-all duration-300
     hover:scale-[1.01]
     ml-auto mr-auto md:ml-32
-  `.replace(/\s+/g, ' ').trim();
+  `.trim();
 
   const bio = document.createElement('p');
   bio.className = 'text-lg text-gray-300 text-justify max-w-4xl leading-relaxed';

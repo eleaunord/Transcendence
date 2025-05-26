@@ -4,13 +4,14 @@ export function createProfileCard(): HTMLElement {
   const profileCard = document.createElement('div');
   profileCard.id = 'profileCard';
   profileCard.className = `
-    relative bg-gray/10 backdrop-blur-md p-10
+    relative bg-black/60 p-10
     rounded-2xl shadow-2xl
     flex flex-col items-center gap-7
     w-96
     transform transition-all duration-300
     hover:scale-105 hover:shadow-3xl
-  `.replace(/\s+/g, ' ').trim();
+  `.trim();
+
 
   // --- Avatar animé ---
   const spinningBorder = document.createElement('div');

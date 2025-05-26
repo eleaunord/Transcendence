@@ -3,13 +3,13 @@ import { t } from '../utils/translator';
 export function createProfileForm(): HTMLElement {
   const formContainer = document.createElement('div');
   formContainer.className = `
-    relative bg-red backdrop-blur-md p-10
+    relative bg-black/60 p-10
     rounded-2xl shadow-2xl
     flex flex-col items-start gap-6
     w-96
     transform transition-all duration-300
     hover:scale-105 hover:shadow-3xl
-  `.replace(/\s+/g, ' ').trim();
+  `.trim();
 
 
   const emailRow = document.createElement('div');

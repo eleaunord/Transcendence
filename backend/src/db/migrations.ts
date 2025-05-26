@@ -64,6 +64,17 @@ function relaxEmailConstraint() {
   }
 }
 
+// --- NEW ---
+function tableExists(tableName: string): boolean {
+  const result = db.prepare(`
+    SELECT name FROM sqlite_master 
+    WHERE type='table' AND name=?
+  `).get(tableName);
+  return !!result;
+}
+
+// --- NEW ---
+
 async function migrate() {
   relaxEmailConstraint();
   safeAlter('google_id', 'TEXT');
@@ -76,12 +87,38 @@ async function migrate() {
   safeAlter('created_at', 'TIMESTAMP');
   safeAlter('is_anonymized', 'INTEGER DEFAULT 0');
 
-  await db.exec(`
-    PRAGMA foreign_keys = OFF;
-    DROP TABLE IF EXISTS scores;
-    DROP TABLE IF EXISTS games;
-    PRAGMA foreign_keys = ON;
-  `);
+  // // --- NEW --- condition
+  if (!tableExists('games')) {
+    console.log('Creating games table...');
+    await db.exec(`
+      CREATE TABLE games (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER, -- NULL 허용됨
+        opponent_id INTEGER NOT NULL,
+        winner_id INTEGER,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log('✅ Table `games` créée (user_id nullable)');
+  } else {
+    console.log('ℹ️ Table `games` already exists - preserving existing data');
+  }
+
+  if (!tableExists('scores')) {
+    console.log('Creating scores table...');
+    await db.exec(`
+      CREATE TABLE scores (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        game_id INTEGER NOT NULL,
+        player_id INTEGER NOT NULL,
+        score INTEGER NOT NULL,
+        FOREIGN KEY (game_id) REFERENCES games(id)
+      );
+    `);
+    console.log('✅ Table `scores` créée');
+  } else {
+    console.log('ℹ️ Table `scores` already exists - preserving existing data');
+  }
 
   db.prepare(`
     INSERT OR IGNORE INTO users (id, username, email)
@@ -91,28 +128,6 @@ async function migrate() {
       (3, 'Guest', 'guest@game.com')
   `).run();
   console.log('Utilisateurs spéciaux insérés dans la table `users`');
-
-  await db.exec(`
-    CREATE TABLE games (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER, -- NULL 허용됨
-      opponent_id INTEGER NOT NULL,
-      winner_id INTEGER,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-  `);
-  console.log('✅ Table `games` créée (user_id nullable)');
-
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS scores (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      game_id INTEGER NOT NULL,
-      player_id INTEGER NOT NULL,
-      score INTEGER NOT NULL,
-      FOREIGN KEY (game_id) REFERENCES games(id)
-    );
-  `);
-  console.log('✅ Table `scores` créée');
 
   await db.exec(`
     CREATE TABLE IF NOT EXISTS potential_friends (
@@ -139,9 +154,9 @@ async function migrate() {
   const potentialFriends = [
     { id: 6, username: 'Alix', status: 'online', profile_picture: '/assets/Team_cards/card_alix.png' },
     { id: 7, username: 'Gnouma', status: 'online', profile_picture: '/assets/Team_cards/card_gnouma.png' },
-    { id: 8, username: 'Rime', status: 'online', profile_picture: '/assets/profile-pictures/card_rime.png' },
+    { id: 8, username: 'Rime', status: 'online', profile_picture: '/assets/Team_cards/card_rime.png' },
     { id: 9, username: 'Shinhye', status: 'online', profile_picture: '/assets/Team_cards/card_shinhye.png' },
-    { id: 10, username: 'eleonore', status: 'online', profile_picture: '/assets/Team_cards/card_eleonore.png' }
+    { id: 10, username: 'Eleonore', status: 'online', profile_picture: '/assets/Team_cards/card_eleonore.png' }
   ];
 
   const insertFriend = db.prepare(`
@@ -184,10 +199,9 @@ async function migrate() {
   safeAlterTournamentPlayers('name', 'TEXT');
 
   /* ==========================
-     AJOUT DDE LA TABLE POUR LE MEMORY
+     AJOUT DE LA TABLE POUR LE MEMORY
   ========================== */
-
-    await db.exec(`
+  await db.exec(`
     CREATE TABLE IF NOT EXISTS memory_games (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,

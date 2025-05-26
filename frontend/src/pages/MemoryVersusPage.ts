@@ -11,7 +11,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
     userId = Number(storedUserId);
   }
   let currentPlayer = 1;
-  const opponentType = localStorage.getItem('memory-opponent') || 'guest';
+  const opponentType = localStorage.getItem('memory-opponent') || 'Guest';
   const opponentName = localStorage.getItem('opponent-name') || t('opponent.guest');
   const scores: Record<number, number> = { 1: 0, 2: 0 };
   const { pairCount, theme, turnTime } = loadMemorySettings();

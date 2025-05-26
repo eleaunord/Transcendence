@@ -19,11 +19,12 @@ export function createHistorySection(token: string): HTMLElement {
 
     const container = document.createElement('div');
     container.className = `
-      bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl
+      bg-black/60 rounded-2xl shadow-2xl
       transition-all duration-300 hover:scale-[1.02] hover:shadow-3xl
       px-6 pt-4 pb-4 w-full max-w-[496px]
       h-[200px] overflow-hidden
-    `.replace(/\s+/g, ' ').trim();
+    `.trim();
+
 
     const header = document.createElement('div');
     header.className = 'flex justify-between items-center w-full mb-4';

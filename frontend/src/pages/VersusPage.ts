@@ -211,21 +211,6 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
     const username = sessionStorage.getItem("username") || "Player 1";
     const opponentName = mode === "ai" ? "AI" : t('player.guest');
 
-    // const playerLabel = document.createElement("div");
-    // playerLabel.textContent = username;
-    // playerLabel.className = `
-    //   absolute top-4 left-6 text-white font-bold z-30 text-lg
-    // `.replace(/\s+/g, ' ').trim();
-
-    // const opponentLabel = document.createElement("div");
-    // opponentLabel.textContent = opponentName;
-    // opponentLabel.className = `
-    //   absolute top-4 right-6 text-white font-bold z-30 text-lg text-right
-    // `.replace(/\s+/g, ' ').trim();
-
-    // gameFrame.appendChild(playerLabel);
-    // gameFrame.appendChild(opponentLabel);
-
     const settings = loadPongSettings();
 
     // 2305 수정
