@@ -37,39 +37,53 @@ async function preventIfLoggedIn(req: FastifyRequest, reply: FastifyReply) {
 export async function authRoutes(app: FastifyInstance) {
   // ----- Route de validation de token ----- \\
   app.get('/validate-token', async (req, reply) => {
-    try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith('Bearer ')) {
-        return reply.code(401).send({ valid: false, error: 'No token provided' });
-      }
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+      return reply.code(401).send({ valid: false, error: 'No token provided' });
+    }
 
-      const token = authHeader.split(' ')[1];
-      const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: number; pending_2fa?: boolean };
 
-      // Vérifier que l'utilisateur existe toujours en base
-      const user = db.prepare('SELECT id, username, email FROM users WHERE id = ?').get(decoded.userId) as User | undefined;
-      
-      if (!user) {
-        return reply.code(401).send({ valid: false, error: 'User not found' });
-      }
+    // Get user info
+    const user = db.prepare('SELECT id, username, email, image, is_2fa_enabled FROM users WHERE id = ?').get(decoded.userId) as User | undefined;
+    
+    if (!user) {
+      return reply.code(401).send({ valid: false, error: 'User not found' });
+    }
 
-      // Token valide et utilisateur existe
-      reply.send({ 
-        valid: true, 
+    // If user has 2FA enabled and token is marked as pending 2FA
+    if (user.is_2fa_enabled && decoded.pending_2fa) {
+      return reply.code(403).send({ 
+        valid: false, 
+        error: '2FA verification required',
+        pending_2fa: true,
         user: {
           id: user.id,
           username: user.username,
-          email: user.email,
-          image: user.image  // NEW 18H
+          email: user.email
         }
       });
-
-    } catch (err: any) {
-      console.log('[TokenValidation] Invalid token:', err.message);
-      reply.code(401).send({ valid: false, error: 'Invalid token' });
     }
-  });
 
+    // Token is fully valid
+    reply.send({ 
+      valid: true, 
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        image: user.image
+      }
+    });
+
+  } catch (err: any) {
+    console.log('[TokenValidation] Invalid token:', err.message);
+    reply.code(401).send({ valid: false, error: 'Invalid token' });
+  }
+  });
+  
  // ----- Authentification Classique ------ \\
   app.post('/signup', { preHandler: preventIfLoggedIn }, async (req, reply) => {
     const { username: rawUsername, email: rawEmail, password } = req.body as any;
@@ -113,7 +127,7 @@ export async function authRoutes(app: FastifyInstance) {
     reply.code(201).send({ message: 'auth.creation_failed', token });  
   });
 
-  app.post('/login',  { preHandler: preventIfLoggedIn }, async (req, reply) => {
+  app.post('/login', { preHandler: preventIfLoggedIn }, async (req, reply) => {
     const { username, password } = req.body as any;
 
     const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username) as User | undefined;
@@ -123,17 +137,28 @@ export async function authRoutes(app: FastifyInstance) {
     const match = await bcrypt.compare(password, user.password_hash || '');
     if (!match) return reply.code(401).send({ error: 'auth.incorrect_password' });
 
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-    console.log('[STANDARD LOGIN] USER EMAIL:', user.email);
-    // 0805 수정
-    // reply.send({ token });
+    // Create payload based on 2FA status
+    const payload: any = { userId: user.id };
+    
+    // If 2FA is enabled, mark token as pending 2FA verification
+    if (user.is_2fa_enabled) {
+      payload.pending_2fa = true;
+    }
+
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+
+    console.log('[STANDARD LOGIN] USER EMAIL:', user.email, 'HAS_2FA:', !!user.is_2fa_enabled);
+
     reply.send({
       token,
       user: {
+        id: user.id,
         email: user.email,
+        username: user.username,
         is_2fa_enabled: !!user.is_2fa_enabled,
         seen_2fa_prompt: !!user.seen_2fa_prompt,
       },
+      requires_2fa: !!user.is_2fa_enabled // Add explicit flag
     });
   });
 
@@ -209,89 +234,112 @@ export async function authRoutes(app: FastifyInstance) {
   });
   
   // ----- 2FA Enable -----
-  app.post('/enable-2fa', async (req, reply) => {
-    try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith('Bearer ')) {
-        return reply.code(401).send({ error: 'auth.unauthorized' });
-      }
-
-      const token = authHeader.split(' ')[1];
-      const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
-
-      const user = db.prepare('SELECT * FROM users WHERE id = ?').get(decoded.userId) as User | undefined;
-      console.log('[2FA] decoded userId:', decoded.userId); //debug
-      if (!user) 
-        return reply.code(404).send({ error: 'User not found' });
-
-      const code = generate2FACode();
-      const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5분 유효
-
-      db.prepare(`
-        UPDATE users SET
-          two_fa_code = ?,
-          two_fa_expires_at = ?
-        WHERE id = ?
-      `).run(code, expiresAt.toISOString(), decoded.userId);
-
-      console.log('[2FA] User Email:', user.email); // debug
-      console.log('[2FA] Sending code to email...'); // debug
-      
-      await sendEmail(user.email, 'Your 2FA Code', `Your code is ${code}. It will expire in 5 minutes.`);
-      reply.send({ message: 'auth.2fa_code_sent' });
-
-    } catch (err) {
-      console.error('2FA enable error:', err);
-      reply.code(500).send({ error: 'auth.2fa_enable_failed' });
+// ----- 2FA Enable -----
+app.post('/enable-2fa', async (req, reply) => {
+  try {
+    // 1) Authenticate & parse token
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+      return reply.code(401).send({ error: 'auth.unauthorized' });
     }
-  });
+    const token = authHeader.slice(7);
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
+
+    // 2) Load the user
+    const user = db
+      .prepare('SELECT * FROM users WHERE id = ?')
+      .get(decoded.userId) as User | undefined;
+    if (!user) {
+      return reply.code(404).send({ error: 'User not found' });
+    }
+
+    // 3) Generate a new code + expiry
+    const code = generate2FACode();
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // valid 5 minutes
+
+    // 4) Mark 2FA enabled AND store the code
+    db.prepare(`
+      UPDATE users SET
+        is_2fa_enabled     = 1,
+        two_fa_code        = ?,
+        two_fa_expires_at  = ?
+      WHERE id = ?
+    `).run(code, expiresAt.toISOString(), decoded.userId);
+
+    // 5) Send the email
+    await sendEmail(
+      user.email,
+      'Your 2FA Code',
+      `Your code is ${code}. It will expire in 5 minutes.`
+    );
+
+    // 6) Reply success
+    reply.send({ message: 'auth.2fa_code_sent' });
+  } catch (err) {
+    console.error('2FA enable error:', err);
+    reply.code(500).send({ error: 'auth.2fa_enable_failed' });
+  }
+});
 
   // ----- 2FA Verification -----
   app.post('/verify-2fa', async (req, reply) => {
-    try {
-      const { code } = req.body as { code: string };
-      const authHeader = req.headers.authorization;
-  
-      if (!authHeader?.startsWith('Bearer ')) {
-        return reply.code(401).send({ error: 'auth.unauthorized' });
-      }
+  try {
+    const { code } = req.body as { code: string };
+    const authHeader = req.headers.authorization;
 
-      const token = authHeader.split(' ')[1];
-      const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
-
-      const user = db.prepare('SELECT * FROM users WHERE id = ?').get(decoded.userId) as User | undefined;
-      if (!user || !user.two_fa_code || !user.two_fa_expires_at) {
-        return reply.code(400).send({ error: 'auth.2fa_not_initiated' });
-      }
-
-      const now = new Date();
-      const expiresAt = new Date(user.two_fa_expires_at);
-  
-      if (now > expiresAt) {
-        return reply.code(400).send({ error: 'auth.2fa_expired' });
-      }
-
-      if (code !== user.two_fa_code) {
-        return reply.code(400).send({ error: 'auth.2fa_invalid' });
-      }
-
-      // 인증 성공 처리
-      db.prepare(`
-        UPDATE users
-        SET is_2fa_enabled = 1,
-            two_fa_code = NULL,
-            two_fa_expires_at = NULL
-        WHERE id = ?
-      `).run(user.id);
-
-      const finalToken = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-      reply.send({ token: finalToken });
-
-    } catch (err) {
-      console.error('2FA verification error:', err);
-      reply.code(500).send({ error: 'auth.2fa_verification_failed' });
+    if (!authHeader?.startsWith('Bearer ')) {
+      return reply.code(401).send({ error: 'auth.unauthorized' });
     }
-  });
+
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: number; pending_2fa?: boolean };
+
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(decoded.userId) as User | undefined;
+    if (!user || !user.two_fa_code || !user.two_fa_expires_at) {
+      return reply.code(400).send({ error: 'auth.2fa_not_initiated' });
+    }
+
+    const now = new Date();
+    const expiresAt = new Date(user.two_fa_expires_at);
+
+    if (now > expiresAt) {
+      return reply.code(400).send({ error: 'auth.2fa_expired' });
+    }
+
+    if (code !== user.two_fa_code) {
+      return reply.code(400).send({ error: 'auth.2fa_invalid' });
+    }
+
+    // Clear 2FA code from database
+    db.prepare(`
+      UPDATE users
+      SET two_fa_code = NULL,
+          two_fa_expires_at = NULL
+      WHERE id = ?
+    `).run(user.id);
+
+    // Create a new token WITHOUT the pending_2fa flag
+    const finalToken = jwt.sign(
+      { userId: user.id }, // No pending_2fa flag
+      JWT_SECRET, 
+      { expiresIn: '1h' }
+    );
+
+    reply.send({ 
+      token: finalToken,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        image: user.image
+      }
+    });
+
+  } catch (err) {
+    console.error('2FA verification error:', err);
+    reply.code(500).send({ error: 'auth.2fa_verification_failed' });
+  }
+});
 
   app.get('/users', async () => {
     const users = db.prepare('SELECT id, username, email FROM users').all();

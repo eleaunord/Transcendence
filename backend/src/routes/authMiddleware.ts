@@ -22,18 +22,28 @@ export async function authenticateToken(request: FastifyRequest, reply: FastifyR
 
   try {
     const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: number; pending_2fa?: boolean };
     
+    // Check if user exists first
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(decoded.userId) as User | undefined;
     if (!user) {
-      console.warn('[auth] Utilisateur non trouvé avec ID:', decoded.userId);
+      console.warn('[auth] User not found with ID:', decoded.userId);
       return reply.code(401).send({ error: 'User not found' });
     }
-    
+
+    // For 2FA-enabled users, check if they need to complete 2FA
+    if (user.is_2fa_enabled && decoded.pending_2fa) {
+      return reply.code(403).send({
+        error: '2FA verification required',
+        pending_2fa: true,
+        redirect: '/2fa?mode=input'
+      });
+    }
+
     // Add user object to request
     request.user = user;
   } catch (err) {
+    console.warn('[auth] Token verification failed:', err);
     return reply.code(401).send({ error: 'Invalid token' });
   }
-  return
 }

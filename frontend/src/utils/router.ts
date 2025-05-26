@@ -7,64 +7,49 @@ export type RouteMap = { [path: string]: (navigate: (path: string) => void) => H
  * Vérifie si le token est valide côté serveur
  */
 
-// OLD
 
-// async function validateToken(): Promise<boolean> {
-//   const token = localStorage.getItem('token');
-//   if (!token) return false;
-
-//   try {
-//     const response = await fetch('/api/validate-token', {
-//       method: 'GET',
-//       headers: {
-//         'Authorization': `Bearer ${token}`,
-//         'Content-Type': 'application/json'
-//       }
-//     });
-    
-//     if (response.ok) {
-//       const data = await response.json();
-//       return data.valid === true;
-//     } else {
-//       // Token invalide, on le supprime
-//       localStorage.removeItem('token');
-//       return false;
-//     }
-//   } catch (error) {
-//     console.error('[TokenValidation] Error validating token:', error);
-//     return false;
-//   }
-// }
-
-// NEW 18H
-async function validateToken(): Promise<boolean> {
+async function validateToken(): Promise<{ isValid: boolean; pending2FA: boolean; user?: any }> {
   const token = localStorage.getItem('token');
-  if (!token) return false;
+  if (!token) return { isValid: false, pending2FA: false };
 
   try {
-    const response = await fetch('/api/validate-token', {
+    const res = await fetch('/api/validate-token', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
-    
-    if (response.ok) {
-      const data = await response.json();
+
+    console.log('[TokenValidation] Response status:', res.status);
+
+    if (res.ok) {
+      const data = await res.json();
+      console.log('[TokenValidation] Valid response:', data);
+      
       if (data.valid && data.user) {
         localStorage.setItem('user', JSON.stringify(data.user));
-        refreshSidebar(); // ⬅️ Add this
+        refreshSidebar();
       }
-      return data.valid === true;
-    } else {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      return false;
+      return { isValid: data.valid === true, pending2FA: false, user: data.user };
     }
-  } catch (error) {
-    console.error('[TokenValidation] Error validating token:', error);
-    return false;
+
+    if (res.status === 403) {
+      const data = await res.json();
+      console.log('[TokenValidation] Token pending 2FA:', data);
+      return { isValid: false, pending2FA: data.pending_2fa === true, user: data.user };
+    }
+
+    // Invalid token
+    console.log('[TokenValidation] Token invalid, clearing storage');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    sessionStorage.clear();
+    return { isValid: false, pending2FA: false };
+
+  } catch (err) {
+    console.error('[TokenValidation] Network error:', err);
+    return { isValid: false, pending2FA: false };
   }
 }
 
@@ -166,32 +151,50 @@ export function protected2FARoute(
 /**
  * Fonction pour rediriger les utilisateurs connectés vers /game au lieu de /
  */
+/**
+ * Fonction pour rediriger les utilisateurs connectés vers /game au lieu de /
+ */
+// Replace your handleHomeRedirect function with this fixed version
 async function handleHomeRedirect(navigate: (path: string) => void): Promise<HTMLElement> {
   const token = localStorage.getItem('token');
-  
-  if (token) {
-    console.log('[HomeRedirect] Token found, validating...');
-    
-    const placeholder = document.createElement('div');
-    placeholder.textContent = 'Checking session...';
-    placeholder.className = 'text-white text-center mt-40 text-xl';
+  const placeholder = document.createElement('div');
+  placeholder.textContent = 'Checking session…';
+  placeholder.className = 'text-white text-center mt-40 text-xl';
 
-    try {
-      const isValid = await validateToken();
-      if (isValid) {
-        console.log('[HomeRedirect] Valid token → redirecting to /game');
-        setTimeout(() => navigate('/game'), 0);
-        return placeholder;
-      }
-    } catch (error) {
-      console.error('[HomeRedirect] Token validation failed:', error);
-    }
+  if (!token) {
+    const { createHomePage } = await import('../pages/HomePage');
+    return createHomePage(navigate);
   }
-  
-  // Si pas de token ou token invalide, charger la page d'accueil normale
-  console.log('[HomeRedirect] No valid token → loading home page');
-  const { createHomePage } = await import('../pages/HomePage');
-  return createHomePage(navigate);
+
+  try {
+    const validation = await validateToken();
+    
+    if (validation.isValid) {
+      // Token is fully valid, go to game
+      navigate('/game');
+      return placeholder;
+    } else if (validation.pending2FA) {
+      // Token exists but needs 2FA verification
+      console.log('[HomeRedirect] Token pending 2FA, redirecting to 2FA input');
+      navigate('/2fa?mode=input');
+      return placeholder;
+    } else {
+      // Token is invalid, show login
+      console.log('[HomeRedirect] Invalid token, showing login');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      sessionStorage.clear();
+      const { createHomePage } = await import('../pages/HomePage');
+      return createHomePage(navigate);
+    }
+  } catch (err) {
+    console.error('[HomeRedirect] Error:', err);
+    localStorage.removeItem('token'); 
+    localStorage.removeItem('user');
+    sessionStorage.clear();
+    const { createHomePage } = await import('../pages/HomePage');
+    return createHomePage(navigate);
+  }
 }
 
 export function initRouter(routes: RouteMap, teamPrefix = '', rootId = 'app') {

@@ -3,91 +3,75 @@ import { t } from '../utils/translator'; // Ajout pour i18n
 
 export function createAuthPage(navigate: (path: string) => void): HTMLElement {
   let error = '';
+const handleLogin = async () => {
+  console.log('handleLogin executed');
+  const username = (document.getElementById('username') as HTMLInputElement).value;
+  const password = (document.getElementById('password') as HTMLInputElement).value;
 
-  const handleLogin = async () => {
-    console.log('handleLogin exécutée');
-    const usernameInput = document.getElementById('username') as HTMLInputElement;
-    const passwordInput = document.getElementById('password') as HTMLInputElement;
+  error = '';
+  updateError();
 
-    const username = usernameInput?.value;
-    const password = passwordInput?.value;
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await res.json();
+    console.log('login response:', data);
 
-    error = '';
-    updateError();
-
-    try {
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await res.json();
-      console.log(data);
-
-      if (!res.ok) {
-        error = t(data.error) || t('auth.error.connection');
-        updateError();
-        return;
-      }
-
-      try {
-        console.log('Token reçu:', data.token);
-
-        // 추가: remove original token
-        localStorage.removeItem('token');
-        sessionStorage.removeItem('token');
-        // 추가: set new token
-        localStorage.setItem('token', data.token);
-
-        console.log('Token stocké:', localStorage.getItem('token'));
-
-        // Récupération des infos utilisateur après login
-        try {
-          const res = await fetch('/api/me', {
-            headers: {
-              Authorization: `Bearer ${data.token}`
-            }
-          });
-
-          if (res.ok) {
-            const user = await res.json();
-            sessionStorage.setItem('username', user.username);
-            sessionStorage.setItem('userEmail', user.email); // 추가 한 부분!
-            sessionStorage.setItem('profilePicture', user.image);
-            console.log('Utilisateur chargé :', user);
-            sessionStorage.setItem('userId', user.id.toString()); // 1505 추가
-
-            console.log('[DEBUG userId in AUTHPAGE] 저장된 userId:', sessionStorage.getItem('userId')); // 1505 추가
-
-            //0805 추가
-            const is2FA = !!user.is_2fa_enabled;
-            const seen2FA = !!user.seen_2fa_prompt;
-            if (!seen2FA) {
-              navigate('/2fa'); // 첫 로그인 → 2FA 활성화 여부 물어보는 페이지
-            } else if (is2FA) {
-              navigate('/2fa?mode=input'); // 이미 활성화됨 → 코드 입력
-            } else {
-              navigate('/profile-creation'); // 2FA 미사용 → 프로필 설정
-            }
-          } else {
-            console.warn('Impossible de charger le profil utilisateur');
-            error = t('auth.error.loadProfile');
-            updateError();
-          }
-        } catch (e) {
-          console.error('Erreur lors du chargement de /api/me :', e);
-          error = t('auth.error.profileFetch');
-          updateError();
-        }
-      } catch (e) {
-        console.error('Erreur lors du stockage du token:', e);
-      }
-    } catch (err) {
-      error = t('auth.error.network');
+    if (!res.ok) {
+      error = t(data.error) || t('auth.error.connection');
       updateError();
+      return;
     }
-  };
+
+    // Store the token (which may have pending_2fa flag)
+    localStorage.setItem('token', data.token);
+    sessionStorage.setItem('token', data.token);
+    sessionStorage.setItem('userEmail', data.user.email);
+
+    // Check if 2FA is required
+    if (data.requires_2fa || data.user.is_2fa_enabled) {
+      console.log('[Auth] User has 2FA enabled, redirecting to input page');
+      sessionStorage.removeItem('2fa_code_sent'); // Clear any previous state
+      return navigate('/2fa?mode=input');
+    }
+
+    // For users without 2FA: fetch full profile and continue
+    const me = await fetch('/api/me', {
+      headers: { Authorization: `Bearer ${data.token}` }
+    });
+
+    if (!me.ok) {
+      console.warn('Unable to load user profile');
+      error = t('auth.error.loadProfile');
+      updateError();
+      return;
+    }
+
+    const user = await me.json();
+    console.log('User loaded:', user);
+    
+    // Store user info
+    localStorage.setItem('user', JSON.stringify(user));
+    sessionStorage.setItem('username', user.username);
+    sessionStorage.setItem('profilePicture', user.image);
+    sessionStorage.setItem('userId', user.id.toString());
+
+    // Navigate to appropriate page
+    if (!user.seen_2fa_prompt) {
+      navigate('/2fa');
+    } else {
+      navigate('/profile-creation');
+    }
+
+  } catch (e) {
+    console.error('Network error:', e);
+    error = t('auth.error.network');
+    updateError();
+  }
+};
 
   const container = document.createElement('div');
   container.className = 'flex flex-col justify-center items-center h-screen bg-gray-900 text-white';
