@@ -292,23 +292,23 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
   gameArea.appendChild(gameFrame);
   container.appendChild(layout);
 
-  sidebar.addEventListener('mouseenter', () => {
-    document
-      .querySelectorAll('.sidebar-label')
-      .forEach(label => label.classList.replace('opacity-0', 'opacity-100'));
-    backgroundImage.className =
-      'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-    layout.classList.add('ml-44');
-  });
+  // sidebar.addEventListener('mouseenter', () => {
+  //   document
+  //     .querySelectorAll('.sidebar-label')
+  //     .forEach(label => label.classList.replace('opacity-0', 'opacity-100'));
+  //   backgroundImage.className =
+  //     'absolute top-0 left-64 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+  //   layout.classList.add('ml-44');
+  // });
 
-  sidebar.addEventListener('mouseleave', () => {
-    document
-      .querySelectorAll('.sidebar-label')
-      .forEach(label => label.classList.replace('opacity-100', 'opacity-0'));
-    backgroundImage.className =
-      'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
-    layout.classList.remove('ml-44');
-  });
+  // sidebar.addEventListener('mouseleave', () => {
+  //   document
+  //     .querySelectorAll('.sidebar-label')
+  //     .forEach(label => label.classList.replace('opacity-100', 'opacity-0'));
+  //   backgroundImage.className =
+  //     'absolute top-0 left-20 right-0 bottom-0 bg-cover bg-center transition-all duration-300';
+  //   layout.classList.remove('ml-44');
+  // });
 
   function showTournamentAnnouncement(
     p1: Player,
