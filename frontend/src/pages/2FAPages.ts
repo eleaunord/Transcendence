@@ -36,7 +36,7 @@ export function create2FAPage(
       fetch('/api/me/seen-2fa', {
         method: 'POST',
         headers: { Authorization: `Bearer ${seenToken}` },
-      }).catch(() => console.warn('[2FA] failed to mark seen'));
+      }).catch(() => console.warn('[2FApages.ts :2FA] failed to mark seen'));
     }
 
     // description
@@ -59,13 +59,13 @@ export function create2FAPage(
     enableBtn.addEventListener('click', async () => {
       // Prevent multiple simultaneous requests
       if (isRequestInProgress) {
-        console.log('[2FA] Request already in progress, ignoring click');
+        console.log('[2FApages.ts :2FA] Request already in progress, ignoring click');
         return;
       }
 
       // Check if code was already sent (using consistent storage)
       if (sessionStorage.getItem('2fa_code_sent') === 'true') {
-        console.log('[2FA] Code already sent, redirecting to input');
+        console.log('[2FApages.ts :2FA] Code already sent, redirecting to input');
         navigate('/2fa?mode=input');
         return;
       }
@@ -109,7 +109,7 @@ export function create2FAPage(
         navigate('/2fa?mode=input');
         
       } catch (error) {
-        console.error('[2FA] Network error:', error);
+        console.error('[2FApages.ts :2FA] Network error:', error);
         alert(t('auth.network_error') || 'Network error occurred');
         enableBtn.disabled = false;
         enableBtn.textContent = t('2fa.enable_button');
@@ -129,6 +129,11 @@ export function create2FAPage(
 
   // ─── INPUT MODE ─────────────────────────────────────────────────────────
   if (mode === 'input') {
+    if (sessionStorage.getItem('2fa_verified') === 'true') {
+    console.log('[2FA] Already verified, redirecting to profile');
+    navigate('/profile-creation');
+    return container;
+  }
 
      // send a fresh code if we haven't already in this session
   const tok = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -140,7 +145,7 @@ export function create2FAPage(
     .then(res => {
       if (!res.ok) throw new Error('2FA send failed');
       sessionStorage.setItem('2fa_code_sent','true');
-      console.log('[2FA] new code sent on input page');
+      console.log('[2FApages.ts :2FA] new code sent on input page');
     })
     .catch(err => console.warn('[2FA] auto-send error:', err));
   }
@@ -199,8 +204,13 @@ verifyBtn.addEventListener('click', async () => {
     localStorage.setItem('token', data.token);
     sessionStorage.setItem('token', data.token);
     
+    sessionStorage.setItem('2fa_verified', 'true');
     // Clear 2FA session state
     sessionStorage.removeItem('2fa_code_sent');
+    window.history.replaceState({}, '', '/profile-creation');
+    console.log('[2FA] Redirect to profile page (history replaced)');
+    navigate('/profile-creation');
+
     
     // Fetch and store user profile
     try {
@@ -211,10 +221,10 @@ verifyBtn.addEventListener('click', async () => {
       if (meRes.ok) {
         const user = await meRes.json();
         localStorage.setItem('user', JSON.stringify(user));
-        console.log('[2FA] User profile loaded and stored');
+        console.log('[2FApages.ts :2FA] User profile loaded and stored');
       }
     } catch (profileError) {
-      console.warn('[2FA] Could not load profile after verification:', profileError);
+      console.warn('[2FApages.ts :2FA] Could not load profile after verification:', profileError);
     }
 
     alert(t('2fa.verified'));
@@ -236,6 +246,7 @@ verifyBtn.addEventListener('click', async () => {
       'block w-full mt-4 py-2 bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded-lg';
     back.addEventListener('click', () => {
       sessionStorage.clear();
+      sessionStorage.removeItem('2fa_verified'); //26
       localStorage.removeItem('token');
       localStorage.removeItem('userEmail');
       window.location.replace(window.location.origin + '/');

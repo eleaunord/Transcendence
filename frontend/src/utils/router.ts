@@ -111,10 +111,10 @@ export function protected2FARoute(
 ): (navigate: (path: string) => void) => HTMLElement {
   return (navigate) => {
     const token = localStorage.getItem('token');
-    console.log('[2FA] token exists? :', token);
+    console.log('[router.ts : 2FA] token exists? :', token);
     
     if (!token) {
-      console.log('[2FA] User not logged in → redirecting to home...');
+      console.log('[router.ts : 2FA] User not logged in → redirecting to home...');
       setTimeout(() => {
         localStorage.setItem('2fa_redirect_notice', '1');
         navigate('/');
@@ -130,16 +130,16 @@ export function protected2FARoute(
     // Valider le token de manière asynchrone
     validateToken().then(isValid => {
       if (isValid) {
-        console.log('[2FA] Valid token → rendering 2FA page');
+        console.log('[router.ts : 2FA] Valid token → rendering 2FA page');
         const actualPage = page(navigate);
         placeholder.parentNode?.replaceChild(actualPage, placeholder);
       } else {
-        console.log('[2FA] Invalid token → redirecting to home...');
+        console.log('[router.ts : 2FA] Invalid token → redirecting to home...');
         localStorage.setItem('2fa_redirect_notice', '1');
         navigate('/');
       }
     }).catch(error => {
-      console.error('[2FA] Token validation failed:', error);
+      console.error('[router.ts : 2FA] Token validation failed:', error);
       localStorage.setItem('2fa_redirect_notice', '1');
       navigate('/');
     });
