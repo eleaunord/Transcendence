@@ -190,6 +190,8 @@
   "delete.failed": "Échec de la suppression.",
 
   "leaderboard.title": "Classement",
+  "game.pong.title": "Pong",
+  "game.memory.lead": "Memory",
   "leaderboard.loading": "Chargement du classement...",
   "leaderboard.error": "Erreur lors de la récupération des données. Vérifiez votre connexion internet ou réessayez plus tard.",
   "leaderboard.rank": "Rang",
@@ -253,6 +255,11 @@
   "custom.theme.nebula": "Nébuleuse",
   "custom.start": "Lancer le match",
 
+  "game.memory.title": "Memory",
+
+  "memory.rules.title": "🧠 Règles du jeu : Memory",
+  "memory.rules.description": "Clique sur deux cartes par tour pour tenter de former des paires. Mémorise leur position !\nLes joueurs jouent à tour de rôle ; celui qui trouve le plus de paires remporte la partie.",
+
   "memory.play": "Jouer",
   "memory.pairs": "Nombre de cartes",
   "memory.pairs.6": "12 (6 paires)",
@@ -299,6 +306,13 @@
   "memory.mode.comingSoon": "Fonctionnalité bientôt disponible !",
   "memory.mode.badge": "À venir",
 
+  "game.pong3d.title": "Pong 3D",
+
+  "game.rules.title": "🕹️ Règles du jeu : Pong",
+  "game.rules.description": "Deux joueurs s'affrontent en renvoyant une balle à l'aide de leur raquette. Un point est marqué si l'adversaire rate la balle. Le premier à atteindre le score maximum gagne. Attention, le rythme s'accélère !",
+  "game.controls.title": "🎮 Contrôles",
+  "game.controls.description": "Joueur 1 : W (haut) / S (bas)\nJoueur 2 : Flèche ↑ (haut) / Flèche ↓ (bas)",
+
   "mode.versus": "Mode Versus",
   "mode.tournament": "Mode Tournoi",
   "mode.duo": "Mode Duo",
@@ -329,6 +343,8 @@
   "tournament.creation_error": "Erreur lors de la création du tournoi",
   "guest.invalid_name": "Nom invalide. Seuls les lettres, chiffres, tirets et underscores sont autorisés (3 à 20 caractères).",
   
+  "about.title": "À propos de nous",
+
   "team.name.shinhye": "Shinhye YUN",
   "team.name.alix": "Alix CERALINE",
   "team.name.gnouma": "Gnouma DUKURAY",

@@ -190,6 +190,8 @@
   "delete.failed": "Failed to delete.",
 
   "leaderboard.title": "Leaderboard",
+  "game.pong.title": "Pong",
+  "game.memory.lead": "Memory",
   "leaderboard.loading": "Loading leaderboard...",
   "leaderboard.error": "Error fetching leaderboard data. Please check your internet connection or try again later.",
   "leaderboard.rank": "Rank",
@@ -253,6 +255,11 @@
   "custom.theme.nebula": "Nebula",
   "custom.start": "Start Match",
 
+  "game.memory.title": "Memory",
+
+  "memory.rules.title": "🧠 Game Rules: Memory",
+  "memory.rules.description": "Click two cards per turn to try to form matching pairs. Remember their positions!\nPlayers take turns; whoever finds the most pairs wins the game.",
+
   "memory.play": "Play",
   "memory.pairs": "Number of cards",
   "memory.pairs.6": "12 (6 pairs)",
@@ -299,11 +306,18 @@
   "memory.mode.comingSoon": "Feature coming soon!",
   "memory.mode.badge": "Coming soon",
 
+  "game.pong3d.title": "Pong 3D",
+
   "mode.versus": "Versus Mode",
   "mode.tournament": "Tournament Mode",
   "mode.duo": "Duo Mode",
   "mode.comingSoon": "Feature coming soon!",
   "mode.badge": "Coming soon",
+
+  "game.rules.title": "🕹️ Game Rules: Pong",
+  "game.rules.description": "Two players face off by bouncing a ball back and forth with their paddles. You score a point if your opponent misses. First to the max score wins. Watch out—the speed ramps up over time!",
+  "game.controls.title": "🎮 Controls",
+  "game.controls.description": "Player 1: W (up) / S (down)\nPlayer 2: ↑ (up) / ↓ (down)",
 
   "versus.countdown": "Game starts in {{seconds}}...",
   "versus.retry": "Play again",
@@ -328,6 +342,8 @@
   "tournament.local_name": "Local Tournament",
   "tournament.creation_error": "Failed to create tournament",
   "guest.invalid_name": "Invalid name. Only letters, numbers, hyphens and underscores are allowed (3 to 20 characters).",
+
+  "about.title": "About Us",
 
   "team.name.shinhye": "Shinhye YUN",
   "team.name.alix": "Alix CERALINE",

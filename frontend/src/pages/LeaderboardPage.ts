@@ -45,11 +45,11 @@ export function createLeaderboardPage(navigate: (path: string) => void): HTMLEle
   tabContainer.className = 'flex mb-6 bg-gray-800/50 rounded-lg p-1';
 
   const pongTab = document.createElement('button');
-  pongTab.textContent = 'Pong';
+  pongTab.textContent = t('game.pong.title');
   pongTab.className = 'px-6 py-3 rounded-md font-semibold transition-all duration-200 bg-blue-600 text-white shadow-lg';
   
   const memoryTab = document.createElement('button');
-  memoryTab.textContent = 'Memory';
+  memoryTab.textContent = t('game.memory.lead');
   memoryTab.className = 'px-6 py-3 rounded-md font-semibold transition-all duration-200 text-gray-300 hover:text-white hover:bg-gray-700/50';
 
   tabContainer.appendChild(pongTab);

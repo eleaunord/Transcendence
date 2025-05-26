@@ -1,5 +1,6 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
+import { t } from '../utils/translator';
 
 type Friend = {
   username: string;
@@ -29,7 +30,7 @@ export function createAboutPage(navigate: (path: string) => void): HTMLElement {
   mainSection.className = 'relative mt-24 flex flex-col items-center z-30';
 
   const title = document.createElement('h2');
-  title.textContent = 'About Us';
+  title.textContent = t('about.title');
   title.className = 'text-4xl font-bold mb-10 text-white';
   mainSection.appendChild(title);
 

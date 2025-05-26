@@ -145,12 +145,11 @@ export function createModePage(navigate: (path: string) => void): HTMLElement {
       transition-all duration-500 z-20 pointer-events-none group-hover:pointer-events-auto
     `;
     infoPanel.innerHTML = `
-      <div class="font-bold mb-1">🕹️ Règles du jeu : Pong</div>
-      <p class="mb-2">Deux joueurs s'affrontent en renvoyant une balle à l'aide de leur raquette. Un point est marqué si l'adversaire rate la balle. Le premier à atteindre le score max gagne. Attention, le rythme s'accélère !</p>
-      <div class="font-bold mb-1">🎮 Contrôles</div>
-      <p>Joueur 1 : W (haut) / S (bas)<br>Joueur 2 : Flèche ↑ (haut) / Flèche ↓ (bas)</p>
+      <div class="font-bold mb-1">${t('game.rules.title')}</div>
+      <p class="mb-2">${t('game.rules.description')}</p>
+      <div class="font-bold mb-1">${t('game.controls.title')}</div>
+      <p>${t('game.controls.description').replace(/\n/g, '<br>')}</p>
     `;
-
 
     const infoWrapper = document.createElement("div");
     infoWrapper.className = "absolute bottom-4 right-4 group";

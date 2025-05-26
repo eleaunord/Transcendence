@@ -190,6 +190,8 @@
   "delete.failed": "삭제에 실패했습니다.",
 
   "leaderboard.title": "리더보드",
+  "game.pong.title": "퐁",
+  "game.memory.lead": "메모리",
   "leaderboard.loading": "리더보드를 불러오는 중...",
   "leaderboard.error": "리더보드 데이터를 가져오는 중 오류가 발생했습니다. 인터넷 연결을 확인하거나 나중에 다시 시도해 주세요.",
   "leaderboard.rank": "순위",
@@ -253,6 +255,11 @@
   "custom.theme.nebula": "성운",
   "custom.start": "게임 시작",
 
+  "game.memory.title": "메모리",
+
+  "memory.rules.title": "🧠 게임 규칙: 메모리",
+  "memory.rules.description": "턴당 두 장의 카드를 클릭해 짝을 맞춰 보세요. 카드 위치를 기억하세요!\n플레이어가 번갈아 가며 진행하며, 가장 많은 쌍을 찾는 사람이 승리합니다.",
+
   "memory.play": "시작하기",
   "memory.pairs": "카드 수",
   "memory.pairs.6": "12장 (6쌍)",
@@ -305,6 +312,13 @@
   "mode.comingSoon": "곧 제공될 기능입니다!",
   "mode.badge": "곧 출시",
 
+  "game.pong3d.title": "퐁 3D",
+
+  "game.rules.title": "🕹️ 게임 규칙: 펑",
+  "game.rules.description": "두 명의 플레이어가 패들로 공을 주고받으며 대결합니다. 상대가 공을 놓치면 점수를 획득합니다. 먼저 최대 점수에 도달하면 승리합니다. 시간이 지날수록 공의 속도가 빨라집니다!",
+  "game.controls.title": "🎮 조작법",
+  "game.controls.description": "플레이어 1: W (위) / S (아래)\n플레이어 2: ↑ (위) / ↓ (아래)",
+
   "versus.countdown": "{{seconds}}초 후 시작",
   "versus.retry": "다시 하기",
   "versus.backToModes": "게임 모드로 돌아가기",
@@ -328,6 +342,8 @@
   "tournament.local_name": "로컬 토너먼트",
   "tournament.creation_error": "토너먼트를 생성할 수 없습니다",
   "guest.invalid_name": "잘못된 이름입니다. 영문자, 숫자, 하이픈(-), 밑줄(_)만 사용할 수 있으며, 3~20자 사이여야 합니다.",
+
+  "about.title": "회사 소개",
 
   "team.name.shinhye": "Shinhye YUN",
   "team.name.alix": "Alix CERALINE",

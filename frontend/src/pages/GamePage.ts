@@ -45,7 +45,7 @@ export function createGamePage(navigate: (path: string) => void): HTMLElement {
  
   // ▶️ Bouton lancer Pong
   const playBtn = document.createElement('button');
-  playBtn.textContent = 'Pong3D';
+  playBtn.textContent = t('game.pong3d.title');
   playBtn.className =
     'bg-blue-600/65 hover:bg-blue-700 text-white text-5xl font-bold py-6 px-24 rounded-lg shadow-lg transition duration-300';
   playBtn.addEventListener('click', () => {
@@ -54,7 +54,7 @@ export function createGamePage(navigate: (path: string) => void): HTMLElement {
 
   // 🎴 Bouton aller au Memory
   const memoryBtn = document.createElement('button');
-  memoryBtn.textContent = 'Memory';
+  memoryBtn.textContent = t('game.memory.title');
   memoryBtn.className =
     'bg-purple-600/65 hover:bg-purple-700 text-white text-5xl font-bold py-6 px-24 rounded-lg shadow-lg transition duration-300';
   memoryBtn.addEventListener('click', () => {

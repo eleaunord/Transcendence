@@ -115,10 +115,12 @@ export function createModeMemoryPage(navigate: (path: string) => void): HTMLElem
       transform translate-x-full opacity-0 group-hover:translate-x-0 group-hover:opacity-100 
       transition-all duration-500 z-20 pointer-events-none group-hover:pointer-events-auto
     `;
+  
     infoPanel.innerHTML = `
-      <div class="font-bold mb-1">🧠 Règles du jeu : Mémo</div>
-      <p class="mb-2">Clique sur deux cartes par tour pour tenter de former des paires.<br>Mémorise leur position !</p>
-      <p>Les joueurs jouent à tour de rôle. Celui qui trouve le plus de paires remporte la partie.</p>
+      <div class="font-bold mb-1">${t('memory.rules.title')}</div>
+      <p class="mb-2">
+        ${t('memory.rules.description').replace(/\n/g, '<br>')}
+      </p>
     `;
 
     const infoWrapper = document.createElement("div");
