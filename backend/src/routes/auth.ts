@@ -225,7 +225,8 @@ export async function authRoutes(app: FastifyInstance) {
 
     } catch (err: any) {
       console.error('Google Auth Error:', err?.response?.data || err.message);
-      reply.code(500).send({ error: 'auth.oauth_failed' });
+      const redirectUrl = `${FRONTEND_URL}/auth/google?error=oauth_failed`;
+      reply.redirect(redirectUrl);    
     }
   });
   

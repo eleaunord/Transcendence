@@ -36,12 +36,12 @@ export function createGoogleOauthPage(navigate: (path: string) => void): HTMLEle
 // 0519 추가 끝!!
 
   // 0527 추가: 이미 가입된 이메일인 경우 안내 
-  if (error === 'already_registered') {
+  if (error === 'oauth_failed') {
     title.textContent = 'This email is already registered.\nPlease log in using your password.';
     spinner.style.display = 'none';
 
     setTimeout(() => {
-      navigate('/auth');
+      navigate('/');
     }, 3000);
     return container;
   }
