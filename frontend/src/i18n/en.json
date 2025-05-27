@@ -139,6 +139,8 @@
   "settings.delete.description": "Clicking Delete my account will permanently remove your account.",
 
   "history.pong": "Pong Matches",
+  "history.victories": "Victories",
+  "history.defeats":   "Defeats",
   "history.memory": "Memory Matches",
   "history.against": "against",
   "history.empty": "No recent matches played.",

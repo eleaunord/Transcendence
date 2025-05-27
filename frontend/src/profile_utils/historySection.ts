@@ -25,41 +25,75 @@ export function createHistorySection(token: string): HTMLElement {
       h-[200px] overflow-hidden
     `.replace(/\s+/g, ' ').trim();
 
-
+    // — HEADER + STATS —
     const header = document.createElement('div');
-    header.className = 'flex justify-between items-center w-full mb-4';
+    header.className = 'flex justify-between items-start w-full mb-4';
+
+    // title + subtitle stacked
+    const titleColumn = document.createElement('div');
+    titleColumn.className = 'flex flex-col';
 
     const title = document.createElement('h3');
     title.textContent = titleText;
     title.className = 'text-xl font-semibold';
 
+    const statsLine = document.createElement('p');
+    statsLine.className = 'text-sm text-gray-300 italic';
+    statsLine.textContent = ''; // filled in below for Pong
+
+    titleColumn.append(title, statsLine);
+
+    // nav buttons
     const nav = document.createElement('div');
     nav.className = 'flex items-center gap-2';
-
     const prevBtn = document.createElement('button');
     prevBtn.textContent = '◀';
     prevBtn.className = 'text-white px-2 py-1 rounded hover:bg-white/20';
-
+    const pageIndicator = document.createElement('span');
+    pageIndicator.className = 'text-sm text-gray-400';
     const nextBtn = document.createElement('button');
     nextBtn.textContent = '▶';
     nextBtn.className = 'text-white px-2 py-1 rounded hover:bg-white/20';
+    nav.append(prevBtn, pageIndicator, nextBtn);
 
-    const pageIndicator = document.createElement('span');
-    pageIndicator.className = 'text-sm text-gray-400';
+    header.append(titleColumn, nav);
 
-    nav.appendChild(prevBtn);
-    nav.appendChild(pageIndicator);
-    nav.appendChild(nextBtn);
-
-    header.appendChild(title);
-    header.appendChild(nav);
-
+    // the list of past games
     const list = document.createElement('div');
     list.className = 'text-gray-300 space-y-2 italic min-h-[80px] transition-opacity duration-300';
 
+    // assemble container once
     container.append(header, list);
     section.appendChild(container);
 
+    // fetch and fill stats if this is the Pong section
+    if (endpoint === '/api/me/pong-games') {
+      fetch('/api/me/pong-stats', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then(r => r.json())
+        .then(({ victories, defeats }) => {
+        statsLine.textContent =
+          `${t('history.victories')}: ${victories} – ${t('history.defeats')}: ${defeats}`;
+      })
+
+        .catch(err => console.error('Could not load pong stats:', err));
+    }
+
+  if (endpoint === '/api/me/memory-games') {
+    fetch('/api/me/memory-stats', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(r => r.json())
+      .then(({ victories, defeats }) => {
+        statsLine.textContent = 
+          `${t('history.victories')}: ${victories} – ${t('history.defeats')}: ${defeats}`;
+      })
+      .catch(console.error);
+  }
+
+
+    // pagination state
     let currentPage = 0;
     let data: any[] = [];
 
@@ -79,21 +113,18 @@ export function createHistorySection(token: string): HTMLElement {
             date.getFullYear()
           ].join('/');
 
-
-          const rawOpp       = game.opponent;
+          const rawOpp = game.opponent;
           const opponentLabel =
-
-            ( rawOpp === 'Invité' || rawOpp === 'Guest' )
+            (rawOpp === 'Invité' || rawOpp === 'Guest')
               ? t('opponent.guest')
               : rawOpp;
 
-          p.textContent = 
+          p.textContent =
             `${icon} ${game.score1} - ${game.score2} ` +
             `${t('history.against')} ${opponentLabel} • ${dateOnly}`;
 
           list.appendChild(p);
         });
-
 
         pageIndicator.textContent = `${currentPage + 1} / ${Math.ceil(data.length / 3)}`;
         prevBtn.disabled = currentPage === 0;
@@ -104,46 +135,32 @@ export function createHistorySection(token: string): HTMLElement {
     };
 
     prevBtn.addEventListener('click', () => {
-      if (currentPage > 0) {
-        currentPage--;
-        renderPage();
-      }
+      if (currentPage > 0) { currentPage--; renderPage(); }
     });
-
     nextBtn.addEventListener('click', () => {
-      if ((currentPage + 1) * 3 < data.length) {
-        currentPage++;
-        renderPage();
-      }
+      if ((currentPage + 1) * 3 < data.length) { currentPage++; renderPage(); }
     });
 
+    // initial fetch of game history
     fetch(endpoint, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => res.json())
       .then(games => {
         if (!Array.isArray(games)) {
-          const errorMsg = document.createElement('p');
-          errorMsg.textContent = t('history.loadError');
-          list.appendChild(errorMsg);
+          list.textContent = t('history.loadError');
           return;
         }
-
         if (games.length === 0) {
-          const emptyMsg = document.createElement('p');
-          emptyMsg.textContent = t('history.empty');
-          list.appendChild(emptyMsg);
+          list.textContent = t('history.empty');
           return;
         }
-
         data = games.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
         renderPage();
       })
       .catch(err => {
-        console.error(`Erreur lors du chargement de ${titleText.toLowerCase()}:`, err);
-        const errorMsg = document.createElement('p');
-        errorMsg.textContent = t('history.error');
-        list.appendChild(errorMsg);
+        console.error(`Erreur loading ${titleText}:`, err);
+        list.textContent = t('history.error');
       });
 
     return section;
@@ -152,8 +169,6 @@ export function createHistorySection(token: string): HTMLElement {
   const pongSection = createPaginatedHistorySection(t('history.pong'), '/api/me/pong-games', '🏓');
   const memorySection = createPaginatedHistorySection(t('history.memory'), '/api/me/memory-games', '🃏');
 
-  historyWrapper.appendChild(pongSection);
-  historyWrapper.appendChild(memorySection);
-
+  historyWrapper.append(pongSection, memorySection);
   return historyWrapper;
 }

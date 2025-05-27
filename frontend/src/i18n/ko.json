@@ -139,6 +139,8 @@
   "settings.delete.description": "계정을 클릭하면 영구적으로 삭제됩니다.",
 
   "history.pong": "퐁 경기",
+  "history.victories": "승리",
+  "history.defeats":   "패배",
   "history.memory": "메모리 경기",
   "history.against": "상대",
   "history.empty": "최근에 플레이한 게임이 없습니다.",

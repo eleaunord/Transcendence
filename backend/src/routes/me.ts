@@ -311,6 +311,40 @@ export async function meRoutes(app: FastifyInstance) {
       return reply.code(500).send({ error: 'Internal Server Error' });
     }
   });
+  
+
+  app.get('/me/pong-stats', { preHandler: authenticateToken }, async (req, reply) => {
+  const userId = req.user?.id;
+  if (!userId) return reply.code(401).send({ error: 'Unauthorized' });
+
+  // count wins vs losses in games table
+  const stats = db.prepare(`
+    SELECT
+      COALESCE(SUM(CASE WHEN winner_id = ? THEN 1 ELSE 0 END), 0) AS victories,
+      COALESCE(SUM(CASE WHEN winner_id != ? THEN 1 ELSE 0 END), 0) AS defeats
+    FROM games
+    WHERE user_id = ?
+  `).get(userId, userId, userId) as { victories: number; defeats: number };
+
+  reply.send(stats);
+  });
+
+  app.get('/me/memory-stats', { preHandler: authenticateToken }, async (req, reply) => {
+    const userId = req.user?.id;
+    if (!userId) return reply.code(401).send({ error: 'Unauthorized' });
+
+    // count wins & losses by comparing score1 vs score2
+    const stats = db.prepare(`
+      SELECT
+        COALESCE(SUM(CASE WHEN score1 > score2 THEN 1 ELSE 0 END), 0) AS victories,
+        COALESCE(SUM(CASE WHEN score1 < score2 THEN 1 ELSE 0 END), 0) AS defeats
+      FROM memory_games
+      WHERE user_id = ?
+    `).get(userId) as { victories: number; defeats: number };
+
+    reply.send(stats);
+  });
+
 
 app.delete('/me', async (req, reply) => {
     const auth = req.headers.authorization;

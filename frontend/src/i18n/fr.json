@@ -139,6 +139,8 @@
   "settings.delete.description": "Cliquez ici pour supprimer définitivement votre compte.",
 
   "history.pong": "Parties de Pong",
+  "history.victories": "Victoires",
+  "history.defeats":   "Défaites",
   "history.memory": "Parties de Memory",
   "history.against": "contre",
   "history.empty": "Aucune partie jouée récemment.",
