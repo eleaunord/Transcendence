@@ -11,6 +11,7 @@ export function createHomePage(navigate: (path: string) => void): HTMLElement {
       highlightCheckbox();
       return;
     }
+    sessionStorage.setItem('privacyAccepted', 'true');
     navigate('/signup');  // Redirection classique
   };
 

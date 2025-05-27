@@ -137,6 +137,30 @@ export function protected2FARoute(
   };
 }
 
+export function privacyAcceptedRoute(
+  page: (navigate: (path: string) => void) => HTMLElement
+): (navigate: (path: string) => void) => HTMLElement {
+  return (navigate) => {
+    const accepted = sessionStorage.getItem('privacyAccepted') === 'true';
+
+    if (!accepted) {
+      alert('You must agree to the terms of service to register');
+
+      // navigate 후 렌더링 지연 → setTimeout으로 다음 tick에서 실행
+      setTimeout(() => navigate('/'), 0);
+
+      // 눈에 보일 뭔가 반환
+      const placeholder = document.createElement('div');
+      placeholder.textContent = 'If you do not agree to the terms, you cannot access this page.';
+      placeholder.className = 'text-white text-center mt-40 text-xl';
+      return placeholder;
+    }
+
+    return page(navigate);
+  };
+}
+
+
 /**
  * Fonction pour rediriger les utilisateurs connectés vers /game au lieu de /
  */

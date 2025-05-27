@@ -1,4 +1,4 @@
-import { initRouter, protectedRoute, protected2FARoute } from './utils/router';
+import { initRouter, protectedRoute, protected2FARoute, privacyAcceptedRoute } from './utils/router';
 import { createHomePage } from './pages/HomePage';
 import { createAuthPage } from './pages/AuthPage';
 import { createProfileCreationPage } from './pages/ProfileCreationPage';
@@ -57,7 +57,7 @@ const routes = {
   '/customization-game' : useWithNavigate(protectedRoute(createGameCustomizationPage)),
   '/customization-memory' : useWithNavigate(protectedRoute(createMemoryCustomizationPage)),
   '/user-profile': useWithNavigate(protectedRoute(createUserProfilePage)),
-  '/signup': useWithNavigate(createSignUpPage),
+  '/signup': useWithNavigate(privacyAcceptedRoute(createSignUpPage)),
   '/auth/google': useWithNavigate(createGoogleOauthPage),
   '/2fa': useWithNavigate((navigate) => {
     const params = new URLSearchParams(window.location.search);
