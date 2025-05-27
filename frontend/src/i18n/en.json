@@ -54,6 +54,7 @@
   "auth.default_error": "An unknown error occurred",
 
   "me.error.missing_token": "Missing token",
+  "me.error.username": "This username is already taken.",
   "me.error.invalid_token": "Invalid or expired token",
   "me.error.unauthorized": "Unauthorized",
   "me.error.user_not_found": "User not found",

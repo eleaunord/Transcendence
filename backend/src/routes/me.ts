@@ -118,6 +118,12 @@ export async function meRoutes(app: FastifyInstance) {
         error: 'me.error.invalid_username'
       });
       }
+       // Vérification si le nom est déjà pris par un autre utilisateur
+    const existing = db.prepare('SELECT id FROM users WHERE username = ? AND id != ?').get(username, userId);
+    if (existing) {
+      return reply.code(409).send({ error: 'me.error.username_taken' }); // 409 Conflict
+    }
+     
       // Mise à jour en base de données
       db.prepare('UPDATE users SET username = ? WHERE id = ?').run(username, userId);
 

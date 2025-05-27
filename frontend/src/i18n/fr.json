@@ -54,6 +54,7 @@
   "auth.default_error": "Une erreur inconnue est survenue",
 
   "me.error.missing_token": "Jeton manquant",
+  "me.error.username": "Ce nom d'utilisateur est déjà utilisé.",
   "me.error.invalid_token": "Jeton invalide ou expiré",
   "me.error.unauthorized": "Non autorisé",
   "me.error.user_not_found": "Utilisateur non trouvé",
