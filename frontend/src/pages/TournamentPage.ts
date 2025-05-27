@@ -238,7 +238,6 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
       updateSlots();
       refreshFriendDropdown();
     }
-    console.log('[SLOT DEBUG] Friend selected:', selectedFriend);
   });
 
   addGuestBtn.addEventListener('click', () => {
@@ -269,7 +268,6 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
       const guestAvatar = guestAvatars[emptyIndex - 1] || '/assets/profile-pictures/default.jpg';
       
       const newGuestId = `guest-${Date.now()}-${Math.random()}`;  // 추가
-      console.log('[NEW GUEST STRING ID]', newGuestId);       
 
       playerSlots[emptyIndex] = {
         id: newGuestId,  // 고유한 guest ID 생성!
@@ -284,10 +282,8 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
 
   startBtn.addEventListener('click', async () => {
     const selectedPlayers = playerSlots.filter(p => p !== null && p !== 'loading') as Player[];
-    console.log('Joueurs sélectionnés :', selectedPlayers);
 
     selectedPlayers.forEach(p => {
-      console.log('[PLAYER ID TYPE CHECK]', p.id, typeof p.id);
     });
 
     try {
@@ -304,15 +300,10 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
       }
       
       const data = await response.json();
-      console.log(' Tournoi créé avec ID:', data.tournamentId);
       
-        // console.log('Status code:', response.status);
-        // console.log('Response ok:', response.ok);
         // const data = await response.json();
-        // console.log('Response body:', data);
       // On redirige vers la page du bracket avec l'ID
       navigate(`/bracket?id=${data.tournamentId}`);
-      // console.log('Je vais naviguer vers', `/bracket?id=${data.tournamentId}`);
     } 
     catch (error)
     {
@@ -321,7 +312,6 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
   });
   
   // startBtn.addEventListener('click', () => {
-  //   console.log('Tournoi démarré avec les joueurs :', playerSlots);
   //   navigate('/local');
   // });
 

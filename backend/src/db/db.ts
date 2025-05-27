@@ -33,7 +33,6 @@ function ensureThemeColumn() {
       ALTER TABLE users 
       ADD COLUMN theme TEXT DEFAULT '/assets/Backgrounds/bg_th1.jpg'
     `).run();
-    console.log('✅ Added theme column to users table');
   }
 
   // Ensure all existing users have a theme

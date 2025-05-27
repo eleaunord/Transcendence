@@ -14,7 +14,6 @@ type Player = {
 export function createBracketPage(navigate: (path: string) => void): HTMLElement {
   // ── RESET ON COLD LOAD ──
   if (sessionStorage.getItem('inMatch') !== 'true') {
-    console.log('[BRACKET] cold load → clearing tournament state');
     const keysToClear = [
       'semiFinalists',
       'finalist',
@@ -27,13 +26,11 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
       .forEach(k => keysToClear.push(k));
     keysToClear.forEach(k => sessionStorage.removeItem(k));
   } else {
-    console.log('[BRACKET] back from match → keeping state');
     sessionStorage.removeItem('inMatch');
   }
 
   // ── CLEAN UP ANY PREVIOUS PONG SCENE ──
   if ((window as any).activePongCleanup) {
-    console.log('[debug bracketpage] Cleaning up previous Pong scene...');
     (window as any).activePongCleanup();
     delete (window as any).activePongCleanup;
   }
@@ -118,7 +115,6 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
   const savedSemiFinalists = sessionStorage.getItem("semiFinalists");
   if (savedSemiFinalists) {
     semiFinalists = JSON.parse(savedSemiFinalists);
-    console.log("[INIT] semiFinalists restored from sessionStorage:", semiFinalists);
   }
 
   function saveWinnerToSemiFinal(winner: Player, matchIndex: number) {
@@ -450,7 +446,6 @@ export function createBracketPage(navigate: (path: string) => void): HTMLElement
       },
       btnReturn
     );
-    console.log("!!Pong scene created in bracket --> setting activePongCleanup");
     (window as any).activePongCleanup = pong.cleanup;
   }
 

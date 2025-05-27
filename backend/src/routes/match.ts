@@ -35,7 +35,6 @@ export async function matchRoutes(app: FastifyInstance) {
     for (const [id, match] of activeMatches.entries()) {
       if (match.created_at < cutoff) {
         activeMatches.delete(id);
-        console.log(`🧹 Cleaned up expired match: ${id}`);
       }
     }
   };
@@ -76,7 +75,6 @@ export async function matchRoutes(app: FastifyInstance) {
         opponent_id,
         created_at: new Date(),
       });
-      console.log(`🎮 Match started in memory: ${gameId}`);
       reply.send({ status: 'created', gameId });
     } catch (err) {
       console.error('❌ Error creating match:', err);
@@ -129,7 +127,6 @@ export async function matchRoutes(app: FastifyInstance) {
     }
 
     const winner_id = score1 > score2 ? finalUserId! : opponent_id;
-    console.log(`🏆 Winner determined: user ${winner_id}`);
 
     try {
       const result = db.prepare(`
@@ -151,7 +148,6 @@ export async function matchRoutes(app: FastifyInstance) {
       insertScore.run(dbGameId, opponent_id, score2);
 
       activeMatches.delete(gameId);
-      console.log(`🎯 Match ${gameId} saved as DB game ${dbGameId}`);
 
       reply.send({ status: 'match completed', winner_id, dbGameId });
     } catch (err) {
@@ -244,7 +240,6 @@ export async function matchRoutes(app: FastifyInstance) {
 //     for (const [matchId, match] of activeMatches.entries()) {
 //       if (match.created_at < thirtyMinutesAgo) {
 //         activeMatches.delete(matchId);
-//         console.log(`🧹 Cleaned up expired match: ${matchId}`);
 //       }
 //     }
 //   };
@@ -296,7 +291,6 @@ export async function matchRoutes(app: FastifyInstance) {
 //         created_at: new Date()
 //       });
 
-//       console.log(`🎮 Match started in memory: ${gameId}`);
 //       reply.send({ status: 'created', gameId });
 //     } catch (err) {
 //       console.error('❌ Erreur lors de la création du match :', err);
@@ -339,7 +333,6 @@ export async function matchRoutes(app: FastifyInstance) {
 //       return reply.status(400).send({ error: 'Match participants do not match' });
 //     }
   
-//     console.log('[DEBUG GAME DATA BACKEND] Reçu POST /match/end', {
 //       gameId,
 //       finalUserId,
 //       opponent_id,
@@ -367,7 +360,6 @@ export async function matchRoutes(app: FastifyInstance) {
   
 //     const winner_id = score1 > score2 ? finalUserId! : opponent_id;
   
-//     console.log(`[DEBUG GAME DATA BACKEND] Winner determined: winner_id=${winner_id}`);
 
 //     try {
 //       // Now save the completed match to database
@@ -387,7 +379,6 @@ export async function matchRoutes(app: FastifyInstance) {
 //       // Remove from active matches
 //       activeMatches.delete(gameId);
 
-//       console.log('🎯 Match completed and saved to database', { 
 //         memoryGameId: gameId, 
 //         dbGameId, 
 //         score1, 
@@ -552,7 +543,6 @@ export async function matchRoutes(app: FastifyInstance) {
 // //       return reply.status(400).send({ error: 'Missing parameters' });
 // //     }
   
-// //     console.log('[DEBUG GAME DATA BACKEND] Reçu POST /match/end', {
 // //       gameId,
 // //       finalUserId,
 // //       opponent_id,
@@ -581,7 +571,6 @@ export async function matchRoutes(app: FastifyInstance) {
 // //     //  수정된 부분: 정확한 finalUserId를 winner로 사용
 // //     const winner_id = score1 > score2 ? finalUserId! : opponent_id;
   
-// //     console.log(`[DEBUG GAME DATA BACKEND] Winner determined: winner_id=${winner_id}`);
   
 // //     // 점수 저장
 // //     db.prepare(`UPDATE scores SET score = ? WHERE game_id = ? AND player_id = ?`)
@@ -593,7 +582,6 @@ export async function matchRoutes(app: FastifyInstance) {
 // //     db.prepare(`UPDATE games SET winner_id = ? WHERE id = ?`)
 // //       .run(winner_id, gameId);
   
-// //     console.log('🎯 Match mis à jour', { gameId, score1, score2, winner_id });
   
 // //     reply.send({ status: 'match updated', winner_id });
 // //   });

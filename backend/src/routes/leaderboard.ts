@@ -5,7 +5,6 @@ export function leaderboardRoutes(app: FastifyInstance) {
   // Get pong leaderboard data - top players by total points
   app.get('/leaderboard', async (request, reply) => {
     try {
-      console.log('Pong leaderboard endpoint accessed');
       const query = `
       SELECT
         u.id,
@@ -42,7 +41,6 @@ export function leaderboardRoutes(app: FastifyInstance) {
   // Get memory leaderboard data - top players by memory game performance <-- 24 여기서 부터 바뀜
   app.get('/memory-leaderboard', async (request, reply) => {
     try {
-      console.log('Memory leaderboard endpoint accessed');
       const query = `
         SELECT 
           u.id,

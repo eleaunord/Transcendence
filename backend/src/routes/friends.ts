@@ -13,7 +13,6 @@ export async function friendsRoutes(app: FastifyInstance) {
   ========================== */
   app.get('/friends', async (request, reply) => {
     try {
-      console.log('Friends endpoint accessed');
       const userId = request.user!.id;
 
       // Requête SQL pour récupérer les amis fictifs marqués comme "amis"
@@ -33,7 +32,6 @@ export async function friendsRoutes(app: FastifyInstance) {
           pf.username
       `;
       const rows = db.prepare(query).all(userId) as FriendRow[];
-      console.log(`✅ Retrieved ${rows.length} friend(s)`);
 
       // On formatte les données pour le frontend
       const friends = rows.map(row => ({

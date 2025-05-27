@@ -50,7 +50,6 @@ export function createGoogleOauthPage(navigate: (path: string) => void): HTMLEle
     sessionStorage.setItem('is_2fa_enabled', String(is2FA));
     sessionStorage.setItem('seen_2fa_prompt', String(seen2FA));
     
-    console.log('[GoogleOAuth] token/email saved to sessionStorage'); // debug
 
     setTimeout(() => {
       if (!seen2FA) {

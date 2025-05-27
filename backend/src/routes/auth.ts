@@ -79,7 +79,6 @@ export async function authRoutes(app: FastifyInstance) {
     });
 
   } catch (err: any) {
-    console.log('[TokenValidation] Invalid token:', err.message);
     reply.code(401).send({ valid: false, error: 'Invalid token' });
   }
   });
@@ -147,7 +146,6 @@ export async function authRoutes(app: FastifyInstance) {
 
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
 
-    console.log('[STANDARD LOGIN] USER EMAIL:', user.email, 'HAS_2FA:', !!user.is_2fa_enabled);
 
     reply.send({
       token,
@@ -164,7 +162,6 @@ export async function authRoutes(app: FastifyInstance) {
 
   // ----- Google OAuth -----
   app.get('/auth/google', async (_, reply) => {
-    console.log('[DEBUG] Sending redirect_uri to Google:', GOOGLE_REDIRECT_URL);
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URL}&response_type=code&scope=profile email&access_type=offline`;
     reply.redirect(authUrl);
   });
@@ -224,7 +221,6 @@ export async function authRoutes(app: FastifyInstance) {
       // 0805 수정
       // const redirectUrl = `${FRONTEND_URL}/auth/google?token=${token}&email=${encodeURIComponent(email)}&is_2fa_enabled=${user.is_2fa_enabled}&seen_2fa_prompt=${user.seen_2fa_prompt}`;
       const redirectUrl = `${FRONTEND_URL}/auth/google?token=${token}&email=${encodeURIComponent(email)}&id=${user.id}&is_2fa_enabled=${user.is_2fa_enabled}&seen_2fa_prompt=${user.seen_2fa_prompt}`;
-      console.log('[GOOGLE OAUTH] Redirecting to:', redirectUrl);
       reply.redirect(redirectUrl);
 
     } catch (err: any) {

@@ -39,7 +39,6 @@ export function createTeamMemberPage(navigate: (path: string) => void, name: str
 
   if (backgroundUrl) {
     backgroundImage.style.backgroundImage = `url('${backgroundUrl}')`;
-    console.log("✅ Fond appliqué :", backgroundUrl);
   } else {
     console.warn("⚠️ Aucun fond trouvé pour :", name);
   }

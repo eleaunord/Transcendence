@@ -4,7 +4,6 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
   let error = '';
 
   const handleSignUp = async () => {
-    console.log('handleSignup exécutée');
     const usernameInput = document.getElementById('username') as HTMLInputElement;
     const passwordInput = document.getElementById('password') as HTMLInputElement;
     const emailInput = document.getElementById('email') as HTMLInputElement;
@@ -24,7 +23,6 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
       });
 
       const data = await res.json();
-      console.log(data);
 
       if (!res.ok) {
         error = t(data.error )|| t('signup.error.failed');
@@ -47,7 +45,6 @@ export function createSignUpPage(navigate: (path: string) => void): HTMLElement 
           sessionStorage.setItem('userEmail', user.email); // 추가
           sessionStorage.setItem('profilePicture', user.image);
           sessionStorage.setItem('userId', user.id.toString()); // 1905 추가
-          console.log('[SIGNUP] Utilisateur chargé :', user);
         } else {
           console.warn('[SIGNUP] Impossible de charger /api/me');
         }

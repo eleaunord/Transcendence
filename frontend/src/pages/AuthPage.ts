@@ -1,10 +1,8 @@
-import { IS_DEV_MODE } from '../config';
 import { t } from '../utils/translator'; // Ajout pour i18n
 
 export function createAuthPage(navigate: (path: string) => void): HTMLElement {
   let error = '';
 const handleLogin = async () => {
-  console.log('handleLogin executed');
   const username = (document.getElementById('username') as HTMLInputElement).value;
   const password = (document.getElementById('password') as HTMLInputElement).value;
 
@@ -18,7 +16,6 @@ const handleLogin = async () => {
       body: JSON.stringify({ username, password }),
     });
     const data = await res.json();
-    console.log('login response:', data);
 
     if (!res.ok) {
       error = t(data.error) || t('auth.error.connection');
@@ -33,7 +30,6 @@ const handleLogin = async () => {
 
     // Check if 2FA is required
     if (data.requires_2fa || data.user.is_2fa_enabled) {
-      console.log('[Auth] User has 2FA enabled, redirecting to input page');
       sessionStorage.removeItem('2fa_code_sent'); // Clear any previous state
       return navigate('/2fa?mode=input');
     }
@@ -51,7 +47,6 @@ const handleLogin = async () => {
     }
 
     const user = await me.json();
-    console.log('User loaded:', user);
     
     // Store user info
     localStorage.setItem('user', JSON.stringify(user));
@@ -137,25 +132,6 @@ const handleLogin = async () => {
       errorMessage.style.display = 'none';
     }
   };
-
-  // Ajout bouton DEV si actif
-  if (IS_DEV_MODE) {
-    const devBanner = document.createElement('div');
-    devBanner.className = 'w-full bg-yellow-500 text-black text-center py-2 font-semibold z-50';
-    devBanner.textContent = t('auth.devMode');
-    container.appendChild(devBanner);
-
-    const devLoginBtn = document.createElement('button');
-    devLoginBtn.type = 'button';
-    devLoginBtn.textContent = t('auth.devLogin');
-    devLoginBtn.className =
-      'w-full mt-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg';
-    devLoginBtn.addEventListener('click', () => {
-      localStorage.setItem('token', 'dev-token');
-      navigate('/profile-creation');
-    });
-    form.appendChild(devLoginBtn);
-  }
 
   // Assemble form
   form.appendChild(usernameDiv);

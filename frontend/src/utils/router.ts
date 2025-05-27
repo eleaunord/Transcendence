@@ -21,11 +21,9 @@ async function validateToken(): Promise<{ isValid: boolean; pending2FA: boolean;
       }
     });
 
-    console.log('[TokenValidation] Response status:', res.status);
 
     if (res.ok) {
       const data = await res.json();
-      console.log('[TokenValidation] Valid response:', data);
       
       if (data.valid && data.user) {
         localStorage.setItem('user', JSON.stringify(data.user));
@@ -36,12 +34,10 @@ async function validateToken(): Promise<{ isValid: boolean; pending2FA: boolean;
 
     if (res.status === 403) {
       const data = await res.json();
-      console.log('[TokenValidation] Token pending 2FA:', data);
       return { isValid: false, pending2FA: data.pending_2fa === true, user: data.user };
     }
 
     // Invalid token
-    console.log('[TokenValidation] Token invalid, clearing storage');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     sessionStorage.clear();
@@ -62,10 +58,8 @@ export function protectedRoute(
 ): (navigate: (path: string) => void) => HTMLElement {
   return (navigate) => {
     const token = localStorage.getItem('token');
-    console.log('[ProtectedRoute] Token presence:', token);
     
     if (!token) {
-      console.log('[ProtectedRoute] No token found → redirecting to home...');
       const placeholder = document.createElement('div');
       placeholder.textContent = t('protected.redirecting');
       placeholder.className = 'text-white text-center mt-40 text-xl';
@@ -89,7 +83,6 @@ export function protectedRoute(
         placeholder.parentNode?.replaceChild(actualPage, placeholder);
       } else {
         // Token invalide, rediriger vers la page d'accueil
-        console.log('[ProtectedRoute] Invalid token → redirecting to home...');
         localStorage.setItem('protected_route_notice', message);
         navigate('/');
       }
@@ -111,10 +104,8 @@ export function protected2FARoute(
 ): (navigate: (path: string) => void) => HTMLElement {
   return (navigate) => {
     const token = localStorage.getItem('token');
-    console.log('[router.ts : 2FA] token exists? :', token);
     
     if (!token) {
-      console.log('[router.ts : 2FA] User not logged in → redirecting to home...');
       setTimeout(() => {
         localStorage.setItem('2fa_redirect_notice', '1');
         navigate('/');
@@ -130,11 +121,9 @@ export function protected2FARoute(
     // Valider le token de manière asynchrone
     validateToken().then(isValid => {
       if (isValid) {
-        console.log('[router.ts : 2FA] Valid token → rendering 2FA page');
         const actualPage = page(navigate);
         placeholder.parentNode?.replaceChild(actualPage, placeholder);
       } else {
-        console.log('[router.ts : 2FA] Invalid token → redirecting to home...');
         localStorage.setItem('2fa_redirect_notice', '1');
         navigate('/');
       }
@@ -175,12 +164,10 @@ async function handleHomeRedirect(navigate: (path: string) => void): Promise<HTM
       return placeholder;
     } else if (validation.pending2FA) {
       // Token exists but needs 2FA verification
-      console.log('[HomeRedirect] Token pending 2FA, redirecting to 2FA input');
       navigate('/2fa?mode=input');
       return placeholder;
     } else {
       // Token is invalid, show login
-      console.log('[HomeRedirect] Invalid token, showing login');
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       sessionStorage.clear();

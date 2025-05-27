@@ -89,7 +89,6 @@ const routes = {
 
 navigate = initRouter(routes, 'team')!;
 
-console.log('🏁 Router chargé');
 
 // === INTERNATIONALISATION ===
 window.addEventListener('DOMContentLoaded', () => {

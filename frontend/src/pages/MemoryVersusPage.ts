@@ -236,7 +236,6 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
       timestamp: new Date().toISOString(),
     };
 
-    console.log('[DEBUG MEMORY RESULT] Résultat envoyé au backend :', result);
 
     try {
       const response = await fetch('/api/memory/end', {
@@ -252,7 +251,6 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
         throw new Error(`Erreur HTTP ${response.status}`);
       }
 
-      console.log('✅ Résultat sauvegardé avec succès.');
     } catch (error) {
       console.error('❌ Erreur lors de l’envoi des résultats :', error);
     }

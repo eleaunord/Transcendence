@@ -50,7 +50,6 @@ async function main() {
   const HOST = process.env.HOST || '0.0.0.0';
 
   app.listen({ port: PORT, host: HOST }, () => {
-    console.log(`✅ Backend running on http://${HOST}:${PORT}`);
   });
   
   // app.get('/', async () => {

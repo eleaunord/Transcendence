@@ -197,7 +197,6 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
     btnReturn.addEventListener("click", () => {
       // 2505 추가
       if ((window as any).activePongCleanup) {
-        console.log('[debug bracketpage] Cleaning up previous Pong scene...');
         (window as any).activePongCleanup();
         delete (window as any).activePongCleanup;
       }
@@ -225,7 +224,6 @@ export function createVersusPage(navigate: (path: string) => void): HTMLElement 
       },
       btnReturn
     );
-    console.log("✅ Pong scene created, setting cleanup globally");
     (window as any).activePongCleanup = pong.cleanup;
   }
 

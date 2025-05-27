@@ -32,10 +32,6 @@ down:
 clean:
 	@$(COMPOSE) down -v --rmi all --remove-orphans
 
-# Voir les logs en live
-logs:
-	@$(COMPOSE) logs -f
-
 # Rebuild complet
 rebuild:
 	@$(COMPOSE) down -v --remove-orphans

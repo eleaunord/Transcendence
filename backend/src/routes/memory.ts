@@ -3,7 +3,6 @@ import { authenticateToken } from './authMiddleware';
 import db from '../db/db';
 
 export async function memoryRoutes(app: FastifyInstance) {
-  console.log('✅ memoryRoutes enregistré');
 
   app.addHook('preHandler', authenticateToken);
 

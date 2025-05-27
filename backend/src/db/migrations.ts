@@ -6,7 +6,6 @@ function safeAlter(column: string, type: string) {
   const exists = columns.some(c => c.name === column);
   if (!exists) {
     db.prepare(`ALTER TABLE users ADD COLUMN ${column} ${type}`).run();
-    console.log(` ==== Added column '${column}' to users table ==== `);
   }
 }
 
@@ -15,7 +14,6 @@ function safeAlterTournamentPlayers(column: string, type: string) {
   const exists = columns.some(c => c.name === column);
   if (!exists) {
     db.prepare(`ALTER TABLE tournament_players ADD COLUMN ${column} ${type}`).run();
-    console.log(` ==== Added column '${column}' to tournament_players table ==== `);
   }
 }
 
@@ -24,7 +22,6 @@ function relaxEmailConstraint() {
   const emailCol = columns.find(col => col.name === 'email');
 
   if (emailCol && emailCol.notnull === 1) {
-    console.log('이메일 NOT NULL 제약 해제 중...');
 
     db.exec(`
       PRAGMA foreign_keys = OFF;
@@ -58,9 +55,7 @@ function relaxEmailConstraint() {
       PRAGMA foreign_keys = ON;
     `);
 
-    console.log('[DEBUG MIGRATION] 이메일 NOT NULL 제약 제거 완료');
   } else {
-    console.log('[DEBUG MIGRATION] 이메일 컬럼은 이미 nullable 상태.');
   }
 }
 
@@ -89,7 +84,6 @@ async function migrate() {
 
   // // --- NEW --- condition
   if (!tableExists('games')) {
-    console.log('Creating games table...');
     await db.exec(`
       CREATE TABLE games (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -99,13 +93,10 @@ async function migrate() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
-    console.log('✅ Table `games` créée (user_id nullable)');
   } else {
-    console.log('ℹ️ Table `games` already exists - preserving existing data');
   }
 
   if (!tableExists('scores')) {
-    console.log('Creating scores table...');
     await db.exec(`
       CREATE TABLE scores (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -115,9 +106,7 @@ async function migrate() {
         FOREIGN KEY (game_id) REFERENCES games(id)
       );
     `);
-    console.log('✅ Table `scores` créée');
   } else {
-    console.log('ℹ️ Table `scores` already exists - preserving existing data');
   }
 
   db.prepare(`
@@ -127,7 +116,6 @@ async function migrate() {
       (2, 'AI', 'ai@game.com'),
       (3, 'Guest', 'guest@game.com')
   `).run();
-  console.log('Utilisateurs spéciaux insérés dans la table `users`');
 
   await db.exec(`
     CREATE TABLE IF NOT EXISTS potential_friends (
@@ -137,7 +125,6 @@ async function migrate() {
       profile_picture TEXT
     );
   `);
-  console.log('✅ Table `potential_friends` créée');
 
   await db.exec(`
     CREATE TABLE IF NOT EXISTS user_friends (
@@ -149,7 +136,6 @@ async function migrate() {
       FOREIGN KEY (friend_id) REFERENCES potential_friends(id)
     );
   `);
-  console.log('✅ Table `user_friends` créée');
 
   const potentialFriends = [
     { id: 6, username: 'Alix', status: 'online', profile_picture: '/assets/Team_cards/card_alix.png' },
@@ -166,14 +152,12 @@ async function migrate() {
 
   potentialFriends.forEach((friend) => {
     insertFriend.run(friend.id, friend.username, friend.status, friend.profile_picture);
-    console.log(`✅ Ami fictif ajouté : ${friend.username}`);
   });
 
   db.prepare(`
     INSERT OR IGNORE INTO users (id, username, image)
     SELECT id, username, profile_picture FROM potential_friends
   `).run();
-  console.log('✅ Les amis fictifs ont été insérés dans la table `users` aussi');
 
   await db.exec(`
     CREATE TABLE IF NOT EXISTS tournaments (
@@ -182,7 +166,6 @@ async function migrate() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `);
-  console.log('✅ Table `tournaments` créée');
 
   await db.exec(`
     CREATE TABLE IF NOT EXISTS tournament_players (
@@ -194,7 +177,6 @@ async function migrate() {
       FOREIGN KEY (tournament_id) REFERENCES tournaments(id)
     );
   `);
-  console.log('✅ Table `tournament_players` créée');
 
   safeAlterTournamentPlayers('name', 'TEXT');
 
@@ -215,7 +197,6 @@ async function migrate() {
       FOREIGN KEY (user_id) REFERENCES users(id)
     );
   `);
-  console.log('✅ Table `memory_games` créée');
 }
 
 migrate().catch(console.error);
