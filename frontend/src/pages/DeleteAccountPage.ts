@@ -92,6 +92,7 @@ export function createDeleteAccountPage(navigate: (path: string) => void): HTMLE
       if (res.ok) {
         alert(t('delete.success'));
         localStorage.removeItem('token');
+        sessionStorage.clear(); // added
         navigate('/');
       } else {
         const data = await res.json();

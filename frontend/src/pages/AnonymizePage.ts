@@ -90,8 +90,14 @@ export function createAnonymizePage(navigate: (path: string) => void): HTMLEleme
 
       if (res.ok) {
         alert(t('anonymize.success'));
-        sessionStorage.clear();
-        localStorage.clear();
+        localStorage.removeItem('token');
+        sessionStorage.clear(); // added
+        // sessionStorage.removeItem('2fa_verified');
+        // sessionStorage.removeItem('2fa_code_sent');
+        // sessionStorage.removeItem('token');
+        // sessionStorage.removeItem('userEmail');
+        // localStorage.removeItem('token');
+        // localStorage.removeItem('user');
         navigate('/');
       } else {
         const data = await res.json();
