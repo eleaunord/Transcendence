@@ -300,7 +300,7 @@
   "memory.victory.you": "🏆 You won!",
   "memory.victory.opponent": "🏆 {{opponent}} won!",
   "memory.victory.scores": "Scores",
-  "memory.backToModes": "Back",
+  "memory.backToModes": "Back to game modes",
   
   "memory.mode.versus": "Versus Mode",
   "memory.mode.solo": "Solo Mode",
