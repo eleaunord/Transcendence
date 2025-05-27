@@ -783,7 +783,7 @@ async function endMatch(score1: number, score2: number) {
     // 🎨 Affichage visuel
     showWinnerScreen(winnerName);
 
-    // 🔁 IA dynamique
+    // ATTENTION IA dynamique -> change de comportement si perd le match
     if (opponentIsAI) {
       const scoreDiff = scorePlayer - scoreIA;
       currentProfile = scoreDiff >= 2
@@ -839,6 +839,7 @@ async function endMatch(score1: number, score2: number) {
       }
     }
 
+    // ATTENTION IA -> mise en place de son profile pendant la partie
     if (isAI) {
       const diff = scoreIA - scorePlayer;
       const maxDiff = SCORE_LIMIT;
@@ -846,6 +847,7 @@ async function endMatch(score1: number, score2: number) {
       currentProfile = interpolateProfiles(iaProfiles.aggressive, iaProfiles.cautious, t);
     }
 
+    // ATTENTION IA -> délai de réaction de l'IA
     if (isAI && ballDir.length() > 0) {
       if (iaNextReactionIn <= 0) {
         const hesitateChance = 0.05; // 5% de chance de ne pas réagir du tout
@@ -853,7 +855,7 @@ async function endMatch(score1: number, score2: number) {
           iaNextReactionIn = 6; // fait "perdre du temps" à l'IA
           return;
         }
-        // IA réagit maintenant
+        // ATTENTION IA -> réagit maintenant
         const dx = paddle2.position.x - ball.position.x;
         const timeToReach = Math.abs(dx / ballDir.x);
         const predictedZ = ball.position.z + (ballDir.z * timeToReach);
@@ -864,7 +866,7 @@ async function endMatch(score1: number, score2: number) {
         const speedFactor = clamp(1 - Math.abs(ball.position.x) / 6, 0.4, 1);
         const maxStep = paddleSpeed * 0.7 * speedFactor * currentProfile.adaptation;
 
-        // Appliquer accélération/inertie
+        // ATTENTION IA -> Appliquer accélération/inertie
         const desiredVelocity = clamp(dz + error, -maxStep, maxStep);
         const acceleration = 0.06;
         iaVelocity += clamp(desiredVelocity - iaVelocity, -acceleration, acceleration);
@@ -873,7 +875,7 @@ async function endMatch(score1: number, score2: number) {
         paddle2.position.z += iaVelocity;
         paddle2.position.z = clamp(paddle2.position.z, -2.4, 2.4);
 
-        // Prochaine réaction dans X frames
+        // ATTENTION IA -> réaction dans X frames (1 seconde d'après le sujet)
         iaNextReactionIn = Math.floor(
           Math.random() * (currentProfile.reactionDelayMax - currentProfile.reactionDelayMin + 1)
         ) + currentProfile.reactionDelayMin;
