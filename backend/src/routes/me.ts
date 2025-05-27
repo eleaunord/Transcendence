@@ -198,6 +198,75 @@ export async function meRoutes(app: FastifyInstance) {
   });
 
   //test 1705 
+  // app.get('/me/export', async (req, reply) => {
+  //   const authHeader = req.headers.authorization;
+  //   if (!authHeader) return reply.status(401).send({ error: 'me.error.missing_token' });
+  
+  //   const token = authHeader.split(' ')[1];
+  //   let payload: any;
+  
+  //   try {
+  //     payload = jwt.verify(token, JWT_SECRET);
+  //   } catch (err) {
+  //     return reply.status(401).send({ error: 'me.error.invalid_token' });
+  //   }
+  
+  //   const userId = payload.userId;
+  
+  //   // 유저 정보 가져오기
+  //   const user = db.prepare(`SELECT * FROM users WHERE id = ?`).get(userId);
+  
+  //   // 참여한 게임 가져오기
+  //   const games = db.prepare(`
+  //     SELECT 
+  //       g.id as game_id,
+  //       g.user_id,
+  //       g.opponent_id,
+  //       g.winner_id,
+  //       g.created_at,
+  //       u1.username as user_username,
+  //       u2.username as opponent_username
+  //     FROM games g
+  //     LEFT JOIN users u1 ON g.user_id = u1.id
+  //     LEFT JOIN users u2 ON g.opponent_id = u2.id
+  //     WHERE g.user_id = ? OR g.opponent_id = ?
+  //   `).all(userId, userId) as ExportedGame[];;
+  
+  //   // 게스트 opponent/user 이름 보정
+  //   for (const game of games) {
+  //     if (game.opponent_id < 0 && !game.opponent_username) {
+  //       game.opponent_username = 'Invité';
+  //     }
+  //     if (game.user_id < 0 && !game.user_username) {
+  //       game.user_username = 'Invité';
+  //     }
+  //   }
+
+  //   // 게임별 점수 가져오기
+  //   const gameScores = db.prepare(`
+  //     SELECT 
+  //       s.game_id,
+  //       s.player_id,
+  //       u.username,
+  //       s.score
+  //     FROM scores s
+  //     JOIN users u ON s.player_id = u.id
+  //     WHERE s.player_id = ?
+  //   `).all(userId);
+  
+  //   const exportData = {
+  //     user,
+  //     games,
+  //     scores: gameScores,
+  //   };
+  
+  //   const json = JSON.stringify(exportData, null, 2);
+  //   reply
+  //     .header('Content-Type', 'application/json')
+  //     .header('Content-Disposition', 'attachment; filename=mes-donnees.json')
+  //     .send(json);
+  // });
+
   app.get('/me/export', async (req, reply) => {
     const authHeader = req.headers.authorization;
     if (!authHeader) return reply.status(401).send({ error: 'me.error.missing_token' });
@@ -208,66 +277,95 @@ export async function meRoutes(app: FastifyInstance) {
     try {
       payload = jwt.verify(token, JWT_SECRET);
     } catch (err) {
+      console.error('[EXPORT] Invalid token:', err);
       return reply.status(401).send({ error: 'me.error.invalid_token' });
     }
   
     const userId = payload.userId;
+    console.log('[EXPORT] userId =', userId);
   
-    // 유저 정보 가져오기
-    const user = db.prepare(`SELECT * FROM users WHERE id = ?`).get(userId);
+    try {
+      // 유저 정보
+      const user = db.prepare(`SELECT * FROM users WHERE id = ?`).get(userId);
+      console.log('[EXPORT] User loaded');
   
-    // 참여한 게임 가져오기
-    const games = db.prepare(`
-      SELECT 
-        g.id as game_id,
-        g.user_id,
-        g.opponent_id,
-        g.winner_id,
-        g.created_at,
-        u1.username as user_username,
-        u2.username as opponent_username
-      FROM games g
-      LEFT JOIN users u1 ON g.user_id = u1.id
-      LEFT JOIN users u2 ON g.opponent_id = u2.id
-      WHERE g.user_id = ? OR g.opponent_id = ?
-    `).all(userId, userId) as ExportedGame[];;
+      // Pong 게임들
+      const games = db.prepare(`
+        SELECT 
+          g.id as game_id,
+          g.user_id,
+          g.opponent_id,
+          g.winner_id,
+          g.created_at,
+          u1.username as user_username,
+          u2.username as opponent_username
+        FROM games g
+        LEFT JOIN users u1 ON g.user_id = u1.id
+        LEFT JOIN users u2 ON g.opponent_id = u2.id
+        WHERE g.user_id = ? OR g.opponent_id = ?
+      `).all(userId, userId) as ExportedGame[];
+      console.log('[EXPORT] Pong games loaded:', games.length);
   
-    // 게스트 opponent/user 이름 보정
-    for (const game of games) {
-      if (game.opponent_id < 0 && !game.opponent_username) {
-        game.opponent_username = 'Invité';
+      // 이름 보정 (게스트 처리)
+      for (const game of games) {
+        if (game.opponent_id < 0 && !game.opponent_username) {
+          game.opponent_username = 'Invité';
+        }
+        if (game.user_id < 0 && !game.user_username) {
+          game.user_username = 'Invité';
+        }
       }
-      if (game.user_id < 0 && !game.user_username) {
-        game.user_username = 'Invité';
-      }
+  
+      // 점수
+      const gameScores = db.prepare(`
+        SELECT 
+          s.game_id,
+          s.player_id,
+          u.username,
+          s.score
+        FROM scores s
+        JOIN users u ON s.player_id = u.id
+        WHERE s.player_id = ?
+      `).all(userId);
+      console.log('[EXPORT] Game scores loaded:', gameScores.length);
+  
+      // 메모리 게임
+      const memoryGames = db.prepare(`
+        SELECT 
+          id,
+          user_id,
+          opponent,
+          score1,
+          score2,
+          winner,
+          pair_count,
+          turn_time,
+          timestamp
+        FROM memory_games
+        WHERE user_id = ?
+      `).all(userId);
+      console.log('[EXPORT] Memory games loaded:', memoryGames.length);
+  
+      // 전체 export 객체
+      const exportData = {
+        user,
+        games,
+        scores: gameScores,
+        memoryGames,
+      };
+  
+      const json = JSON.stringify(exportData, null, 2);
+      reply
+        .header('Content-Type', 'application/json')
+        .header('Content-Disposition', 'attachment; filename=mes-donnees.json')
+        .send(json);
+    } catch (err) {
+      console.error('[EXPORT] Unexpected error during export:', err);
+      reply.code(500).send({ error: 'me.error.export_failed' });
     }
-
-    // 게임별 점수 가져오기
-    const gameScores = db.prepare(`
-      SELECT 
-        s.game_id,
-        s.player_id,
-        u.username,
-        s.score
-      FROM scores s
-      JOIN users u ON s.player_id = u.id
-      WHERE s.player_id = ?
-    `).all(userId);
-  
-    const exportData = {
-      user,
-      games,
-      scores: gameScores,
-    };
-  
-    const json = JSON.stringify(exportData, null, 2);
-    reply
-      .header('Content-Type', 'application/json')
-      .header('Content-Disposition', 'attachment; filename=mes-donnees.json')
-      .send(json);
   });
-
-  // PATCH /api/me/2fa
+  
+    // PATCH /api/me/2fa
   app.patch('/me/2fa', async (req, reply) => {
     const userId = req.user?.id;
     if (!userId)
