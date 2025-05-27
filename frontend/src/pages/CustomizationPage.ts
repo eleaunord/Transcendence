@@ -1,6 +1,7 @@
 import { createSidebar } from "../utils/sidebar";
 import { applyUserTheme } from "../utils/theme";
 import { preloadThemeAssets } from '../utils/preloadAssets';
+import { t } from '../utils/translator';
 
 export function createCustomizationPage(navigate: (path: string) => void): HTMLElement {
   if ((window as any).activePongCleanup) {
@@ -47,6 +48,12 @@ export function createCustomizationPage(navigate: (path: string) => void): HTMLE
       window.dispatchEvent(updateThemeEvent);
 
       const token = localStorage.getItem('token');
+      
+      if (!token) {
+      alert(t('profile.auth.required'));
+      return;
+      }
+
       try {
         await fetch('/api/me/theme', {
           method: 'PATCH',

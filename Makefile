@@ -6,7 +6,7 @@ CERT_SCRIPT = nginx/generate-certs.sh
 
 # Démarrer tous les services
 up: prepare
-	@$(COMPOSE) up --build 
+	@$(COMPOSE) up --build -d
 
 # Préparation : chmod + génération des certificats si absents
 prepare: chmod certs

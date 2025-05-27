@@ -89,6 +89,10 @@ export function createProfileCard(): HTMLElement {
           localStorage.setItem('user', JSON.stringify(user));
 
           const token = localStorage.getItem('token');
+          if (!token) {
+            alert(t('profile.auth.required'));
+            return;
+          }
           if (token) {
             fetch('/api/me/image', {
               method: 'PATCH',

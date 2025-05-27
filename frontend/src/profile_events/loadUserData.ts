@@ -1,6 +1,12 @@
 import { t } from '../utils/translator';
 
 export function loadUserData(token: string): void {
+
+  if (!token) {
+    alert(t('profile.auth.required'));
+    return;
+  }
+
   fetch('/api/me', {
     headers: {
       Authorization: `Bearer ${token}`

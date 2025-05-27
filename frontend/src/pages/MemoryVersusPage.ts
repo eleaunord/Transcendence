@@ -217,7 +217,7 @@ export function createMemoryVersusPage(navigate: (path: string) => void): HTMLEl
     const token = localStorage.getItem("token");
 
     if (!token) {
-      console.warn("❗ Token manquant. Utilisateur non connecté ?");
+      alert(t('profile.auth.required'));
       return;
     }
 

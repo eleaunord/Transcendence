@@ -173,6 +173,11 @@ export function createTournamentPage(navigate: (path: string) => void): HTMLElem
 
   // Event listeners
   const token = localStorage.getItem('token');
+
+  if (!token) {
+    alert(t('profile.auth.required'));
+  }
+  
   let friends: Player[] = [];
   
  // 2005 추가  

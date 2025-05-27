@@ -37,6 +37,10 @@ export function createMemoryFriendPage(navigate: (path: string) => void): HTMLEl
 
   const token = localStorage.getItem('token');
 
+  if (!token) {
+      alert(t('profile.auth.required'));
+    }
+
   if (token) {
     fetch('/api/friends', { headers: { Authorization: `Bearer ${token}` } })
       .then(res => res.json())

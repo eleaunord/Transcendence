@@ -71,6 +71,12 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
     sessionStorage.setItem('profilePicture', selectedImage);
 
     const token = localStorage.getItem('token');
+
+    if (!token) {
+      alert(t('profile.auth.required'));
+      return;
+    }
+
     if (token) {
       await fetch('/api/me/image', {
         method: 'PATCH',
@@ -96,6 +102,11 @@ export function createProfileCreationPage(navigate: (path: string) => void): HTM
     sessionStorage.setItem('profilePicture', selectedImage);
 
     const token = localStorage.getItem('token');
+    if (!token) {
+      alert(t('profile.auth.required'));
+      return;
+    }
+
     if (token) {
       await fetch('/api/me/image', {
         method: 'PATCH',
