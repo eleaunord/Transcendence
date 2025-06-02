@@ -4,11 +4,13 @@ Transcendence is a web-based gaming platform and the final project of 42’s Com
 
 The idea was to go beyond what we were comfortable with — hence the name "Transcendence". We had to explore and integrate a wide range of unfamiliar technologies: secure user authentication (including 2FA), Dockerized deployments, tournaments, matchmaking, and even AI opponents.
 
+
 <p align="center">
   
-   <img src="https://github.com/user-attachments/assets/0ae4c340-88fa-4059-a836-209f4538d7d7" width="400"/>
+  ![image](https://github.com/user-attachments/assets/0ae4c340-88fa-4059-a836-209f4538d7d7)
   
 </p>
+
 
 Our final product is a web app where players can:
 
@@ -18,11 +20,13 @@ Our final product is a web app where players can:
 - Track their performance and stats
 - And more — all from a responsive and user-friendly single-page application
 
+
 <p align="center">
 
 ![image](https://github.com/user-attachments/assets/7571262f-a2c7-466d-9228-7fccbf5ffd97)
 
 </p>
+
 
 For most of us, this was our first experience working on a full-stack app with real-world features like OAuth, 2FA, websocket communication, and Docker. Everything from the frontend to the backend was built from scratch or within strict constraints, often without frameworks or libraries that could do the heavy lifting for us. Even the images and artwork in the project were entirely designed by our own teammate and talented artist, Rime Younssi.
 
@@ -58,11 +62,13 @@ We learned not just how to code a game, but how to design a full software system
 
 ## 🧑‍🤝‍🧑 Meet the Team
 
+
 <p align="center">
 
 ![image](https://github.com/user-attachments/assets/fef54d48-b8f8-4672-a4d8-e00c66db1e83)
 
 </p>
+
 
 This project was created by 5 students from 42:
 
