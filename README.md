@@ -70,7 +70,7 @@ We learned not just how to code a game, but how to design a full software system
 </p>
 
 
-This project was created by 5 students from 42:
+This project was done by 5 students from 42:
 
 - Alix CERALINE
 - Shinhye YUN
@@ -78,6 +78,7 @@ This project was created by 5 students from 42:
 - Gnouma DUKURAY
 - Rime YOUNSSI 
 
+Visit our app web page to learn more about us!
 
 # Discover the project
 
