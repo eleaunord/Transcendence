@@ -4,6 +4,12 @@ Transcendence is a web-based gaming platform and the final project of 42’s Com
 
 The idea was to go beyond what we were comfortable with — hence the name "Transcendence". We had to explore and integrate a wide range of unfamiliar technologies: secure user authentication (including 2FA), Dockerized deployments, tournaments, matchmaking, and even AI opponents.
 
+<p align="center">
+  
+  ![image](https://github.com/user-attachments/assets/0ae4c340-88fa-4059-a836-209f4538d7d7)
+  
+</p>
+
 Our final product is a web app where players can:
 
 - Play Pong and Memory with friends and AI. 
@@ -12,15 +18,17 @@ Our final product is a web app where players can:
 - Track their performance and stats
 - And more — all from a responsive and user-friendly single-page application
 
+<p align="center">
+
+![image](https://github.com/user-attachments/assets/7571262f-a2c7-466d-9228-7fccbf5ffd97)
+
+</p>
+
 For most of us, this was our first experience working on a full-stack app with real-world features like OAuth, 2FA, websocket communication, and Docker. Everything from the frontend to the backend was built from scratch or within strict constraints, often without frameworks or libraries that could do the heavy lifting for us. Even the images and artwork in the project were entirely designed by our own teammate and talented artist, Rime Younssi.
 
 It wasn’t easy — but it was incredibly rewarding.
 
 We learned not just how to code a game, but how to design a full software system, work as a team under pressure, and solve problems we’d never seen before. Transcendence pushed us out of our comfort zones — and helped us grow into real developers.
-
-![image](https://github.com/user-attachments/assets/0ae4c340-88fa-4059-a836-209f4538d7d7)
-![image](https://github.com/user-attachments/assets/e6619ff9-212c-4832-a7f6-66164094a8be)
-
 
 ## 📚 Table of Contents
 
