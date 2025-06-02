@@ -6,7 +6,7 @@ The idea was to go beyond what we were comfortable with — hence the name "Tran
 
 <p align="center">
   
-  ![image](https://github.com/user-attachments/assets/0ae4c340-88fa-4059-a836-209f4538d7d7)
+   <img src="https://github.com/user-attachments/assets/0ae4c340-88fa-4059-a836-209f4538d7d7" width="400"/>
   
 </p>
 
@@ -58,8 +58,11 @@ We learned not just how to code a game, but how to design a full software system
 
 ## 🧑‍🤝‍🧑 Meet the Team
 
+<p align="center">
+
 ![image](https://github.com/user-attachments/assets/fef54d48-b8f8-4672-a4d8-e00c66db1e83)
 
+</p>
 
 This project was created by 5 students from 42:
 
