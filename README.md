@@ -18,9 +18,52 @@ It wasn’t easy — but it was incredibly rewarding.
 
 We learned not just how to code a game, but how to design a full software system, work as a team under pressure, and solve problems we’d never seen before. Transcendence pushed us out of our comfort zones — and helped us grow into real developers.
 
-# 🚀 How we got started
+# Discover the project
 
-## Step 1 — Frontend Setup with Vite, React & TypeScript
+## 🏓 Less chit chat, let’s play!
+
+Want to try out the project on your own computer? (YES!) Here’s a step-by-step guide to run Transcendence locally.
+
+*NB : Before you start, make sure you have these tools installed:*
+- *Git – to download the project*
+- *Docker – to run everything easily*
+- *Make – (usually preinstalled on Mac/Linux)*
+
+### Step 1: Clone the project
+
+Open a terminal or command prompt, and type:
+```
+git clone https://github.com/your-username/transcendence.git
+cd transcendence
+```
+This downloads the project onto your computer.
+
+### Step 2: Start the app
+
+```
+make up
+```
+
+### Step 3: Open the app
+
+Once it’s ready, open your browser and go to:
+```
+https://localhost:8443/ 
+```
+
+### To stop everything
+
+When you're done playing:
+
+```
+make down
+```
+
+# Learn about our adventure
+
+## 🚀 How we got started
+
+### Step 1 — Frontend Setup with Vite, React & TypeScript
 
 We began by setting up the frontend using Vite with a React + TypeScript template. This gave us a fast development environment and a clean project structure.
 
@@ -39,7 +82,7 @@ npm run dev
 ```
 Then open http://localhost:5173 in your browser to see the default React page.
 
-## Step 2 — Backend Setup with Node.js, Fastify & TypeScript
+### Step 2 — Backend Setup with Node.js, Fastify & TypeScript
 
 Next, we created the backend using Fastify, a lightweight and fast web framework for Node.js.
 
@@ -64,7 +107,7 @@ You can test if it’s working by visiting:
 http://localhost:3001/api/ping
 ```
 
-## Step 3 — Adding SQLite to the Backend
+### Step 3 — Adding SQLite to the Backend
 
 For persistent storage, we added SQLite using the better-sqlite3 package:
 ```
@@ -88,7 +131,7 @@ Which returns:
   { "id": 1, "name": "Gnouma" }
 ]
 ```
-## Step 4 — Dockerization & NGINX Reverse Proxy
+### Step 4 — Dockerization & NGINX Reverse Proxy
 
 Finally, we brought everything together using Docker with an NGINX reverse proxy. The folder structure looked like this:
 
