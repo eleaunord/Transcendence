@@ -18,6 +18,10 @@ It wasn’t easy — but it was incredibly rewarding.
 
 We learned not just how to code a game, but how to design a full software system, work as a team under pressure, and solve problems we’d never seen before. Transcendence pushed us out of our comfort zones — and helped us grow into real developers.
 
+![image](https://github.com/user-attachments/assets/0ae4c340-88fa-4059-a836-209f4538d7d7)
+![image](https://github.com/user-attachments/assets/e6619ff9-212c-4832-a7f6-66164094a8be)
+
+
 ## 📚 Table of Contents
 
 - [💻 Technologies Used](#-technologies-used)
@@ -43,8 +47,11 @@ We learned not just how to code a game, but how to design a full software system
 - Setting up and reverse-proxying a full Docker environment
 - Collaborating effectively with Git and team roles
 - Designing UI and game assets ourselves
-- 
+
 ## 🧑‍🤝‍🧑 Meet the Team
+
+![image](https://github.com/user-attachments/assets/fef54d48-b8f8-4672-a4d8-e00c66db1e83)
+
 
 This project was created by 5 students from 42:
 
