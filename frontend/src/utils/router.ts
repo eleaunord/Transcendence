@@ -217,15 +217,27 @@ export function initRouter(routes: RouteMap, teamPrefix = '', rootId = 'app') {
     const container = document.createElement('div');
     container.className = 'relative min-h-screen bg-gray-900 text-white overflow-hidden';
     
-    import('../pages/TeamMemberPage').then(({ createTeamMemberPage }) => {
-      const teamMemberElement = createTeamMemberPage(navigate, name);
-      container.innerHTML = '';
-      container.append(...Array.from(teamMemberElement.childNodes));
-      container.className = teamMemberElement.className;
-    }).catch(err => {
-      console.error('Error loading team member page:', err);
-      container.innerHTML = '<div class="text-white text-center mt-40 text-xl">Error loading team member page</div>';
-    });
+  import('../pages/TeamMemberPage').then(({ createTeamMemberPage }) => {
+    const lowerName = name.toLowerCase();
+    const validNames = ['shinhye', 'alix', 'gnouma', 'rime', 'eleonore'];
+
+    if (!validNames.includes(lowerName)) {
+      import('../pages/404Page').then(({ renderNotFoundPage }) => {
+        container.innerHTML = '';
+        container.appendChild(renderNotFoundPage());
+      });
+      return;
+    }
+
+    const teamMemberElement = createTeamMemberPage(navigate, name);
+    container.innerHTML = '';
+    container.append(...Array.from(teamMemberElement.childNodes));
+    container.className = teamMemberElement.className;
+  }).catch(err => {
+    console.error('Error loading team member page:', err);
+    container.innerHTML = '<div class="text-white text-center mt-40 text-xl">Error loading team member page</div>';
+  });
+
     
     return container;
   }
