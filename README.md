@@ -33,7 +33,7 @@ For most of us, this was our first experience working on a full-stack app with r
 It wasn’t easy — but it was incredibly rewarding.
 
 We learned not just how to code a game, but how to design a full software system, work as a team under pressure, and solve problems we’d never seen before. Transcendence pushed us out of our comfort zones — and helped us grow into real developers.
----
+
 # 📚 Table of Contents
 
 - [💻 Technologies Used](#-technologies-used)
@@ -41,8 +41,10 @@ We learned not just how to code a game, but how to design a full software system
 - [🧑‍🤝‍🧑 Meet the Team](#-meet-the-team)
 - [🏓 Try out the project](#-less-chit-chat-lets-play)
 - [🚀 How we got started](#-how-we-got-started)
+
 ---
 # Discover more about the project
+---
 
 ## 💻 Technologies Used
 
@@ -119,8 +121,6 @@ When you're done playing:
 ```
 make down
 ```
-
-# Learn more about our tech journey
 
 ## 🚀 How we got started
 
