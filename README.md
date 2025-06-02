@@ -18,6 +18,43 @@ It wasn’t easy — but it was incredibly rewarding.
 
 We learned not just how to code a game, but how to design a full software system, work as a team under pressure, and solve problems we’d never seen before. Transcendence pushed us out of our comfort zones — and helped us grow into real developers.
 
+## 📚 Table of Contents
+
+- [💻 Technologies Used](#-technologies-used)
+- [🧠 What We Learned](#-what-we-learned)
+- [🧑‍🤝‍🧑 Meet the Team](#-meet-the-team)
+- [🏓 Try out the project](#-less-chit-chat-lets-play)
+- [🚀 How we got started](#-how-we-got-started)
+
+
+## 💻 Technologies Used
+
+- **Frontend**: React, Vite, TypeScript
+- **Backend**: Node.js, Fastify, TypeScript
+- **Database**: SQLite (with better-sqlite3)
+- **Auth**: JWT, OAuth2, 2FA (TOTP)
+- **Real-time**: WebSocket
+- **Deployment**: Docker, Docker Compose, NGINX
+
+## 🧠 What We Learned
+
+- Building secure authentication from scratch (including 2FA)
+- Managing a real-time multiplayer game with WebSockets
+- Setting up and reverse-proxying a full Docker environment
+- Collaborating effectively with Git and team roles
+- Designing UI and game assets ourselves
+- 
+## 🧑‍🤝‍🧑 Meet the Team
+
+This project was created by 5 students from 42:
+
+- Alix CERALINE
+- Shinhye YUN
+- Eleonore ROTY
+- Gnouma DUKURAY
+- Rime YOUNSSI 
+
+
 # Discover the project
 
 ## 🏓 Less chit chat, let’s play!
@@ -29,7 +66,7 @@ Want to try out the project on your own computer? (YES!) Here’s a step-by-step
 - *Docker – to run everything easily*
 - *Make – (usually preinstalled on Mac/Linux)*
 
-### Step 1: Clone the project
+### Step 1: Clone the project
 
 Open a terminal or command prompt, and type:
 ```
@@ -38,20 +75,20 @@ cd transcendence
 ```
 This downloads the project onto your computer.
 
-### Step 2: Start the app
+### Step 2: Start the app
 
 ```
 make up
 ```
 
-### Step 3: Open the app
+### Step 3: Open the app
 
 Once it’s ready, open your browser and go to:
 ```
 https://localhost:8443/ 
 ```
 
-### To stop everything
+### To stop everything
 
 When you're done playing:
 
@@ -59,7 +96,7 @@ When you're done playing:
 make down
 ```
 
-# Learn about our adventure
+# Learn more about our tech journey
 
 ## 🚀 How we got started
 
