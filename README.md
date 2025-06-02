@@ -35,53 +35,13 @@ It wasn’t easy — but it was incredibly rewarding.
 We learned not just how to code a game, but how to design a full software system, work as a team under pressure, and solve problems we’d never seen before. Transcendence pushed us out of our comfort zones — and helped us grow into real developers.
 
 # 📚 Table of Contents
-
-- [💻 Technologies Used](#-technologies-used)
-- [🧠 What We Learned](#-what-we-learned)
-- [🧑‍🤝‍🧑 Meet the Team](#-meet-the-team)
-- [🏓 Try out the project](#-less-chit-chat-lets-play)
-- [🚀 How we got started](#-how-we-got-started)
+- 🕹️ [Try out the project](#-less-chit-chat-lets-play)
+- 🛠️ [How we got started](#-how-we-got-started)
+- 💻 [Technologies Used](#-technologies-used)
+- 🧠 [What We Learned](#-what-we-learned)
+- 🧑‍🤝‍🧑 [Meet the Team](#-meet-the-team)
 
 ---
-# Discover more about the project
----
-
-## 💻 Technologies Used
-
-- **Frontend**: React, Vite, TypeScript
-- **Backend**: Node.js, Fastify, TypeScript
-- **Database**: SQLite (with better-sqlite3)
-- **Auth**: JWT, OAuth2, 2FA (TOTP)
-- **Real-time**: WebSocket
-- **Deployment**: Docker, Docker Compose, NGINX
-
-## 🧠 What We Learned
-
-- Building secure authentication from scratch (including 2FA)
-- Managing a real-time multiplayer game with WebSockets
-- Setting up and reverse-proxying a full Docker environment
-- Collaborating effectively with Git and team roles
-- Designing UI and game assets ourselves
-
-## 🧑‍🤝‍🧑 Meet the Team
-
-
-<p align="center">
-
-![image](https://github.com/user-attachments/assets/fef54d48-b8f8-4672-a4d8-e00c66db1e83)
-
-</p>
-
-
-This project was done by 5 students from 42:
-
-- Alix CERALINE
-- Shinhye YUN
-- Eleonore ROTY
-- Gnouma DUKURAY
-- Rime YOUNSSI 
-
-Visit our app web page to learn more about us!
 
 ## 🏓 Less chit chat, let’s play!
 
@@ -121,6 +81,7 @@ When you're done playing:
 ```
 make down
 ```
+---
 
 ## 🚀 How we got started
 
@@ -227,6 +188,45 @@ With one command, the whole app runs in Docker containers:
 ```
 docker-compose up --build
 ```
+---
+
+## 💻 Technologies Used
+
+- **Frontend**: React, Vite, TypeScript
+- **Backend**: Node.js, Fastify, TypeScript
+- **Database**: SQLite (with better-sqlite3)
+- **Auth**: JWT, OAuth2, 2FA (TOTP)
+- **Real-time**: WebSocket
+- **Deployment**: Docker, Docker Compose, NGINX
+
+---
+
+## 🧠 What We Learned
+
+- Building secure authentication from scratch (including 2FA)
+- Managing a real-time multiplayer game with WebSockets
+- Setting up and reverse-proxying a full Docker environment
+- Collaborating effectively with Git and team roles
+- Designing UI and game assets ourselves
+
+---
+
+## 🧑‍🤝‍🧑 Meet the Team
+
+<p align="center">
+
+![image](https://github.com/user-attachments/assets/fef54d48-b8f8-4672-a4d8-e00c66db1e83)
+
+</p>
 
 
+This project was done by 5 students from 42:
+
+- Alix CERALINE
+- Shinhye YUN
+- Eleonore ROTY
+- Gnouma DUKURAY
+- Rime YOUNSSI 
+
+Visit our app web page to learn more about us!
 
